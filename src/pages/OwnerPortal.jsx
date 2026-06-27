@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { migrateMenu } from '../migration';
 
 const OwnerPortal = () => {
   const [activeTab, setActiveTab] = useState('memories');
@@ -28,13 +27,28 @@ const OwnerPortal = () => {
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8">
-      <h1 className="text-3xl font-bold mb-8">Dumble' Door Admin</h1>
+      <h1 className="text-3xl font-bold mb-8 text-white">Dumble' Door Admin</h1>
       
       <div className="flex gap-4 mb-8">
-        <button onClick={() => setActiveTab('memories')} className="p-2 bg-slate-800 rounded">Memories</button>
-        <button onClick={() => setActiveTab('menu')} className="p-2 bg-slate-800 rounded">Menu Editor</button>
-        <button onClick={migrateMenu} className="p-2 bg-red-900 text-white rounded">RUN MIGRATION</button>
+        <button 
+          onClick={() => setActiveTab('memories')} 
+          className={`p-2 rounded ${activeTab === 'memories' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Memories
+        </button>
+        <button 
+          onClick={() => setActiveTab('menu')} 
+          className={`p-2 rounded ${activeTab === 'menu' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Menu Editor
+        </button>
       </div>
+
+      {activeTab === 'memories' && (
+        <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-800">
+          <p className="text-slate-400">Memory management view active.</p>
+        </div>
+      )}
 
       {activeTab === 'menu' && menuData && (
         <div className="bg-[#1E293B] border border-slate-800 rounded-xl p-6 shadow-2xl">
