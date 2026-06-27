@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { FULL_MENU } from '../constants/data';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
@@ -33,22 +32,28 @@ const MenuSection = ({ title, info, idx, setTheme, soldOutItems }) => {
 };
 
 const MenuBoard = ({ setTheme }) => {
+  const [menu, setMenu] = useState(null);
   const [soldOutItems, setSoldOutItems] = useState([]);
 
-  // Listen to live menu state from Firebase
+  // Live listener for the Menu Data AND Sold Out State
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, "settings", "menuState"), (doc) => {
-      if (doc.exists() && doc.data().soldOut) {
-        setSoldOutItems(doc.data().soldOut);
-      }
+    const unsub = onSnapshot(doc(db, "settings", "fullMenu"), (doc) => {
+      if (doc.exists()) setMenu(doc.data().data);
     });
-    return () => unsubscribe();
+
+    const unsubSoldOut = onSnapshot(doc(db, "settings", "menuState"), (doc) => {
+      if (doc.exists() && doc.data().soldOut) setSoldOutItems(doc.data().soldOut);
+    });
+
+    return () => { unsub(); unsubSoldOut(); };
   }, []);
+
+  if (!menu) return <div className="text-center p-20 text-white font-mono">Loading Cafe...</div>;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-6 py-20">
       <h1 className="text-8xl font-serif text-center mb-48">The Menu.</h1>
-      {Object.entries(FULL_MENU).map(([cat, info], idx) => (
+      {Object.entries(menu).map(([cat, info], idx) => (
         <MenuSection key={cat} title={cat} info={info} idx={idx} setTheme={setTheme} soldOutItems={soldOutItems} />
       ))}
     </motion.div>
