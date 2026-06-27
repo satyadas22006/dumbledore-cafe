@@ -1,57 +1,49 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { FULL_MENU } from '../constants/data';
+import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
-const MenuSection = ({ title, info, idx, setTheme, soldOutItems }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { margin: "-50% 0px -50% 0px" });
-  useEffect(() => { if (isInView) setTheme(info.theme); }, [isInView, info.theme, setTheme]);
+const MenuBoard = () => {
+  const [menu, setMenu] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <div ref={ref} className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-16 min-h-[70vh] py-20`}>
-      <div className="w-full md:w-5/12 text-center md:text-left"><h2 className="text-7xl md:text-9xl font-cursive transform -rotate-3">{title}</h2></div>
-      <div className="w-full md:w-7/12">
-        <ul className="space-y-8">
-          {info.items.map(item => {
-            const isSoldOut = soldOutItems.includes(item.n);
-            return (
-              <li key={item.n} className={`flex justify-between items-end border-b border-current border-opacity-20 border-dashed pb-3 transition-opacity ${isSoldOut ? 'opacity-40' : 'opacity-100'}`}>
-                <span className="font-serif text-3xl md:text-4xl flex items-center gap-4">
-                  {item.n} 
-                  {isSoldOut && <span className="text-xs font-mono uppercase tracking-widest bg-current text-white px-2 py-1 rounded">Sold Out</span>}
-                </span>
-                <span className="font-mono font-bold text-2xl shrink-0 opacity-80">₹{item.p}</span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-const MenuBoard = ({ setTheme }) => {
-  const [soldOutItems, setSoldOutItems] = useState([]);
-
-  // Listen to live menu state from Firebase
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, "settings", "menuState"), (doc) => {
-      if (doc.exists() && doc.data().soldOut) {
-        setSoldOutItems(doc.data().soldOut);
+    // This creates a real-time "live" link to your Firebase database
+    const unsub = onSnapshot(doc(db, "settings", "fullMenu"), (doc) => {
+      if (doc.exists()) {
+        setMenu(doc.data().data);
+        setLoading(false);
       }
     });
-    return () => unsubscribe();
+    
+    // This cleans up the connection when the user leaves the page
+    return () => unsub();
   }, []);
 
+  if (loading) return <div className="text-center p-20 text-white font-mono">Syncing Menu...</div>;
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-6 py-20">
-      <h1 className="text-8xl font-serif text-center mb-48">The Menu.</h1>
-      {Object.entries(FULL_MENU).map(([cat, info], idx) => (
-        <MenuSection key={cat} title={cat} info={info} idx={idx} setTheme={setTheme} soldOutItems={soldOutItems} />
-      ))}
-    </motion.div>
+    <div className="min-h-screen bg-[#0F172A] p-8 text-white">
+      <h1 className="text-4xl font-bold mb-12 text-center text-emerald-400">Dumble' Door Menu</h1>
+      
+      <div className="max-w-3xl mx-auto">
+        {Object.entries(menu).map(([category, info]) => (
+          <div key={category} className="mb-10">
+            <h2 className="text-2xl font-mono uppercase border-b border-emerald-900 pb-2 mb-6 text-emerald-600">
+              {category}
+            </h2>
+            
+            <div className="space-y-4">
+              {info.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-lg font-medium">{item.n}</span>
+                  <span className="text-emerald-400 font-mono font-bold">₹{item.p}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
