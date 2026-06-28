@@ -1,0 +1,2894 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+eslint.config.js
+index.html
+package.json
+postcss.config.js
+public/favicon.svg
+public/icons.svg
+README.md
+src/App.css
+src/App.jsx
+src/assets/hero.png
+src/assets/react.svg
+src/assets/vite.svg
+src/components/AvatarRenderer.jsx
+src/components/Barcode.jsx
+src/components/GlobalCompanion.jsx
+src/components/Icons.jsx
+src/components/VinylPlayer.jsx
+src/constants/data.js
+src/context/AvatarContext.jsx
+src/firebase.js
+src/index.css
+src/main.jsx
+src/migration.js
+src/pages/AvatarCreatorPage.jsx
+src/pages/ChronicleBoard.jsx
+src/pages/Directory.jsx
+src/pages/Games.jsx
+src/pages/Home.jsx
+src/pages/HueHunt.jsx
+src/pages/IceBreakers.jsx
+src/pages/LandingPage.jsx
+src/pages/MemoryWall.jsx
+src/pages/MenuBoard.jsx
+src/pages/OwnerPortal.jsx
+src/pages/ReviewWizard.jsx
+src/pages/ThankYou.jsx
+tailwind.config.js
+vercel.json
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.*
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dumbledore-community</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "dumbledore-community",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^12.15.0",
+    "framer-motion": "^12.41.0",
+    "lucide-react": "^1.21.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.0",
+    "recharts": "^3.9.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^10.5.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.6.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.1.0"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46"><path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z" style="fill:#863bff;fill:color(display-p3 .5252 .23 1);fill-opacity:1"/><mask id="a" width="48" height="46" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M25.842 44.938c-.664.844-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.183c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.498 0-3.579-1.842-3.579H1.133c-.92 0-1.456-1.04-.92-1.787L9.91.473c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.578 1.842 3.578h11.377c.943 0 1.473 1.088.89 1.832L25.843 44.94z" style="fill:#000;fill-opacity:1"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#ede6ff" rx="5.508" ry="14.704" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -4.47 31.516)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#ede6ff" rx="10.399" ry="29.851" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -39.328 7.883)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#7e14ff" rx="5.508" ry="30.487" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -25.913 -14.639)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -32.644 -3.334)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -34.34 30.47)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#ede6ff" rx="14.072" ry="22.078" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="rotate(93.35 24.506 48.493)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx=".387" cy="8.972" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(39.51 .387 8.972)"/></g><g filter="url(#k)"><ellipse cx="47.523" cy="-6.092" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 47.523 -6.092)"/></g><g filter="url(#l)"><ellipse cx="41.412" cy="6.333" fill="#47bfff" rx="5.971" ry="9.665" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 41.412 6.333)"/></g><g filter="url(#m)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#n)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#o)"><ellipse cx="35.651" cy="29.907" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 35.651 29.907)"/></g><g filter="url(#p)"><ellipse cx="38.418" cy="32.4" fill="#47bfff" rx="5.971" ry="15.297" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 38.418 32.4)"/></g></g><defs><filter id="b" width="60.045" height="41.654" x="-19.77" y="16.149" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-54.613" y="-7.533" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-49.64" y="2.03" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-45.045" y="20.029" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-43.513" y="21.178" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="15.756" y="-17.901" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-27.636" y="-22.853" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="20.116" y="-38.415" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="24.641" y="-11.323" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="8.244" y="-2.416" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="18.713" y="10.588" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="public/icons.svg">
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="bluesky-icon" viewBox="0 0 16 17">
+    <g clip-path="url(#bluesky-clip)"><path fill="#08060d" d="M7.75 7.735c-.693-1.348-2.58-3.86-4.334-5.097-1.68-1.187-2.32-.981-2.74-.79C.188 2.065.1 2.812.1 3.251s.241 3.602.398 4.13c.52 1.744 2.367 2.333 4.07 2.145-2.495.37-4.71 1.278-1.805 4.512 3.196 3.309 4.38-.71 4.987-2.746.608 2.036 1.307 5.91 4.93 2.746 2.72-2.746.747-4.143-1.747-4.512 1.702.189 3.55-.4 4.07-2.145.156-.528.397-3.691.397-4.13s-.088-1.186-.575-1.406c-.42-.19-1.06-.395-2.741.79-1.755 1.24-3.64 3.752-4.334 5.099"/></g>
+    <defs><clipPath id="bluesky-clip"><path fill="#fff" d="M.1.85h15.3v15.3H.1z"/></clipPath></defs>
+  </symbol>
+  <symbol id="discord-icon" viewBox="0 0 20 19">
+    <path fill="#08060d" d="M16.224 3.768a14.5 14.5 0 0 0-3.67-1.153c-.158.286-.343.67-.47.976a13.5 13.5 0 0 0-4.067 0c-.128-.306-.317-.69-.476-.976A14.4 14.4 0 0 0 3.868 3.77C1.546 7.28.916 10.703 1.231 14.077a14.7 14.7 0 0 0 4.5 2.306q.545-.748.965-1.587a9.5 9.5 0 0 1-1.518-.74q.191-.14.372-.293c2.927 1.369 6.107 1.369 8.999 0q.183.152.372.294-.723.437-1.52.74.418.838.963 1.588a14.6 14.6 0 0 0 4.504-2.308c.37-3.911-.63-7.302-2.644-10.309m-9.13 8.234c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.894 0 1.614.82 1.599 1.82.001 1-.705 1.82-1.6 1.82m5.91 0c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.893 0 1.614.82 1.599 1.82 0 1-.706 1.82-1.6 1.82"/>
+  </symbol>
+  <symbol id="documentation-icon" viewBox="0 0 21 20">
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="m15.5 13.333 1.533 1.322c.645.555.967.833.967 1.178s-.322.623-.967 1.179L15.5 18.333m-3.333-5-1.534 1.322c-.644.555-.966.833-.966 1.178s.322.623.966 1.179l1.534 1.321"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M17.167 10.836v-4.32c0-1.41 0-2.117-.224-2.68-.359-.906-1.118-1.621-2.08-1.96-.599-.21-1.349-.21-2.848-.21-2.623 0-3.935 0-4.983.369-1.684.591-3.013 1.842-3.641 3.428C3 6.449 3 7.684 3 10.154v2.122c0 2.558 0 3.838.706 4.726q.306.383.713.671c.76.536 1.79.64 3.581.66"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M3 10a2.78 2.78 0 0 1 2.778-2.778c.555 0 1.209.097 1.748-.047.48-.129.854-.503.982-.982.145-.54.048-1.194.048-1.749a2.78 2.78 0 0 1 2.777-2.777"/>
+  </symbol>
+  <symbol id="github-icon" viewBox="0 0 19 19">
+    <path fill="#08060d" fill-rule="evenodd" d="M9.356 1.85C5.05 1.85 1.57 5.356 1.57 9.694a7.84 7.84 0 0 0 5.324 7.44c.387.079.528-.168.528-.376 0-.182-.013-.805-.013-1.454-2.165.467-2.616-.935-2.616-.935-.349-.91-.864-1.143-.864-1.143-.71-.48.051-.48.051-.48.787.051 1.2.805 1.2.805.695 1.194 1.817.857 2.268.649.064-.507.27-.857.49-1.052-1.728-.182-3.545-.857-3.545-3.87 0-.857.31-1.558.8-2.104-.078-.195-.349-1 .077-2.078 0 0 .657-.208 2.14.805a7.5 7.5 0 0 1 1.946-.26c.657 0 1.328.092 1.946.26 1.483-1.013 2.14-.805 2.14-.805.426 1.078.155 1.883.078 2.078.502.546.799 1.247.799 2.104 0 3.013-1.818 3.675-3.558 3.87.284.247.528.714.528 1.454 0 1.052-.012 1.896-.012 2.156 0 .208.142.455.528.377a7.84 7.84 0 0 0 5.324-7.441c.013-4.338-3.48-7.844-7.773-7.844" clip-rule="evenodd"/>
+  </symbol>
+  <symbol id="social-icon" viewBox="0 0 20 20">
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M12.5 6.667a4.167 4.167 0 1 0-8.334 0 4.167 4.167 0 0 0 8.334 0"/>
+    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M2.5 16.667a5.833 5.833 0 0 1 8.75-5.053m3.837.474.513 1.035c.07.144.257.282.414.309l.93.155c.596.1.736.536.307.965l-.723.73a.64.64 0 0 0-.152.531l.207.903c.164.715-.213.991-.84.618l-.872-.52a.63.63 0 0 0-.577 0l-.872.52c-.624.373-1.003.094-.84-.618l.207-.903a.64.64 0 0 0-.152-.532l-.723-.729c-.426-.43-.289-.864.306-.964l.93-.156a.64.64 0 0 0 .412-.31l.513-1.034c.28-.562.735-.562 1.012 0"/>
+  </symbol>
+  <symbol id="x-icon" viewBox="0 0 19 19">
+    <path fill="#08060d" fill-rule="evenodd" d="M1.893 1.98c.052.072 1.245 1.769 2.653 3.77l2.892 4.114c.183.261.333.48.333.486s-.068.089-.152.183l-.522.593-.765.867-3.597 4.087c-.375.426-.734.834-.798.905a1 1 0 0 0-.118.148c0 .01.236.017.664.017h.663l.729-.83c.4-.457.796-.906.879-.999a692 692 0 0 0 1.794-2.038c.034-.037.301-.34.594-.675l.551-.624.345-.392a7 7 0 0 1 .34-.374c.006 0 .93 1.306 2.052 2.903l2.084 2.965.045.063h2.275c1.87 0 2.273-.003 2.266-.021-.008-.02-1.098-1.572-3.894-5.547-2.013-2.862-2.28-3.246-2.273-3.266.008-.019.282-.332 2.085-2.38l2-2.274 1.567-1.782c.022-.028-.016-.03-.65-.03h-.674l-.3.342a871 871 0 0 1-1.782 2.025c-.067.075-.405.458-.75.852a100 100 0 0 1-.803.91c-.148.172-.299.344-.99 1.127-.304.343-.32.358-.345.327-.015-.019-.904-1.282-1.976-2.808L6.365 1.85H1.8zm1.782.91 8.078 11.294c.772 1.08 1.413 1.973 1.425 1.984.016.017.241.02 1.05.017l1.03-.004-2.694-3.766L7.796 5.75 5.722 2.852l-1.039-.004-1.039-.004z" clip-rule="evenodd"/>
+  </symbol>
+</svg>
+</file>
+
+<file path="README.md">
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+</file>
+
+<file path="src/App.css">
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
+    }
+  }
+
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+#docs {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="src/assets/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
+</file>
+
+<file path="src/components/AvatarRenderer.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+import { AVATAR_OPTIONS } from '../context/AvatarContext';
+
+export const AvatarRenderer = ({ config, size = 200, animate = true }) => {
+  if (!config) return null;
+
+  const skinColor = AVATAR_OPTIONS.skinTones.find(s => s.id === config.skin)?.value || '#FFF5E1';
+  const shape = AVATAR_OPTIONS.faceShapes.find(f => f.id === config.faceShape) || AVATAR_OPTIONS.faceShapes[0];
+
+  // Motion Variants mirroring Cat strawberry.jpg's bouncing weight
+  const bobbingAnimation = animate ? {
+    animate: {
+      y: [0, -6, 0],
+      scaleY: [1, 1.02, 1],
+      transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+    }
+  } : {};
+
+  const faceTiltAnimation = animate ? {
+    animate: {
+      rotate: [-1, 1, -1],
+      transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+    }
+  } : {};
+
+  return (
+    <motion.svg
+      className="select-none pointer-events-none drop-shadow-sm"
+      width={size}
+      height={size}
+      viewBox="0 0 300 300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...bobbingAnimation}
+    >
+      {/* BACKGROUND SHADOW / CHUNKY GLOW LAYER */}
+      <circle cx="150" cy="260" r="60" fill="#472C20" opacity="0.12" />
+
+      {/* CLOTHING TOP LAYER RIG */}
+      <g id="apparel-top">
+        {config.top === 'hoodie' && (
+          <path d="M80 230 C 80 180, 220 180, 220 230 L 230 280 L 70 280 Z" fill={config.topColor} stroke="#472C20" strokeWidth="5" strokeLinejoin="round" />
+        )}
+        {config.top === 'sweater' && (
+          <path d="M90 220 Q 150 250 210 220 L 230 280 L 70 280 Z" fill={config.topColor} stroke="#472C20" strokeWidth="5" strokeLinejoin="round" />
+        )}
+        {config.top === 'shirt' && (
+          <>
+            <path d="M90 220 C 90 200, 210 200, 210 220 L 225 280 L 75 280 Z" fill="#FFF" stroke="#472C20" strokeWidth="5" />
+            <path d="M120 210 L 150 235 L 110 240 Z" fill={config.topColor} stroke="#472C20" strokeWidth="4" />
+            <path d="M180 210 L 150 235 L 190 240 Z" fill={config.topColor} stroke="#472C20" strokeWidth="4" />
+          </>
+        )}
+      </g>
+
+      {/* BASE BODY HEAD CONTOUR GROUP */}
+      <motion.g id="head-group" {...faceTiltAnimation} className="origin-[150px_180px]">
+        
+        {/* HAIR REAR BACKDROP ACCENTS */}
+        {config.hairStyle === 'buns' && (
+          <>
+            <circle cx="70" cy="90" r="30" fill={config.hairColor} stroke="#472C20" strokeWidth="5"/>
+            <circle cx="230" cy="90" r="30" fill={config.hairColor} stroke="#472C20" strokeWidth="5"/>
+          </>
+        )}
+
+        {/* SKIN BASE FACE */}
+        <ellipse cx="150" cy="150" rx={shape.rx} ry={shape.ry} fill={skinColor} stroke="#472C20" strokeWidth="5" />
+
+        {/* CHEEK BLUSH (Inspired by 9359111722535664.jpg) */}
+        <circle cx="95" cy="165" r="12" fill="#FFB6C9" opacity="0.6" />
+        <circle cx="205" cy="165" r="12" fill="#FFB6C9" opacity="0.6" />
+
+        {/* HAIR FOREGROUND ELEMENTS */}
+        <g id="hair-front" fill={config.hairColor}>
+          {config.hairStyle === 'fluffy' && (
+            <path d="M60 120 C 60 50, 240 50, 240 120 C 210 100, 180 110, 150 95 C 120 110, 90 100, 60 120 Z" stroke="#472C20" strokeWidth="5" strokeLinejoin="round" />
+          )}
+          {config.hairStyle === 'curls' && (
+            <path d="M55 130 Q 40 90 70 80 Q 100 70 120 90 Q 150 60 180 90 Q 210 70 230 80 Q 260 90 245 130 Z" stroke="#472C20" strokeWidth="5" strokeLinejoin="round" />
+          )}
+          {config.hairStyle === 'spiky' && (
+            <path d="M65 115 L 100 70 L 130 90 L 150 50 L 170 90 L 200 70 L 235 115 Z" stroke="#472C20" strokeWidth="5" strokeLinejoin="round" />
+          )}
+        </g>
+
+        {/* FACIAL EXPRESSIONS LAYER */}
+        <g id="expression-features" stroke="#472C20" strokeWidth="5" strokeLinecap="round" fill="none">
+          {config.expression === 'happy' && (
+            <>
+              <path d="M100 145 Q 110 135 120 145" />
+              <path d="M180 145 Q 190 135 200 145" />
+              <path d="M140 170 Q 150 185 160 170" fill="#472C20" />
+            </>
+          )}
+          {config.expression === 'laughing' && (
+            <>
+              <path d="M95 140 L 115 150 L 95 160" />
+              <path d="M205 140 L 185 150 L 205 160" />
+              <path d="M135 165 Q 150 195 165 165 Z" fill="#FFB6C9" />
+            </>
+          )}
+          {config.expression === 'surprised' && (
+            <>
+              <circle cx="110" cy="145" r="4" fill="#472C20" />
+              <circle cx="190" cy="145" r="4" fill="#472C20" />
+              <circle cx="150" cy="175" r="8" fill="none" />
+            </>
+          )}
+          {config.expression === 'sleepy' && (
+            <>
+              <path d="M95 150 L 115 150" strokeWidth="4" />
+              <path d="M185 150 L 205 150" strokeWidth="4" />
+              <path d="M142 168 Q 150 172 158 168" />
+            </>
+          )}
+          {config.expression === 'grumpy' && (
+            <>
+              <path d="M95 140 L 115 146" />
+              <path d="M205 140 L 185 146" />
+              <circle cx="110" cy="152" r="4" fill="#472C20" />
+              <circle cx="190" cy="152" r="4" fill="#472C20" />
+              <path d="M140 175 Q 150 165 160 175" />
+            </>
+          )}
+        </g>
+
+        {/* GLASSES ACCESSORY RIG */}
+        {config.glasses !== 'none' && (
+          <g id="eyewear" stroke="#472C20" strokeWidth="5" fill="none">
+            {config.glasses === 'round' && (
+              <>
+                <circle cx="110" cy="150" r="22" />
+                <circle cx="190" cy="150" r="22" />
+                <path d="M132 150 L 168 150" />
+              </>
+            )}
+            {config.glasses === 'square' && (
+              <>
+                <rect x="88" y="130" width="40" height="35" rx="6" />
+                <rect x="172" y="130" width="40" height="35" rx="6" />
+                <path d="M128 148 L 172 148" />
+              </>
+            )}
+          </g>
+        )}
+
+        {/* COZY HEAD GEAR OR HAT OVERLAYS */}
+        {config.accessory === 'duckHat' && (
+          <g id="duck-cowl">
+            {/* Soft duck cap shell based on 6755468183143554_2.jpg architecture */}
+            <path d="M70 90 C 70 30, 230 30, 230 90 Z" fill="#FFE08A" stroke="#472C20" strokeWidth="5" />
+            <ellipse cx="150" cy="55" rx="14" ry="8" fill="#FF9F29" stroke="#472C20" strokeWidth="4" />
+            <circle cx="125" cy="55" r="3" fill="#472C20" />
+            <circle cx="175" cy="55" r="3" fill="#472C20" />
+          </g>
+        )}
+        {config.accessory === 'strawberryHat' && (
+          <g id="strawberry-cowl">
+            <path d="M70 95 C 70 25, 230 25, 230 95 Z" fill="#D87585" stroke="#472C20" strokeWidth="5" />
+            {/* Green Leaf Stem Crowns directly pointing out like Cat strawberry.jpg */}
+            <path d="M150 25 L 150 10 M130 30 L 150 25 L 170 30 L 150 15 Z" fill="#A8E6CF" stroke="#472C20" strokeWidth="4" />
+            <circle cx="110" cy="60" r="2" fill="#FFF7D8" />
+            <circle cx="190" cy="60" r="2" fill="#FFF7D8" />
+            <circle cx="150" cy="75" r="2" fill="#FFF7D8" />
+          </g>
+        )}
+        {config.accessory === 'sprout' && (
+          <path d="M150 70 Q 140 50 130 52 Q 145 42 150 60 Q 160 45 175 48 Q 155 52 150 70" fill="#A8E6CF" stroke="#472C20" strokeWidth="4" />
+        )}
+      </motion.g>
+
+      {/* COMPANION ITEMS (HELD STUFF ITEMS ROW) */}
+      {config.heldItem !== 'none' && (
+        <g id="held-item-group" transform="translate(190, 200)">
+          {config.heldItem === 'coffee' && (
+            <g>
+              <rect x="10" y="20" width="35" height="40" rx="10" fill="#FFF7D8" stroke="#472C20" strokeWidth="4" />
+              <path d="M45 30 C 53 30, 53 45, 45 45" stroke="#472C20" strokeWidth="4" fill="none" />
+              <text x="18" y="46" fontSize="16">☕</text>
+            </g>
+          )}
+          {config.heldItem === 'knife' && (
+            <g transform="rotate(-15)">
+              <path d="M5 25 L 35 25 L 30 10 L 5 10 Z" fill="#D3D3D3" stroke="#472C20" strokeWidth="4" />
+              <rect x="35" y="13" width="12" height="10" rx="2" fill="#FFB6C9" stroke="#472C20" strokeWidth="4" />
+            </g>
+          )}
+          {config.heldItem === 'flower' && (
+            <g transform="translate(20,20)">
+              <circle cx="10" cy="10" r="14" fill="#FFB6C9" stroke="#472C20" strokeWidth="3" />
+              <circle cx="10" cy="10" r="6" fill="#FFE08A" stroke="#472C20" strokeWidth="3" />
+            </g>
+          )}
+        </g>
+      )}
+    </motion.svg>
+  );
+};
+</file>
+
+<file path="src/components/Barcode.jsx">
+import React from 'react';
+
+const Barcode = () => (
+  <div className="flex h-12 w-full items-center justify-center gap-[2px] opacity-80">
+    {[...Array(35)].map((_, i) => (
+      <div key={i} className="h-full bg-current" style={{ width: Math.random() > 0.5 ? '2px' : '4px', opacity: Math.random() > 0.8 ? 0 : 1 }}></div>
+    ))}
+  </div>
+);
+
+export default Barcode;
+</file>
+
+<file path="src/components/GlobalCompanion.jsx">
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { useAvatar } from '../context/AvatarContext';
+import { AvatarRenderer } from './AvatarRenderer';
+
+export default function GlobalCompanion() {
+  const { avatar, isCustomized } = useAvatar();
+  const location = useLocation();
+  const [showBubble, setShowBubble] = useState(true);
+
+  // Hide the companion completely ONLY when on the root landing page or inside the studio creator
+  if (location.pathname === '/welcome' || location.pathname === '/avatar-studio') {
+    return null;
+  }
+
+  // Dynamic contextual remarks depending on which game or board route they open
+  const getSpeechBubbleText = () => {
+    if (location.pathname.includes('icebreakers')) return "Eye contact time! No yapping lies around me... 👁️";
+    if (location.pathname.includes('hue-hunt')) return "Hurry up!! Snap that target color object before the clock dies! 🍓";
+    if (location.pathname === '/') return "Welcome back to safety! Let's go cook up some table drama? ✨";
+    return "I am observing your clicks quietly... 🐥";
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[9999] pointer-events-none select-none flex flex-col items-center">
+      <AnimatePresence>
+        {showBubble && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            onClick={() => setShowBubble(false)}
+            className="pointer-events-auto cursor-pointer bg-white border-[3px] border-[#472C20] rounded-2xl px-4 py-2.5 text-[11px] font-black uppercase tracking-wider text-[#472C20] shadow-[4px_4px_0_#472C20] mb-3 text-center max-w-[180px] relative"
+          >
+            {getSpeechBubbleText()}
+            {/* Lower Speech Bubble Tail element arrow indicator */}
+            <div className="absolute bottom-[-9px] right-8 w-3 h-3 bg-white border-b-[3px] border-r-[3px] border-[#472C20] rotate-45"></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Avatar Core Container Grid */}
+      <motion.div
+        className="pointer-events-auto cursor-pointer w-24 h-24 flex items-center justify-center bg-[#FFF7D8]/90 backdrop-blur-sm border-4 border-[#472C20] rounded-full shadow-[5px_5px_0_#472C20]"
+        whileHover={{ scale: 1.1, rotate: -3 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setShowBubble(!showBubble)}
+        animate={{
+          y: [0, -5, 0],
+        }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="scale-[0.8] transform translate-y-[-4px]">
+          <AvatarRenderer config={avatar} size={100} animate={false} />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/Icons.jsx">
+import React from 'react';
+
+export const InstagramIcon = ({ size = 24 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+);
+export const WhatsappIcon = ({ size = 24 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+);
+export const TwitterIcon = ({ size = 24 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+);
+</file>
+
+<file path="src/components/VinylPlayer.jsx">
+import React, { useState, useEffect, useRef } from 'react';
+import { Disc3 } from 'lucide-react';
+
+const VinylPlayer = ({ theme }) => {
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.4;
+  }, []);
+
+  const toggle = () => {
+    if (playing) audioRef.current.pause();
+    else audioRef.current.play();
+    setPlaying(!playing);
+  };
+
+  return (
+    <div className="fixed bottom-6 left-6 z-[999]">
+      <button onClick={toggle} style={{ backgroundColor: theme.text, color: theme.bg }} className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform group relative overflow-hidden">
+        <Disc3 size={28} className={playing ? 'vinyl-spin' : ''} />
+        <div className={`absolute top-2 right-2 w-1 h-4 bg-current origin-top transition-transform duration-500 ${playing ? 'rotate-[25deg]' : 'rotate-0'}`} />
+      </button>
+    </div>
+  );
+};
+
+export default VinylPlayer;
+</file>
+
+<file path="src/constants/data.js">
+// src/constants/data.js
+export const THEMES = {
+  cream: { bg: '#FDFBF7', text: '#2C241B', btn: '#2C241B', btnText: '#FDFBF7', border: 'rgba(44,36,27,0.1)' },
+  forest: { bg: '#112A22', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#112A22', border: 'rgba(253,251,247,0.1)' },
+  terra: { bg: '#A64226', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#A64226', border: 'rgba(253,251,247,0.1)' },
+  navy: { bg: '#1E293B', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#1E293B', border: 'rgba(253,251,247,0.1)' },
+  rose: { bg: '#E2C7C0', text: '#2C241B', btn: '#2C241B', btnText: '#E2C7C0', border: 'rgba(44,36,27,0.1)' },
+  sand: { bg: '#D1C7BD', text: '#2C241B', btn: '#2C241B', btnText: '#D1C7BD', border: 'rgba(44,36,27,0.1)' },
+  charcoal: { bg: '#222222', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#222222', border: 'rgba(253,251,247,0.1)' }
+};
+
+export const FULL_MENU = {
+  "Sliders": { theme: THEMES.forest, items: [{n: "Green Day", p: 69}, {n: "Egg-Splosive", p: 79}, {n: "BBQ Chickenizer", p: 99}, {n: "Peppy Paneer", p: 99}] },
+  "Burgers": { theme: THEMES.terra, items: [{n: "Big Crunch Tikki", p: 119}, {n: "The Big Brown", p: 149}, {n: "The Mexican Dominator", p: 159}] },
+  "Pasta": { theme: THEMES.navy, items: [{n: "Fusilli Arrabiata", p: 149}, {n: "Spaghetti Meatball", p: 179}, {n: "Baked Mac & Cheese", p: 189}] },
+  "Chinese": { theme: THEMES.rose, items: [{n: "Veg Steamed Momos", p: 60}, {n: "Chicken Steamed Momos", p: 70}, {n: "Paneer Steamed Bao", p: 80}] },
+  "Beverages": { theme: THEMES.cream, items: [{n: "Cold Coffee", p: 79}, {n: "Virgin Mojito", p: 99}, {n: "Kit-Kat Milkshake", p: 119}] }
+};
+
+export const DEFAULT_MEMORIES = [
+  { id: 1, name: "Local Student", text: "The chutney keeps bringing me back. Best momos in Jagda!", dish: "Chicken Steamed Momos", vibe: "🥟 Foodie", highlights: ["Authentic Taste"], reason: "🥟 The Cravings", rating: "😍 Amazing", createdAt: Date.now() - 86400000, items: ["Chicken Steamed Momos"] },
+  { id: 2, name: "Anonymous Enjoyer", text: "Still my favorite rainy-day meal.", dish: "Spaghetti Meatball", vibe: "🌧 Comfort Seeker", highlights: ["Comforting"], reason: "🌧 Comfort", rating: "😍 Amazing", createdAt: Date.now() - 172800000, items: ["Spaghetti Meatball"] },
+  { id: 3, name: "Midnight Wanderer", text: "Came here for a birthday treat. Made it so special.", dish: "Kit-Kat Milkshake", vibe: "👥 Family Time", highlights: ["Friendly Service"], reason: "👥 Friends/Family", rating: "😊 Good", createdAt: Date.now() - 400000000, items: ["Kit-Kat Milkshake"] }
+];
+
+export const CHART_COLORS = ['#D97757', '#E8B059', '#7E9C8A', '#D1C7BD', '#6B7280'];
+</file>
+
+<file path="src/context/AvatarContext.jsx">
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const AvatarContext = createContext();
+
+export const AVATAR_OPTIONS = {
+  skinTones: [
+    { id: 'cream', value: '#FFF5E1', name: 'Cream' },
+    { id: 'peach', value: '#FFD8B3', name: 'Peach' },
+    { id: 'honey', value: '#E6A15C', name: 'Honey' },
+    { id: 'cocoa', value: '#8D5B4C', name: 'Cocoa' }
+  ],
+  faceShapes: [
+    { id: 'round', rx: '110', ry: '100', name: 'Round Mochi' },
+    { id: 'oval', rx: '95', ry: '110', name: 'Tall Melon' }
+  ],
+  hairStyles: [
+    { id: 'none', name: 'Smooth/Bald' },
+    { id: 'fluffy', name: 'Fluffy Bangs' },
+    { id: 'curls', name: 'Cozy Curls' },
+    { id: 'spiky', name: 'Spiky Tuft' },
+    { id: 'buns', name: 'Mochi Buns' }
+  ],
+  hairColors: [
+    { id: 'brown', value: '#472C20' },
+    { id: 'berry', value: '#D87585' },
+    { id: 'gold', value: '#FFE08A' },
+    { id: 'mint', value: '#A8E6CF' }
+  ],
+  expressions: [
+    { id: 'happy', name: 'Happy Beam' },
+    { id: 'laughing', name: 'Big Laugh' },
+    { id: 'sleepy', name: 'Sleepy Blink' },
+    { id: 'grumpy', name: 'Mild Grump' }
+  ],
+  glasses: [
+    { id: 'none', name: 'No Glasses' },
+    { id: 'round', name: 'Classic Round' }
+  ],
+  accessories: [
+    { id: 'none', name: 'No Hat' },
+    { id: 'duckHat', name: 'Crime Duck Cap 🐥' },
+    { id: 'strawberryHat', name: 'Berry Cowl 🍓' },
+    { id: 'sprout', name: 'Tiny Sprout 🌱' }
+  ],
+  tops: [
+    { id: 'hoodie', name: 'Oversized Hoodie', color: '#FFB6C9' },
+    { id: 'sweater', name: 'Cable Sweater', color: '#A8DADC' },
+    { id: 'shirt', name: 'Tea Apron Apron', color: '#E9C46A' }
+  ],
+  heldItems: [
+    { id: 'none', name: 'Free Hands' },
+    { id: 'coffee', name: 'Warm Mug ☕' },
+    { id: 'knife', name: 'Mischievous Blade 🔪' },
+    { id: 'flower', name: 'Star Flower 🌸' }
+  ]
+};
+
+// Default cute fallback setup if they click "Enter Cafe" directly
+const DEFAULT_MYSTERY_AVATAR = {
+  skin: 'cream',
+  faceShape: 'round',
+  hairStyle: 'none',
+  hairColor: '#472C20',
+  expression: 'happy',
+  glasses: 'none',
+  accessory: 'duckHat', // Give them the duck hat automatically!
+  top: 'hoodie',
+  topColor: '#FFE08A',
+  heldItem: 'knife' // Unhinged fallback
+};
+
+export const AvatarProvider = ({ children }) => {
+  const [avatar, setAvatar] = useState(DEFAULT_MYSTERY_AVATAR);
+  const [isCustomized, setIsCustomized] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('cafe_user_avatar');
+    if (saved) {
+      setAvatar(JSON.parse(saved));
+      setIsCustomized(true);
+    }
+  }, []);
+
+  const saveAvatar = (newAvatar) => {
+    setAvatar(newAvatar);
+    setIsCustomized(true);
+    localStorage.setItem('cafe_user_avatar', JSON.stringify(newAvatar));
+  };
+
+  const clearAvatar = () => {
+    setAvatar(DEFAULT_MYSTERY_AVATAR);
+    setIsCustomized(false);
+    localStorage.removeItem('cafe_user_avatar');
+  };
+
+  const generateRandomAvatar = () => {
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    return {
+      skin: pick(AVATAR_OPTIONS.skinTones).id,
+      faceShape: pick(AVATAR_OPTIONS.faceShapes).id,
+      hairStyle: pick(AVATAR_OPTIONS.hairStyles).id,
+      hairColor: pick(AVATAR_OPTIONS.hairColors).value,
+      expression: pick(AVATAR_OPTIONS.expressions).id,
+      glasses: pick(AVATAR_OPTIONS.glasses).id,
+      accessory: pick(AVATAR_OPTIONS.accessories).id,
+      top: pick(AVATAR_OPTIONS.tops).id,
+      topColor: pick(AVATAR_OPTIONS.hairColors).value,
+      heldItem: pick(AVATAR_OPTIONS.heldItems).id
+    };
+  };
+
+  return (
+    <AvatarContext.Provider value={{ avatar, isCustomized, saveAvatar, clearAvatar, generateRandomAvatar, DEFAULT_MYSTERY_AVATAR }}>
+      {children}
+    </AvatarContext.Provider>
+  );
+};
+
+export const useAvatar = () => useContext(AvatarContext);
+</file>
+
+<file path="src/index.css">
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FDFBF7;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  .receipt-edge {
+    background-image: radial-gradient(currentColor 4px, transparent 0);
+    background-size: 16px 16px;
+    background-position: -8px -8px;
+  }
+  
+  /* Napkin Texture */
+  .cafe-napkin {
+    background-color: #FAFAF7;
+    background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 4px 4px;
+    box-shadow: 2px 4px 15px rgba(0,0,0,0.05), inset 0 0 20px rgba(0,0,0,0.02);
+  }
+}
+
+html { scroll-behavior: smooth; }
+.masonry-grid { column-gap: 2rem; }
+.masonry-item { break-inside: avoid; margin-bottom: 2rem; }
+
+@keyframes softPulse {
+  0% { box-shadow: 0 0 0 0 rgba(currentColor, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(currentColor, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(currentColor, 0); }
+}
+.btn-pulse { animation: softPulse 2s infinite; }
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.vinyl-spin { animation: spin 4s linear infinite; }
+</file>
+
+<file path="src/main.jsx">
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+</file>
+
+<file path="src/migration.js">
+import { db } from './firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { FULL_MENU } from './constants/data';
+
+export const migrateMenu = async () => {
+  try {
+    await setDoc(doc(db, "settings", "fullMenu"), { data: FULL_MENU });
+    alert("Migration Successful! Data is now in Firebase.");
+  } catch (e) {
+    console.error("Migration failed", e);
+    alert("Migration failed. Check console.");
+  }
+};
+</file>
+
+<file path="src/pages/AvatarCreatorPage.jsx">
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useAvatar, AVATAR_OPTIONS } from '../context/AvatarContext';
+import { AvatarRenderer } from '../components/AvatarRenderer';
+import { Sparkles, Shuffle, Check, ArrowLeft } from 'lucide-react';
+
+export default function AvatarCreatorPage({ onNavigate }) {
+  const { saveAvatar, generateRandomAvatar, DEFAULT_MYSTERY_AVATAR } = useAvatar();
+  const [currentConfig, setCurrentConfig] = useState(() => generateRandomAvatar());
+  const [activeTab, setActiveTab] = useState('features');
+
+  const handleComplete = () => {
+    saveAvatar(currentConfig);
+    onNavigate('home'); // Send them straight into the home system dashboards!
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FFF9E8] text-[#472C20] font-sans relative overflow-hidden flex items-center justify-center p-4">
+      
+      {/* Background decoration elements floating row */}
+      <div className="absolute top-12 left-12 text-3xl opacity-20">✨</div>
+      <div className="absolute bottom-24 left-16 text-4xl opacity-20">🍄</div>
+
+      <div className="w-full max-w-4xl bg-[#FFF7D8] border-[5px] border-[#472C20] rounded-[35px] shadow-[12px_12px_0_#472C20] overflow-hidden grid grid-cols-1 md:grid-cols-12 relative z-10">
+        
+        {/* VIEWPORT GRAPHIC CONTROL COLUMN */}
+        <div className="md:col-span-5 bg-[#FFF9E8] border-b-4 md:border-b-0 md:border-r-4 border-[#472C20] p-8 flex flex-col items-center justify-between">
+          <div className="text-center w-full flex justify-between items-center">
+            <button onClick={() => onNavigate('welcome')} className="flex items-center gap-1 text-xs font-black uppercase tracking-wider opacity-70 hover:opacity-100">
+              <ArrowLeft size={14} className="stroke-[3]" /> exit
+            </button>
+            <h1 className="text-xl font-black">Avatar Studio</h1>
+            <div className="w-8"></div>
+          </div>
+
+          <div className="relative my-6 h-52 flex items-center justify-center w-full">
+            <AvatarRenderer config={currentConfig} size={210} animate={true} />
+          </div>
+
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={() => setCurrentConfig(generateRandomAvatar())}
+              className="flex-1 bg-[#FFE08A] border-4 border-[#472C20] rounded-2xl font-black py-2.5 shadow-[3px_3px_0_#472C20] hover:translate-y-[-2px] active:translate-y-[2px] transition-all text-xs uppercase tracking-wider"
+            >
+              🎲 Chaos Mix
+            </button>
+            <button
+              onClick={() => setCurrentConfig(DEFAULT_MYSTERY_AVATAR)}
+              className="bg-white border-4 border-[#472C20] rounded-2xl font-black px-4 py-2.5 shadow-[3px_3px_0_#472C20] text-xs uppercase tracking-wider"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* CUSTOMIZATION CONTROLS DESIGN FIELD */}
+        <div className="md:col-span-7 p-6 flex flex-col justify-between h-[480px] md:h-[540px]">
+          <div className="flex gap-2 border-b-2 border-dashed border-[#472C20]/20 pb-2">
+            {['features', 'apparel', 'gear'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider border-2 border-[#472C20] transition-all ${
+                  activeTab === tab ? 'bg-[#FF9F29] text-white shadow-[3px_3px_0_#472C20]' : 'bg-white shadow-[2px_2px_0_#472C20]'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto my-4 space-y-5">
+            {activeTab === 'features' && (
+              <>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Skin Tone</label>
+                  <div className="flex gap-2">
+                    {AVATAR_OPTIONS.skinTones.map(s => (
+                      <button key={s.id} onClick={() => setCurrentConfig({...currentConfig, skin: s.id})} className="w-10 h-10 rounded-full border-4 border-[#472C20] relative" style={{ backgroundColor: s.value }}>
+                        {currentConfig.skin === s.id && <Check size={16} className="absolute inset-0 m-auto stroke-[4]" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Expression</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AVATAR_OPTIONS.expressions.map(e => (
+                      <button key={e.id} onClick={() => setCurrentConfig({...currentConfig, expression: e.id})} className={`p-2 rounded-xl border-2 font-bold text-xs border-[#472C20] text-left ${currentConfig.expression === e.id ? 'bg-[#FFB6C9]' : 'bg-white'}`}>
+                        {e.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'apparel' && (
+              <>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Hair Style</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AVATAR_OPTIONS.hairStyles.map(h => (
+                      <button key={h.id} onClick={() => setCurrentConfig({...currentConfig, hairStyle: h.id})} className={`p-2 rounded-xl border-2 font-bold text-xs border-[#472C20] text-left ${currentConfig.hairStyle === h.id ? 'bg-[#FFB6C9]' : 'bg-white'}`}>
+                        {h.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Outfit Style</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {AVATAR_OPTIONS.tops.map(t => (
+                      <button key={t.id} onClick={() => setCurrentConfig({...currentConfig, top: t.id, topColor: t.color})} className={`p-2 rounded-xl border-2 font-bold text-xs border-[#472C20] ${currentConfig.top === t.id ? 'bg-[#A8E6CF]' : 'bg-white'}`}>
+                        {t.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'gear' && (
+              <>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Hats & Headgear</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AVATAR_OPTIONS.accessories.map(a => (
+                      <button key={a.id} onClick={() => setCurrentConfig({...currentConfig, accessory: a.id})} className={`p-2 rounded-xl border-2 font-bold text-xs border-[#472C20] ${currentConfig.accessory === a.id ? 'bg-[#FFE08A]' : 'bg-white'}`}>
+                        {a.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-black uppercase block mb-1.5">Held Object Props</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AVATAR_OPTIONS.heldItems.map(i => (
+                      <button key={i.id} onClick={() => setCurrentConfig({...currentConfig, heldItem: i.id})} className={`p-2 rounded-xl border-2 font-bold text-xs border-[#472C20] ${currentConfig.heldItem === i.id ? 'bg-[#FFE08A]' : 'bg-white'}`}>
+                        {i.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={handleComplete}
+            className="w-full bg-[#FF9F29] text-white border-4 border-[#472C20] rounded-2xl font-black text-base py-3.5 shadow-[5px_5px_0_#472C20] hover:translate-y-[-2px] active:translate-y-[2px] transition-all flex items-center justify-center gap-2"
+          >
+            Lock Character & Enter Café <Sparkles size={16} />
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/Directory.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+
+const Directory = () => {
+  // Soft Purple / Lavender grid background
+  const gridBackground = {
+    backgroundImage: 'linear-gradient(#E9D8FD 1px, transparent 1px), linear-gradient(90deg, #E9D8FD 1px, transparent 1px)',
+    backgroundSize: '40px 40px',
+    backgroundColor: '#FAF5FF' // Soft lavender base
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.6 }}
+      style={gridBackground}
+      className="min-h-screen text-[#4A3B32] py-20 px-6 overflow-hidden"
+    >
+      <div className="max-w-5xl mx-auto text-center mt-10">
+        
+        {/* Cute Header Section */}
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-20"
+        >
+          <h1 className="text-7xl md:text-9xl font-serif text-[#4A3B32] mb-4 tracking-tight">
+            Visit Us.
+          </h1>
+          <p className="text-2xl md:text-3xl font-cursive italic opacity-80 mt-6 transform -rotate-2">
+            "A place remembered through people."
+          </p>
+        </motion.div>
+
+        {/* Retro Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 text-left">
+          
+          {/* Hours Card */}
+          <motion.div 
+            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
+            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
+          >
+            {/* Cute Pastel Tag */}
+            <div className="inline-block bg-[#A7F3D0] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
+              Hours
+            </div>
+            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Tue - Sun</h3>
+            <p className="font-mono text-2xl font-bold opacity-80 text-[#4A3B32]">11:30 AM - 9:00 PM</p>
+            
+            {/* Cute Red Monday Closed Badge */}
+            <div className="mt-6 inline-block bg-[#FF9B9B] px-4 py-1.5 rounded-full border-2 border-[#4A3B32] shadow-[3px_3px_0px_#4A3B32] transform rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
+              <p className="font-mono font-bold text-[#4A3B32] text-sm uppercase tracking-wider">
+                Monday: Closed 💤
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Location Card */}
+          <motion.div 
+            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
+            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
+          >
+            {/* Cute Pastel Tag */}
+            <div className="inline-block bg-[#FFD1DC] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
+              Location
+            </div>
+            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Shop 1 & 2</h3>
+            <p className="font-serif text-2xl opacity-90 text-[#4A3B32]">Near M.G.M School, Jagda</p>
+          </motion.div>
+        </div>
+
+        {/* Map Section with heavy retro styling */}
+        <motion.div 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="w-full h-[450px] rounded-[3rem] overflow-hidden border-[4px] border-[#4A3B32] shadow-[10px_10px_0px_#4A3B32] bg-[#FFFDF8]"
+        >
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3692.651765476317!2d84.8812!3d22.2533!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a201f0000000001%3A0x8b1b2c3d4e5f6g7h!2sDumble%20Door%20Cafe!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Directory;
+</file>
+
+<file path="src/pages/Games.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Sparkles, Smile } from 'lucide-react';
+
+const Games = ({ onNavigate }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0 }} 
+      className="max-w-4xl mx-auto px-6 pt-12 select-none"
+    >
+      {/* Back button */}
+      <div className="mb-8">
+        <button 
+          onClick={() => onNavigate('home')} 
+          className="flex items-center gap-2 text-sm font-bold tracking-wider hover:opacity-70 transition-opacity text-[#4A3728]"
+        >
+          <ArrowLeft size={18} className="stroke-[2.5]" /> back to the cafe
+        </button>
+      </div>
+
+      {/* Main Hand-drawn Window Board */}
+      <div className="bg-[#F9F6F0] text-[#3C2F2F] border-4 border-[#3C2F2F] rounded-[2.5rem] shadow-[8px_8px_0px_0px_#3C2F2F] p-6 md:p-10 relative overflow-hidden">
+        
+        {/* Playful Header Section */}
+        <div className="text-center mb-12 space-y-3">
+          <div className="inline-flex items-center gap-2 bg-[#F1E9DB] border-2 border-[#3C2F2F] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+            <Sparkles size={14} className="text-amber-500 animate-spin" /> dumble play corner <Smile size={14} />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-serif font-black tracking-tight">
+            The Cozy Arcade
+          </h1>
+          <p className="text-sm max-w-md mx-auto opacity-80 font-medium">
+            Take a little break, grab your drink, and pick a game to play while you wait!
+          </p>
+        </div>
+
+        {/* Game Cards Grid Container */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+          
+          {/* Card 1: Hue Hunt */}
+          <motion.div 
+            whileHover={{ scale: 1.03, rotate: -1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onNavigate('hue-hunt')}
+            className="bg-[#FFFDF9] border-4 border-[#3C2F2F] rounded-[2rem] p-8 cursor-pointer shadow-[5px_5px_0px_0px_#3C2F2F] flex flex-col items-center text-center group transition-colors hover:bg-[#FFF9EC]"
+          >
+            <div className="w-20 h-20 bg-[#FFE8C5] rounded-full border-4 border-[#3C2F2F] flex items-center justify-center text-4xl shadow-inner mb-4 group-hover:animate-bounce">
+              📸
+            </div>
+            <h2 className="text-2xl font-serif font-black">Hue Hunt</h2>
+            <p className="text-xs font-medium opacity-70 mt-3 leading-relaxed">
+              Find and snap photos of matching colored items around your table before the countdown timer hits zero!
+            </p>
+          </motion.div>
+
+          {/* Card 2: Icebreakers */}
+          <motion.div 
+            whileHover={{ scale: 1.03, rotate: 1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onNavigate('icebreakers')}
+            className="bg-[#FFFDF9] border-4 border-[#3C2F2F] rounded-[2rem] p-8 cursor-pointer shadow-[5px_5px_0px_0px_#3C2F2F] flex flex-col items-center text-center group transition-colors hover:bg-[#EDF6FF]"
+          >
+            <div className="w-20 h-20 bg-[#D4EBFF] rounded-full border-4 border-[#3C2F2F] flex items-center justify-center text-4xl shadow-inner mb-4 group-hover:animate-bounce">
+              💬
+            </div>
+            <h2 className="text-2xl font-serif font-black">Talk Box</h2>
+            <p className="text-xs font-medium opacity-70 mt-3 leading-relaxed">
+              Getting to know each other better. Draw charming, unexpected table questions to spark casual chatter.
+            </p>
+          </motion.div>
+
+        </div>
+
+        {/* Bottom decorative scribble badge */}
+        <div className="text-center mt-12 text-[11px] font-bold uppercase tracking-widest opacity-40">
+          • built for friendly tables •
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Games;
+</file>
+
+<file path="src/pages/HueHunt.jsx">
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Camera, RotateCcw, Timer, Heart } from 'lucide-react';
+
+const HUNT_COLORS = [
+  { name: 'Chili Red 🍓', hex: '#E11D48' },
+  { name: 'Forest Green 🌳', hex: '#166534' },
+  { name: 'Ocean Navy 🌊', hex: '#1E3A8A' },
+  { name: 'Mustard Yellow 🥞', hex: '#CA8A04' },
+  { name: 'Terracotta ☕', hex: '#C2410C' }
+];
+
+const HueHunt = ({ onNavigate }) => {
+  const [gameState, setGameState] = useState('idle'); // idle, playing, won, lost
+  const [targetColor, setTargetColor] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const fileInputRef = useRef(null);
+  const prevColorRef = useRef(null);
+
+  const REQUIRED_PHOTOS = 3;
+
+  useEffect(() => {
+    let timer;
+    if (gameState === 'playing' && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
+    } else if (timeLeft === 0 && gameState === 'playing') {
+      setGameState('lost');
+    }
+    return () => clearInterval(timer);
+  }, [gameState, timeLeft]);
+
+  const startGame = () => {
+    let availableColors = HUNT_COLORS;
+    if (prevColorRef.current) {
+      availableColors = HUNT_COLORS.filter(c => c.name !== prevColorRef.current.name);
+    }
+    const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+    prevColorRef.current = randomColor;
+
+    setTargetColor(randomColor);
+    setTimeLeft(60);
+    setUploadedPhotos([]);
+    setGameState('playing');
+  };
+
+  const handleCapture = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      const updated = [...uploadedPhotos, imageUrl];
+      setUploadedPhotos(updated);
+      if (updated.length === REQUIRED_PHOTOS) setGameState('won');
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto px-6 pt-12 select-none">
+      <div className="mb-6">
+        <button onClick={() => onNavigate('games')} className="flex items-center gap-2 text-sm font-bold text-[#4A3728] hover:opacity-70 transition-opacity">
+          <ArrowLeft size={16} className="stroke-[2.5]" /> back to selection
+        </button>
+      </div>
+
+      <div className="bg-[#F9F6F0] text-[#3C2F2F] border-4 border-[#3C2F2F] rounded-[2.5rem] shadow-[6px_6px_0px_0px_#3C2F2F] p-6 relative">
+        <AnimatePresence mode="wait">
+          
+          {/* State 1: Idle Screen */}
+          {gameState === 'idle' && (
+            <motion.div key="idle" className="py-8 text-center space-y-6">
+              <span className="text-6xl block animate-bounce">🐥</span>
+              <h2 className="text-3xl font-serif font-black">Hue Hunt Match</h2>
+              <p className="text-sm font-medium opacity-80 leading-relaxed max-w-sm mx-auto">
+                We'll give you a random mystery target shade. Find and take real snaps of <b>{REQUIRED_PHOTOS} matching items</b> inside the room before your clock runs out!
+              </p>
+              <button 
+                onClick={startGame} 
+                className="bg-[#3C2F2F] text-[#F9F6F0] font-bold px-8 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-transform shadow-md"
+              >
+                Let's Find Colors!
+              </button>
+            </motion.div>
+          )}
+
+          {/* State 2: Active Gameplay */}
+          {gameState === 'playing' && targetColor && (
+            <motion.div key="playing" className="space-y-6 text-center w-full">
+              {/* Stats Panel */}
+              <div className="flex justify-between items-center bg-[#FFFDF9] px-5 py-2.5 border-2 border-[#3C2F2F] rounded-2xl font-bold text-xs uppercase tracking-wide">
+                <div className="flex items-center gap-1.5">
+                  <Timer size={16} className={timeLeft <= 10 ? "text-red-500 animate-spin" : "text-[#3C2F2F]"} />
+                  <span className={timeLeft <= 10 ? "text-red-500" : ""}>Time Left: {timeLeft}s</span>
+                </div>
+                <div>Snaps: {uploadedPhotos.length}/{REQUIRED_PHOTOS}</div>
+              </div>
+
+              {/* Targets Goal Display */}
+              <div className="p-6 border-4 border-[#3C2F2F] rounded-[2rem] text-white shadow-inner flex flex-col justify-center items-center" style={{ backgroundColor: targetColor.hex }}>
+                <span className="bg-black/20 text-white rounded-full px-3 py-0.5 text-[11px] font-bold tracking-wider uppercase mb-1">Your Color Objective</span>
+                <h3 className="text-3xl font-serif font-black drop-shadow-sm">{targetColor.name}</h3>
+              </div>
+
+              {/* Photo Upload Slots Grid */}
+              <div className="grid grid-cols-3 gap-3">
+                {[...Array(REQUIRED_PHOTOS)].map((_, i) => (
+                  <div key={i} className="aspect-square border-4 border-dashed border-[#3C2F2F]/30 bg-[#FFFDF9] rounded-2xl flex items-center justify-center overflow-hidden relative">
+                    {uploadedPhotos[i] ? (
+                      <img src={uploadedPhotos[i]} alt="captured item" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl font-bold opacity-30">#{i + 1}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Camera Trigger Button Zone */}
+              <div className="pt-4">
+                <input type="file" accept="image/*" capture="environment" ref={fileInputRef} onChange={handleCapture} className="hidden" />
+                <button 
+                  onClick={() => fileInputRef.current.click()} 
+                  className="w-20 h-20 rounded-full bg-[#FFE3B3] border-4 border-[#3C2F2F] shadow-[4px_4px_0px_0px_#3C2F2F] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform text-[#3C2F2F] mx-auto"
+                >
+                  <Camera size={28} className="stroke-[2.5]" />
+                </button>
+                <p className="text-[11px] font-bold opacity-50 mt-3 uppercase tracking-wider">Tap to snap a matching object picture</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* State 3: Won Screen */}
+          {gameState === 'won' && (
+            <motion.div key="won" className="py-8 text-center space-y-6">
+              <div className="text-6xl animate-pulse">🐱🍌</div>
+              <h2 className="text-4xl font-serif font-black text-amber-600">You Nailed It!</h2>
+              <p className="text-sm font-medium opacity-80 max-w-sm mx-auto leading-relaxed">
+                All data match items perfectly logged. Show this to the cashier counter setup to grab your reward treat! 🍪
+              </p>
+              <button 
+                onClick={startGame} 
+                className="bg-[#3C2F2F] text-[#F9F6F0] font-bold px-6 py-3 rounded-full hover:scale-105 transition-transform text-xs uppercase flex items-center gap-2 mx-auto"
+              >
+                <RotateCcw size={14} /> Replay Mission
+              </button>
+            </motion.div>
+          )}
+
+          {/* State 4: Lost Screen */}
+          {gameState === 'lost' && (
+            <motion.div key="lost" className="py-8 text-center space-y-6">
+              <span className="text-6xl block">😿</span>
+              <h2 className="text-3xl font-serif font-black text-red-600">Timer Ran Out!</h2>
+              <p className="text-sm font-medium opacity-70">You grabbed {uploadedPhotos.length} out of {REQUIRED_PHOTOS} snaps. Let's give it another shot!</p>
+              <button 
+                onClick={startGame} 
+                className="bg-[#3C2F2F] text-[#F9F6F0] font-bold px-6 py-3 rounded-full hover:scale-105 transition-transform text-xs uppercase flex items-center gap-2 mx-auto"
+              >
+                <RotateCcw size={14} /> Try Again
+              </button>
+            </motion.div>
+          )}
+
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+export default HueHunt;
+</file>
+
+<file path="src/pages/IceBreakers.jsx">
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Sparkles, AlertTriangle, MessageSquare, Zap } from 'lucide-react';
+
+// Pure chatpata drama prompts
+const SPICY_PROMPTS = [
+  "Who's most likely to accidentally start dating someone from this café? 👀",
+  "What's the biggest green flag you've ignored because they were hot? 🔥",
+  "Who's your celebrity \"hear me out\"? 🤔",
+  "What's your most embarrassing search history item that isn't illegal? 🔍",
+  "Have you ever secretly stalked someone's Spotify listening activity? 🎧",
+  "What is your absolute number one toxic trait? 💅",
+  "What's something you'd defend with your LIFE even though everyone disagrees? ⚔️",
+  "What's your most completely unnecessary purchase this month? 💸",
+  "What's a red flag you'd still probably ignore? 🚩",
+  "Who at this table would survive the longest in a zombie apocalypse? 🧟",
+  "What's your current personal Roman Empire? 🏛️",
+  "If your last situationship had a movie title, what would it be? 🎬",
+  "Who is the undisputed biggest yapper at this table? 🗣️",
+  "What's the most delusional thing you've convinced yourself of? 🌀",
+  "Which app would expose you the absolute most if people saw your screen time? 📱",
+  "Have you ever pretended not to see someone you know in public? 🙈",
+  "What's your worst \"I can fix them\" moment? 🛠️",
+  "What is the pettiest thing you've done in the last 6 months? 🧊",
+  "What's one spicy opinion you hold that would instantly get you cancelled? 🤫",
+  "What's the funniest, most unnecessary lie you've ever told? 🤥",
+  "If everyone here swapped unlocked phones for 5 minutes... who would panic first? 🚨",
+  "Who's most likely to accidentally become famous for something weird? 🌟",
+  "What's your most used emoji and why is it highly suspicious? 🧐",
+  "What's one thing you absolutely and silently judge other people for? ⚖️",
+  "If your life had a loading screen tip right now, what would it say? 🎮"
+];
+
+// 1-in-8 Chaos Wildcards
+const CHAOS_CARDS = [
+  {
+    title: "🐥 DUCK ATTACK!",
+    text: "Everyone points at the person most likely to ghost a group chat on 3, 2, 1... No explanations allowed. 🔪",
+    color: "#FFB6C9" // Pink attack
+  },
+  {
+    title: "🐥 CHAOS CARD",
+    text: "Everyone at the table has to answer the next card drawn. Absolute no skipping allowed! 🎲",
+    color: "#FFE08A" // Yellow panic
+  },
+  {
+    title: "🐥 PLOT TWIST",
+    text: "The oldest person at the table gets to invent and ask their own unhinged question next. 👑",
+    color: "#FFF7D8" // Soft cream
+  }
+];
+
+const FloatingDoodle = ({ char, className }) => (
+  <div className={`absolute text-3xl opacity-25 select-none pointer-events-none font-bold ${className}`}>
+    {char}
+  </div>
+);
+
+const Icebreakers = ({ onNavigate }) => {
+  const [currentCard, setCurrentCard] = useState(null);
+  const [isChaos, setIsChaos] = useState(false);
+  const [rotation, setRotation] = useState(0);
+
+  const drawCard = () => {
+    // 1 in 8 chance to trigger a Chaos Event card
+    const triggerChaos = Math.floor(Math.random() * 8) === 0;
+    const randomTilt = (Math.random() * 8 - 4).toFixed(1);
+    setRotation(randomTilt);
+
+    if (triggerChaos) {
+      const randomChaos = CHAOS_CARDS[Math.floor(Math.random() * CHAOS_CARDS.length)];
+      setCurrentCard(randomChaos);
+      setIsChaos(true);
+    } else {
+      let pool = SPICY_PROMPTS;
+      if (currentCard && !isChaos) {
+        pool = SPICY_PROMPTS.filter(p => p !== currentCard.text);
+      }
+      const randomText = pool[Math.floor(Math.random() * pool.length)];
+      setCurrentCard({
+        title: "✨ Secret Card ✨",
+        text: randomText,
+        color: "#FFF7D8"
+      });
+      setIsChaos(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FFF9E8] font-sans text-[#472C20] relative overflow-hidden px-6 pt-12 pb-24 select-none">
+      
+      {/* Decorative Sanrio/Cozy Floating Cafe Doodles */}
+      <FloatingDoodle char="✨" className="top-12 left-10 rotate-12 animate-pulse" />
+      <FloatingDoodle char="⭐" className="top-24 right-16 -rotate-12" />
+      <FloatingDoodle char="💛" className="bottom-32 left-14 rotate-45" />
+      <FloatingDoodle char="🍞" className="bottom-16 right-12 -rotate-6 animate-bounce" style={{ animationDuration: '4s' }} />
+      <FloatingDoodle char="☕" className="top-2/3 left-8 -rotate-12" />
+      <FloatingDoodle char="🍰" className="top-1/3 right-10 rotate-12" />
+      <FloatingDoodle char="🔪" className="bottom-48 right-1/4 rotate-90 opacity-10" />
+      <FloatingDoodle char="🐥" className="top-8 left-1/3 opacity-20" />
+
+      {/* Top Header Navigation */}
+      <div className="max-w-md mx-auto mb-6 relative z-10">
+        <button 
+          onClick={() => onNavigate('games')} 
+          className="flex items-center gap-2 text-sm font-black text-[#472C20] hover:opacity-80 transition-opacity uppercase tracking-wider bg-[#FFF7D8] border-2 border-[#472C20] rounded-full px-4 py-1.5 shadow-[3px_3px_0_#472C20]"
+        >
+          <ArrowLeft size={14} className="stroke-[3]" /> run away
+        </button>
+      </div>
+
+      <div className="max-w-md mx-auto relative z-10">
+        <AnimatePresence mode="wait">
+          {!currentCard ? (
+            /* ================= LOBBY SCREEN ================= */
+            <motion.div 
+              key="lobby"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-[#FFF7D8] border-[5px] border-[#472C20] rounded-[35px] shadow-[10px_10px_0_#472C20] p-8 text-center flex flex-col items-center mt-6"
+            >
+              {/* Cute Crime Mascot Image from project assets */}
+              <div className="relative mb-4">
+                <img 
+                  src="/duck.png" 
+                  alt="Mascot Duck" 
+                  className="w-40 h-40 object-contain animate-bounce select-none pointer-events-none"
+                  style={{ animationDuration: '2s' }}
+                  onError={(e) => {
+                    // Fallback visual indicator just in case asset path shifts
+                    e.target.style.display = 'none';
+                    e.target.parentNode.innerHTML = "<div class='text-7xl p-4 bg-[#FFE08A] border-4 border-[#472C20] rounded-full shadow-[4px_4px_0_#472C20]'>🐥🔪</div>";
+                  }}
+                />
+              </div>
+
+              {/* Unhinged Title Header */}
+              <div className="space-y-2 mb-8">
+                <h1 className="text-3xl font-black tracking-tight text-[#472C20]">
+                  Today's Victim...
+                </h1>
+                <p className="text-sm font-bold text-[#6D4C41] max-w-xs leading-relaxed">
+                  Answer honestly. The duck knows when you're caping. Pull a card & expose your friends. ✨
+                </p>
+              </div>
+
+              {/* Chunky Action Button */}
+              <button
+                onClick={drawCard}
+                className="w-full bg-[#FFB347] border-[4px] border-[#472C20] rounded-[22px] font-black text-lg py-4 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#472C20] active:translate-y-[2px] active:shadow-[2px_2px_0_#472C20] transition-all flex items-center justify-center gap-2 group"
+              >
+                🍳 Cook Up Drama 
+                <span className="group-hover:rotate-12 transition-transform">✨</span>
+              </button>
+            </motion.div>
+          ) : (
+            /* ================= PLAYING / DECK SCREEN ================= */
+            <motion.div
+              key="gameplay"
+              initial={{ opacity: 0, y: 40, scale: 0.85, rotate: parseFloat(rotation) - 4 }}
+              animate={{ opacity: 1, y: 0, scale: 1, rotate: parseFloat(rotation) }}
+              exit={{ opacity: 0, y: -40, scale: 0.85, rotate: parseFloat(rotation) + 4 }}
+              transition={{ type: "spring", stiffness: 260, damping: 18 }}
+              className="w-full"
+            >
+              {/* Duck Speech Bubble Tip Indicator */}
+              <div className="flex flex-col items-center mb-5 relative">
+                <div className="bg-white border-[4px] border-[#472C20] rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-wider shadow-[4px_4px_0_#472C20] relative max-w-[200px] text-center">
+                  {isChaos ? "🚨 CHOOSE CHAOS!" : "👁️ Don't lie."}
+                  {/* Speech Bubble Arrow tails */}
+                  <div className="absolute bottom-[-11px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-[4px] border-r-[4px] border-[#472C20] rotate-45"></div>
+                </div>
+              </div>
+
+              {/* Main Custom Rounded Question Card Deck */}
+              <div 
+                className="border-[5px] border-[#472C20] rounded-[35px] p-6 shadow-[10px_10px_0_#472C20] min-h-[280px] flex flex-col justify-between items-center relative overflow-hidden text-center"
+                style={{ backgroundColor: currentCard.color }}
+              >
+                {/* Visual Texture Sparkle Overlays */}
+                <span className="absolute top-4 left-4 text-xl opacity-20">⭐</span>
+                <span className="absolute bottom-4 right-4 text-xl opacity-20">✨</span>
+
+                {/* Card Title Label */}
+                <div className="flex items-center gap-1.5 bg-white border-[3px] border-[#472C20] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-[3px_3px_0_#472C20] mt-1">
+                  {isChaos ? (
+                    <AlertTriangle size={12} className="text-[#FF9F29] stroke-[3]" />
+                  ) : (
+                    <MessageSquare size={12} className="text-[#FFB347] stroke-[3]" />
+                  )}
+                  {currentCard.title}
+                </div>
+
+                {/* Question Body Text Box */}
+                <div className="my-auto py-6 px-2">
+                  <p className="text-xl font-black text-[#472C20] leading-snug tracking-tight">
+                    {currentCard.text}
+                  </p>
+                </div>
+
+                {/* Footer Signature Sticker */}
+                <div className="w-full flex justify-center items-center gap-1 opacity-90 border-t-2 border-dashed border-[#472C20]/20 pt-3">
+                  <span className="text-lg">🐥</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider opacity-60">
+                    {isChaos ? "Mild Chaos System" : "Spicy Cafe Truth Deck"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Gameplay Controller Drawer Area */}
+              <div className="mt-10 flex flex-col items-center gap-4">
+                <button
+                  onClick={drawCard}
+                  className="w-full bg-[#FFE08A] border-[4px] border-[#472C20] rounded-2xl font-black text-sm py-3.5 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:rotate-1 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                >
+                  <Zap size={14} className="fill-current stroke-[3]" /> Next Question 🎲
+                </button>
+                
+                <p className="text-[11px] font-black opacity-60 uppercase tracking-widest text-center bg-[#FFF7D8] border border-[#472C20]/40 rounded-md px-3 py-1">
+                  Pass the screen to your right 🔄
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+    </div>
+  );
+};
+
+export default Icebreakers;
+</file>
+
+<file path="src/pages/LandingPage.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, Coffee, Smile } from 'lucide-react';
+
+export default function LandingPage({ onNavigate }) {
+  // Gingham check pattern background styles mimicking 3659243442003164.jpg
+  const ginghamBackgroundStyle = {
+    backgroundColor: '#f4f8ff',
+    backgroundImage: `
+      linear-gradient(90deg, rgba(162, 194, 232, 0.4) 50%, transparent 50%),
+      linear-gradient(rgba(162, 194, 232, 0.4) 50%, transparent 50%)
+    `,
+    backgroundSize: '40px 40px'
+  };
+
+  return (
+    <div 
+      style={ginghamBackgroundStyle}
+      className="min-h-screen text-[#472C20] font-sans relative overflow-hidden flex items-center justify-center p-6 select-none"
+    >
+      {/* Cozy scrapbooked sticker floating assets inspired directly by 3659243442003164.jpg */}
+      <motion.div animate={{ y: [0, -8, 0], rotate: [8, 12, 8] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-10 left-8 text-6xl drop-shadow-sm">☀️</motion.div>
+      <motion.div animate={{ y: [0, 6, 0], rotate: [-5, 5, -5] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="absolute top-32 right-12 text-5xl drop-shadow-sm">🍎</motion.div>
+      <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity }} className="absolute bottom-16 left-12 text-4xl opacity-90">⭐</motion.div>
+      <motion.div className="absolute bottom-32 right-16 text-5xl rotate-12 opacity-85">🍰</motion.div>
+      <motion.div className="absolute top-1/2 left-6 text-4xl -rotate-12">🍅</motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md bg-[#FFFDF9] border-[5px] border-[#472C20] rounded-[35px] shadow-[12px_12px_0_#472C20] p-8 text-center flex flex-col items-center relative z-10"
+      >
+        {/* Soft custom badge header */}
+        <span className="inline-flex items-center gap-1 bg-[#FFE08A] border-2 border-[#472C20] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0_#472C20] mb-4">
+          ✨ Welcome Friend
+        </span>
+
+        <h1 className="text-4xl font-serif font-black tracking-tight mb-1 text-[#472C20]">Dumble' Door</h1>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#FF9F29] mb-8">Cozy Social Café</p>
+
+        {/* The Action Buttons Row Layout */}
+        <div className="w-full space-y-4">
+          
+          {/* OPTION 1: Enter Café Immediately */}
+          <button
+            onClick={() => onNavigate('home')}
+            className="w-full bg-[#A8E6CF] border-[4px] border-[#472C20] rounded-2xl font-serif font-black text-xl py-4 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#472C20] active:translate-y-[2px] active:shadow-[2px_2px_0_#472C20] transition-all flex items-center justify-center gap-2 group"
+          >
+            <Coffee size={20} className="group-hover:animate-spin" /> Enter Café Directly
+          </button>
+
+          {/* OPTION 2: Customize Avatar Dress Up Screen */}
+          <button
+            onClick={() => onNavigate('avatar-studio')}
+            className="w-full bg-[#FFB6C9] border-[4px] border-[#472C20] rounded-2xl font-black text-sm py-3.5 text-[#472C20] shadow-[4px_4px_0_#472C20] hover:bg-[#FFA3BA] hover:translate-y-[-1px] active:translate-y-[2px] active:shadow-[2px_2px_0_#472C20] transition-all flex items-center justify-center gap-2"
+          >
+            <Smile size={16} /> Create Your Avatar First
+          </button>
+          
+        </div>
+
+        <div className="mt-8 text-[9px] font-black uppercase opacity-40 tracking-widest">
+          Jagda, Rourkela • Gather & Play
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/MemoryWall.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+
+const MemoryWall = ({ memories }) => {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-6 py-20 relative">
+      <h1 className="text-7xl font-serif text-center mb-32">The Wall.</h1>
+      
+      <div className="masonry-grid columns-1 md:columns-2 lg:columns-3">
+        {memories.map((m, idx) => (
+          <div key={m.id} className="masonry-item relative rotate-2 hover:rotate-0 hover:z-10 transition-all duration-300 group">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-white/40 backdrop-blur-md rotate-[-4deg] shadow-sm z-20 border border-white/60"></div>
+            
+            <div className="bg-[#FDFBF7] text-[#2C241B] p-6 pb-16 rounded-sm shadow-2xl">
+              <div className="bg-white aspect-square mb-6 p-8 flex items-center justify-center shadow-inner border border-[#2C241B]/5 relative">
+                <p className="text-4xl font-cursive leading-tight text-center">"{m.text || m.highlights[0]}"</p>
+              </div>
+              <div className="flex justify-between items-center px-2 mb-2">
+                <span className="font-serif font-bold text-xl truncate">{m.dish}</span>
+                <span className="text-3xl">{m.vibe.split(" ")[0]}</span>
+              </div>
+              <div className="px-2 text-sm font-mono opacity-60 flex justify-between">
+                <span>{m.name || "Anonymous Enjoyer"}</span>
+                <span>{new Date(m.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+export default MemoryWall;
+</file>
+
+<file path="src/pages/ThankYou.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import Barcode from '../components/Barcode';
+import { InstagramIcon, WhatsappIcon, TwitterIcon } from '../components/Icons';
+import { THEMES, CHART_COLORS } from '../constants/data';
+
+const ThankYou = ({ memories, reviewData, onNavigate, theme }) => {
+  const chartDataReason = [
+    { name: 'Food', value: memories.filter(m => m.reason?.includes('Food') || m.reason?.includes('Craving')).length },
+    { name: 'People', value: memories.filter(m => m.reason?.includes('People')).length },
+    { name: 'Comfort', value: memories.filter(m => m.reason?.includes('Comfort')).length },
+    { name: 'Family', value: memories.filter(m => m.reason?.includes('Friends') || m.reason?.includes('Family')).length }
+  ].filter(d => d.value > 0).map((d, i) => ({ ...d, color: CHART_COLORS[i % CHART_COLORS.length] }));
+
+  const chartDataRating = [
+    { name: 'Amazing', value: memories.filter(m => m.rating?.includes('Amazing')).length },
+    { name: 'Good', value: memories.filter(m => m.rating?.includes('Good')).length },
+    { name: 'Okay/Missed', value: memories.filter(m => m.rating?.includes('Okay') || m.rating?.includes('Missed')).length },
+  ].filter(d => d.value > 0).map((d, i) => ({ ...d, color: CHART_COLORS[i % CHART_COLORS.length] }));
+
+  const handleShare = async (platform) => {
+    const memoryText = reviewData?.text || reviewData?.highlights?.[0] || "Such a cozy spot!";
+    const shareText = `Just left a memory at Dumble' Door Cafe! ✨\n\n"${memoryText}"\n\nMy Vibe: ${reviewData?.vibe}\n📍 Jagda, Rourkela`;
+    if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+    else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+    else if (platform === 'ig') {
+      if (navigator.share) {
+        try { await navigator.share({ title: "Dumble' Door", text: shareText }); } catch (err) {}
+      } else { alert("Screenshot your Golden Ticket and tag us on your IG Story! ✨📸"); }
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">
+      <div className="text-center w-full mb-12">
+        <h1 className="text-7xl font-serif mb-6">Memory Saved.</h1>
+        <p className="text-2xl font-serif italic opacity-80 mb-6">Screenshot to save your Golden Ticket.</p>
+        <button onClick={() => onNavigate('wall', THEMES.navy)} style={{ backgroundColor: theme.text, color: theme.bg }} className="px-12 py-4 rounded-full text-lg font-bold hover:scale-105 transition-transform shadow-2xl">Take me to the Wall →</button>
+      </div>
+      
+      <div className="flex flex-col lg:flex-row gap-16 w-full items-start justify-center">
+        
+        {/* RECEIPT & SOCIAL SHARE COLUMN */}
+        <div className="flex flex-col items-center gap-6 mx-auto lg:mx-0 z-20 w-full max-w-sm">
+          {reviewData && (
+            <motion.div drag dragConstraints={{ left: -20, right: 20, top: -20, bottom: 20 }} className="relative w-full drop-shadow-2xl cursor-grab active:cursor-grabbing">
+              <div className="bg-[#FDFBF7] text-[#2C241B] p-8 pb-12 font-mono flex flex-col items-center">
+                <h2 className="text-3xl font-bold mb-1 uppercase tracking-widest text-center">DUMBLE' DOOR</h2>
+                <p className="mb-6 opacity-60 uppercase text-xs">JAGDA, ROURKELA</p>
+                
+                <div className="w-full space-y-2 mb-6 font-bold text-sm">
+                  <div className="flex justify-between"><span>ORDER</span><span>#{Math.floor(Math.random() * 9000) + 1000}</span></div>
+                  <div className="flex justify-between"><span>NAME</span><span>{reviewData.name}</span></div>
+                  <div className="flex justify-between"><span>VIBE</span><span>{reviewData.vibe}</span></div>
+                </div>
+                
+                <div className="w-full border-t border-dashed border-[#2C241B]/20 mb-6"></div>
+                
+                <div className="w-full space-y-2 mb-6 font-bold">
+                  {reviewData.items && reviewData.items.map((item, i) => (
+                    <div key={i} className="flex justify-between"><span className="truncate pr-4">1x {item.toUpperCase()}</span></div>
+                  ))}
+                </div>
+                
+                {reviewData.text && (
+                  <>
+                    <div className="w-full border-t border-dashed border-[#2C241B]/20 mb-6"></div>
+                    <p className="font-cursive text-3xl text-center leading-tight">"{reviewData.text}"</p>
+                  </>
+                )}
+                
+                <div className="w-full border-t border-dashed border-[#2C241B]/20 mt-6 pt-6 flex flex-col items-center text-center">
+                   <p className="uppercase font-bold text-xs tracking-wider mb-2">⭐ Golden Ticket ⭐</p>
+                   <p className="text-[10px] opacity-70 mb-4">Screenshot this receipt. Show it on your next visit for 10% off your order.</p>
+                   <Barcode />
+                   <p className="text-[8px] mt-2 font-sans tracking-widest">{Math.floor(Math.random() * 10000000000)}</p>
+                </div>
+                <div className="absolute -bottom-2 left-0 right-0 h-4 receipt-edge text-[#FDFBF7]"></div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* SOCIAL SHARE */}
+          <div className="flex flex-col items-center gap-3 w-full mt-2">
+            <p className="font-mono uppercase tracking-widest text-xs opacity-70 mb-1">Share your ticket</p>
+            <div className="flex items-center gap-4">
+              <button onClick={() => handleShare('ig')} className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-lg">
+                <InstagramIcon size={22} />
+              </button>
+              <button onClick={() => handleShare('whatsapp')} className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform bg-green-500 text-white shadow-lg">
+                <WhatsappIcon size={22} />
+              </button>
+              <button onClick={() => handleShare('twitter')} className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform bg-black text-white shadow-lg border border-white/20">
+                <TwitterIcon size={22} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div style={{ borderColor: theme.border }} className="p-8 rounded-[3rem] border border-opacity-30 bg-white/5 backdrop-blur-md">
+            <h3 className="font-serif text-2xl text-center mb-6">Why they visit</h3>
+            <div className="h-48"><ResponsiveContainer><PieChart><Pie data={chartDataReason} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={5} dataKey="value" stroke="none">{chartDataReason.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip contentStyle={{borderRadius: '1rem', border: 'none', backgroundColor: theme.text, color: theme.bg}} itemStyle={{color: theme.bg}} /></PieChart></ResponsiveContainer></div>
+          </div>
+          <div style={{ borderColor: theme.border }} className="p-8 rounded-[3rem] border border-opacity-30 bg-white/5 backdrop-blur-md">
+            <h3 className="font-serif text-2xl text-center mb-6">Overall Ratings</h3>
+            <div className="h-48"><ResponsiveContainer><PieChart><Pie data={chartDataRating} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={5} dataKey="value" stroke="none">{chartDataRating.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip contentStyle={{borderRadius: '1rem', border: 'none', backgroundColor: theme.text, color: theme.bg}} itemStyle={{color: theme.bg}} /></PieChart></ResponsiveContainer></div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default ThankYou;
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        serif: ['"Playfair Display"', 'serif'],
+        sans: ['"Inter"', 'sans-serif'],
+        cursive: ['"Caveat"', 'cursive'],
+        mono: ['"Space Mono"', 'monospace'],
+      }
+    },
+  },
+  plugins: [],
+}
+</file>
+
+<file path="vercel.json">
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+</file>
+
+<file path="src/firebase.js">
+// src/firebase.js
+console.log("Firebase placeholder active - running in mock UI mode.");
+
+// Add a 'type' property so we can detect this is a mock
+export const db = {
+  type: 'mock'
+};
+</file>
+
+<file path="src/pages/ChronicleBoard.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+
+const ScrapbookCard = ({ children, className, rotation = 0 }) => (
+  <motion.div 
+    whileHover={{ rotate: 0, scale: 1.02 }}
+    style={{ rotate: `${rotation}deg` }}
+    className={`bg-[#FFFDF9] p-8 border-2 border-[#472C20] shadow-[8px_8px_0_#472C20] ${className}`}
+  >
+    {children}
+  </motion.div>
+);
+
+const ChronicleBoard = ({ memories, theme }) => {
+  return (
+    <div className="min-h-screen py-20 px-6" style={{ 
+      backgroundColor: '#FAF6EE', 
+      backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
+      backgroundSize: '24px 24px' 
+    }}>
+      <motion.h1 initial={{ y: -20 }} animate={{ y: 0 }} className="text-7xl font-cursive text-center mb-16 text-[#472C20]">
+        The Chronicle.
+      </motion.h1>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        {/* Today's Story (Polaroid Style) */}
+        <ScrapbookCard rotation={-2} className="md:col-span-2 flex items-center gap-8">
+          <div className="w-32 h-32 bg-gray-200 border border-black flex items-center justify-center font-mono">Photo</div>
+          <div>
+            <h3 className="font-bold text-xl mb-2">Today's Story</h3>
+            <p className="font-serif italic">"A quiet morning turned chaotic when the café cat decided the espresso machine was a jungle gym..."</p>
+          </div>
+        </ScrapbookCard>
+
+        {/* Duck Commentary (Sticky Note) */}
+        <ScrapbookCard rotation={3} className="bg-yellow-100 flex flex-col justify-between">
+          <p className="text-sm font-mono opacity-70">DUCKY SAYS:</p>
+          <p className="font-cursive text-2xl">"The coffee is 10/10, but the crumbs? 0/10. Do better, humans."</p>
+        </ScrapbookCard>
+
+        {/* Trending Items */}
+        <ScrapbookCard rotation={-1} className="md:col-span-3">
+          <h3 className="font-mono text-xs uppercase tracking-widest mb-6">Current Obsessions</h3>
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {['Matcha Latte', 'Croissant', 'Pour Over'].map((item) => (
+              <div key={item} className="px-6 py-2 border-2 border-[#472C20] rounded-full bg-white font-bold">
+                {item}
+              </div>
+            ))}
+          </div>
+        </ScrapbookCard>
+
+        {/* Floating Decorations */}
+        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="fixed top-20 right-20 text-6xl">⭐</motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default ChronicleBoard;
+</file>
+
+<file path="src/pages/Home.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Heart, MapPin, UtensilsCrossed, Sparkles, BookOpen, Gamepad2, Layers } from 'lucide-react';
+import { THEMES } from '../constants/data';
+
+const ScrapbookCard = ({ children, onClick, className }) => (
+  <motion.div 
+    whileHover={{ rotate: 1, scale: 1.02 }}
+    onClick={onClick}
+    className={`bg-[#FFFDF9] border-4 border-[#472C20] shadow-[8px_8px_0_#472C20] rounded-3xl p-8 cursor-pointer ${className}`}
+  >
+    {children}
+  </motion.div>
+);
+
+const Home = ({ onNavigate, theme }) => (
+  <div className="min-h-screen py-20 px-6" style={{ 
+    backgroundColor: '#FAF6EE', 
+    backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
+    backgroundSize: '24px 24px' 
+  }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto">
+      
+      {/* Hero Section */}
+      <section className="text-center mb-16 space-y-6">
+        <h1 className="text-7xl font-cursive text-[#472C20]">Dumble' Door.</h1>
+        <p className="font-serif italic text-xl opacity-70">"A place remembered through people."</p>
+        
+        <div className="flex flex-col items-center gap-6 pt-4">
+          <button 
+            onClick={() => onNavigate('review', THEMES.rose)} 
+            className="px-10 py-4 bg-[#FFE08A] border-4 border-[#472C20] rounded-full font-black uppercase tracking-widest shadow-[6px_6px_0_#472C20] hover:translate-y-1 transition-transform"
+          >
+            Share Your Experience <Heart className="inline ml-2" />
+          </button>
+        </div>
+      </section>
+
+      {/* Navigation Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <ScrapbookCard onClick={() => onNavigate('menu', THEMES.forest)}>
+          <UtensilsCrossed size={40} className="mb-4" />
+          <h3 className="font-bold text-2xl">The Menu</h3>
+          <p className="text-sm opacity-60">Authentic recipes.</p>
+        </ScrapbookCard>
+
+        <ScrapbookCard onClick={() => onNavigate('chronicle', THEMES.sand)}>
+          <BookOpen size={40} className="mb-4" />
+          <h3 className="font-bold text-2xl">Chronicle</h3>
+          <p className="text-sm opacity-60">Community pulse.</p>
+        </ScrapbookCard>
+
+        <ScrapbookCard onClick={() => onNavigate('games', THEMES.cream)}>
+          <Gamepad2 size={40} className="mb-4 text-purple-600" />
+          <h3 className="font-bold text-2xl">Arcade</h3>
+          <p className="text-sm opacity-60">Retro games.</p>
+        </ScrapbookCard>
+
+        <ScrapbookCard onClick={() => onNavigate('directory', THEMES.charcoal)}>
+          <MapPin size={40} className="mb-4" />
+          <h3 className="font-bold text-2xl">Visit Us</h3>
+          <p className="text-sm opacity-60">Maps & Directions.</p>
+        </ScrapbookCard>
+      </div>
+
+      {/* Memory Wall Link - Styled as a special pinned note */}
+      <motion.div 
+        whileHover={{ rotate: -1 }}
+        onClick={() => onNavigate('wall', THEMES.navy)}
+        className="bg-[#D1EAED] border-4 border-[#472C20] shadow-[8px_8px_0_#472C20] rounded-full p-6 flex items-center justify-center gap-4 cursor-pointer hover:bg-[#bce6eb] transition-colors"
+      >
+        <Layers size={24} />
+        <span className="font-black uppercase tracking-widest">Or browse the full Memory Wall →</span>
+      </motion.div>
+
+    </motion.div>
+  </div>
+);
+
+export default Home;
+</file>
+
+<file path="src/pages/ReviewWizard.jsx">
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAvatar } from '../context/AvatarContext';
+import { AvatarRenderer } from '../components/AvatarRenderer';
+import { Sparkles, Heart, Coffee, Check, ArrowRight, Search } from 'lucide-react';
+
+// Mock menu items mapping standard features
+const CAFE_MENU = [
+  { id: '1', name: 'Mochi Waffles', type: 'food' },
+  { id: '2', name: 'Lavender Cold Brew', type: 'drink' },
+  { id: '3', name: 'Garlic Butter Dumplings', type: 'food' },
+  { id: '4', name: 'Matcha Affogato', type: 'drink', soldOut: true },
+  { id: '5', name: 'Cozy Chai Pot', type: 'drink' }
+];
+
+export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
+  const { avatar } = useAvatar();
+  const [step, setStep] = useState(1);
+  const totalSteps = 8; 
+
+  // --- WIZARD FORM STATE ---
+  const [rating, setRating] = useState(null);
+  const [purpose, setPurpose] = useState('');
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [favoriteDish, setFavoriteDish] = useState('');
+  const [selectedHighlights, setSelectedHighlights] = useState([]);
+  const [vibe, setVibe] = useState('');
+  const [review, setReview] = useState(''); // Fixed: Changed from 'whisper' to match application core state expectations
+  const [anonymousName, setAnonymousName] = useState('');
+  
+  const [isSearchingTwin, setIsSearchingTwin] = useState(false);
+
+  // Styling mimics the clean graph grid paper background from 5207355816114460.jpg
+  const journalGridStyle = {
+    backgroundColor: '#FAF6EE',
+    backgroundImage: `
+      linear-gradient(#E8E2D5 1px, transparent 1px),
+      linear-gradient(90deg, #E8E2D5 1px, transparent 1px)
+    `,
+    backgroundSize: '24px 24px'
+  };
+
+  const handleNextStep = () => {
+    if (step < 7) {
+      setStep(prev => prev + 1);
+    } else if (step === 7) {
+      setStep(8);
+      setIsSearchingTwin(true);
+    }
+  };
+
+  useEffect(() => {
+    if (step === 8 && isSearchingTwin) {
+      const timer = setTimeout(() => {
+        setIsSearchingTwin(false);
+        const completeMemory = {
+          rating,
+          purpose,
+          items: selectedItems,
+          dish: favoriteDish,
+          highlights: selectedHighlights,
+          vibe,
+          review, // Fixed: Sends the matching 'review' key directly to App.jsx state arrays
+          name: anonymousName || 'Anonymous Duckling'
+        };
+        onComplete(completeMemory);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [step, isSearchingTwin]);
+
+  const toggleItemSelection = (itemName) => {
+    if (selectedItems.includes(itemName)) {
+      setSelectedItems(prev => prev.filter(i => i !== itemName));
+      if (favoriteDish === itemName) setFavoriteDish('');
+    } else {
+      setSelectedItems(prev => [...prev, itemName]);
+    }
+  };
+
+  const toggleHighlight = (highlight) => {
+    setSelectedHighlights(prev => 
+      prev.includes(highlight) ? prev.filter(h => h !== highlight) : [...prev, highlight]
+    );
+  };
+
+  const handleInstagramShare = () => {
+    alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
+  };
+
+  const pageVariants = {
+    initial: { opacity: 0, rotateY: -30, transformOrigin: "left center" },
+    animate: { opacity: 1, rotateY: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, rotateY: 30, transformOrigin: "right center", transition: { duration: 0.4 } }
+  };
+
+  return (
+    <div style={journalGridStyle} className="min-h-screen text-[#472C20] py-12 px-4 flex flex-col items-center justify-center relative overflow-hidden select-none">
+      
+      {/* Decorative scrapbooked star badges tracking 5207355816114460.jpg */}
+      <div className="absolute top-4 right-6 text-6xl opacity-20">⭐</div>
+      <div className="absolute bottom-6 left-8 text-5xl opacity-15">⭐</div>
+
+      {/* --- PROGRESS BAR: COFFEE FILL SYSTEM --- */}
+      {step <= 7 && (
+        <div className="mb-8 flex flex-col items-center bg-white/60 border-2 border-[#472C20] rounded-2xl px-6 py-3 shadow-[4px_4px_0_#472C20]">
+          <div className="flex items-center gap-3">
+            <div className="relative w-8 h-8 border-2 border-[#472C20] rounded-b-xl rounded-t-sm flex items-end overflow-hidden bg-white">
+              <motion.div 
+                className="w-full bg-[#C19A6B]" 
+                animate={{ height: `${(step / 7) * 100}%` }} 
+                transition={{ duration: 0.4 }}
+              />
+              <div className="absolute top-1 right-[-6px] w-2 h-4 border-2 border-[#472C20] rounded-r-md"></div>
+            </div>
+            <span className="text-xs font-black uppercase tracking-widest">
+              Filling your memory journal ({step}/7)
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* --- MAIN SCRAPBOOK PAGE CONTAINER --- */}
+      <div className="w-full max-w-2xl min-h-[460px] bg-[#FFFDF9] border-[5px] border-[#472C20] rounded-[32px] shadow-[12px_12px_0_#472C20] p-8 flex flex-col justify-between relative">
+        
+        {/* AVATAR COMPANION REACTION HUB */}
+        {step <= 7 && (
+          <div className="absolute -top-12 -right-4 flex items-center gap-2 bg-[#FFE08A] border-4 border-[#472C20] rounded-full p-1 shadow-md z-20">
+            <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/50">
+              <AvatarRenderer config={avatar} size={50} animate={true} />
+            </div>
+            <div className="bg-white border-2 border-[#472C20] rounded-xl px-2.5 py-1 text-[10px] font-black uppercase max-w-[120px]">
+              {step === 1 && "Be honest! 💛"}
+              {step === 3 && "Any snacks? 🥞"}
+              {step === 7 && "Write nicely! 🖋️"}
+              {step !== 1 && step !== 3 && step !== 7 && "Looks neat! ✨"}
+            </div>
+          </div>
+        )}
+
+        <AnimatePresence mode="wait">
+          <motion.div key={step} variants={pageVariants} initial="initial" animate="animate" exit="exit" className="flex-1 flex flex-col justify-center">
+            
+            {/* --- STEP 1: RATING --- */}
+            {step === 1 && (
+              <div className="text-center space-y-6">
+                <h2 className="text-3xl font-serif font-black">How's your heart leaving the café today?</h2>
+                <div className="flex justify-center gap-4 py-4">
+                  {[
+                    { val: 1, label: '🌧️ Missed' },
+                    { val: 2, label: '😐 Okay' },
+                    { val: 3, label: '✨ Good' },
+                    { val: 4, label: '🎉 Amazing' }
+                  ].map(opt => (
+                    <motion.button
+                      key={opt.val}
+                      whileHover={{ scale: 1.05, rotate: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => { setRating(opt.val); handleNextStep(); }}
+                      className={`px-5 py-4 rounded-2xl font-black border-4 border-[#472C20] shadow-[4px_4px_0_#472C20] text-sm ${rating === opt.val ? 'bg-[#FFE08A]' : 'bg-white'}`}
+                    >
+                      {opt.label}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 2: PURPOSE POSTCARDS --- */}
+            {step === 2 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center mb-4">Why were you visiting us?</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { id: 'food', text: '🥟 Food Mission' },
+                    { id: 'catch', text: '❤️ Catching Up' },
+                    { id: 'escape', text: '🌧️ Escaping Reality' },
+                    { id: 'family', text: '👨‍👩‍👧 Family Time' }
+                  ].map(item => (
+                    <motion.div
+                      key={item.id}
+                      whileHover={{ scale: 1.03, rotate: 2 }}
+                      onClick={() => { setPurpose(item.id); handleNextStep(); }}
+                      className={`cursor-pointer p-5 border-4 border-[#472C20] rounded-2xl shadow-[4px_4px_0_#472C20] transition-colors ${purpose === item.id ? 'bg-[#FFB6C9]' : 'bg-white'}`}
+                    >
+                      <p className="font-black text-base">{item.text}</p>
+                      <p className="text-[10px] uppercase opacity-60 tracking-wider mt-1">Click to stamp onto journal</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 3: FOOD CARDS SELECTION --- */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[220px] overflow-y-auto pr-2 py-1">
+                  {CAFE_MENU.map(dish => (
+                    <button
+                      key={dish.id}
+                      disabled={dish.soldOut}
+                      onClick={() => toggleItemSelection(dish.name)}
+                      className={`p-3 rounded-xl border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-sm transition-all relative ${
+                        dish.soldOut ? 'bg-gray-100 opacity-40 line-through cursor-not-allowed' :
+                        selectedItems.includes(dish.name) ? 'bg-[#A8E6CF] translate-x-1 shadow-[2px_2px_0_#472C20]' : 'bg-white'
+                      }`}
+                    >
+                      <span>{dish.name}</span>
+                      {dish.soldOut ? (
+                        <span className="text-[9px] font-black uppercase bg-red-400 text-white px-2 py-0.5 rounded border border-[#472C20]">Sold Out</span>
+                      ) : selectedItems.includes(dish.name) && (
+                        <div className="flex items-center gap-1 text-[#472C20] font-black text-xs">
+                          <Check size={14} className="stroke-[4]" /> ✓ Sticker
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleNextStep} disabled={selectedItems.length === 0} className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1">
+                    Continue <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 4: MAIN CHARACTER DISH --- */}
+            {step === 4 && (
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl font-serif font-black">Which one was the Main Character of your meal?</h2>
+                <div className="flex flex-wrap justify-center gap-3 py-2">
+                  {selectedItems.map(item => (
+                    <motion.button
+                      key={item}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => { setFavoriteDish(item); handleNextStep(); }}
+                      className={`px-5 py-3 rounded-2xl font-black border-4 border-[#472C20] text-sm transition-all ${favoriteDish === item ? 'bg-[#FFE08A] ring-4 ring-[#FF9F29]/30 scale-105' : 'bg-white'}`}
+                    >
+                      👑 {item}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 5: COLLECTIBLE STICKERS HIGHLIGHTS --- */}
+            {step === 5 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">Collect your review stickers</h2>
+                <div className="flex flex-wrap justify-center gap-3 py-4">
+                  {[
+                    '⭐ Perfectly Cooked', '☁️ Cozy Alley', '💛 Friendly Staff', 
+                    '🍴 Delicious Decor', '✨ Worth Coming Back'
+                  ].map(badge => {
+                    const active = selectedHighlights.includes(badge);
+                    return (
+                      <button
+                        key={badge}
+                        onClick={() => toggleHighlight(badge)}
+                        className={`px-4 py-2 rounded-full border-2 border-[#472C20] font-black text-xs uppercase tracking-wider transition-all shadow-[2px_2px_0_#472C20] ${
+                          active ? 'bg-[#E9C46A] -rotate-3 translate-y-[-2px] shadow-[4px_4px_0_#472C20]' : 'bg-white'
+                        }`}
+                      >
+                        {badge}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-end">
+                  <button onClick={handleNextStep} className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl">
+                    Next Page
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 6: CHOOSE MOOD VIBE --- */}
+            {step === 6 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">Capture today's exact mood vibe</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    '🌧️ Rainy Day Comfort', '✨ Main Character Energy', 
+                    '☕ Coffee & Conversations', '🌸 Peaceful Escape'
+                  ].map(vOption => (
+                    <button
+                      key={vOption}
+                      onClick={() => { setVibe(vOption); handleNextStep(); }}
+                      className={`p-4 border-2 border-[#472C20] rounded-xl font-black text-xs uppercase tracking-wider text-left transition-transform hover:scale-[1.02] ${
+                        vibe === vOption ? 'bg-[#A8DADC]' : 'bg-white'
+                      }`}
+                    >
+                      {vOption}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* --- STEP 7: GUESTBOOK LEAVE A WHISPER --- */}
+            {step === 7 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">Leave a little memory whisper...</h2>
+                <div className="bg-[#FFFDF9] border-2 border-dashed border-[#472C20]/40 rounded-xl p-4 relative shadow-inner">
+                  <div className="absolute bottom-2 right-2 w-12 h-12 rounded-full border-4 border-amber-900/5 pointer-events-none"></div>
+                  
+                  <textarea
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    placeholder="What will you remember about today? Type inside our shared guestbook..."
+                    className="w-full h-24 bg-transparent resize-none border-none focus:ring-0 text-sm font-medium outline-none"
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  value={anonymousName}
+                  onChange={(e) => setAnonymousName(e.target.value)}
+                  placeholder="Sign with an anonymous handle (or leave blank for custom name)..."
+                  className="w-full bg-white border-2 border-[#472C20] rounded-xl px-3 py-2 text-xs font-bold outline-none"
+                />
+
+                <button
+                  onClick={handleNextStep}
+                  className="w-full bg-[#FF9F29] text-white border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20]"
+                >
+                  Seal Page into Ledger ✨
+                </button>
+              </div>
+            )}
+
+            {/* --- STEP 8: TWIN REVEAL MATRIX --- */}
+            {step === 8 && (
+              <div className="text-center py-6 flex flex-col items-center justify-center">
+                <AnimatePresence mode="wait">
+                  {isSearchingTwin ? (
+                    <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 flex flex-col items-center">
+                      <div className="w-16 h-16 border-4 border-dashed border-[#FF9F29] rounded-full animate-spin flex items-center justify-center">
+                        <Search className="text-[#472C20]" size={24} />
+                      </div>
+                      <h3 className="text-xl font-serif font-black mt-2 animate-pulse">Searching for someone who shared your café vibe...</h3>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="reveal" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full space-y-6">
+                      {twin ? (
+                        <div className="space-y-4 w-full">
+                          <span className="bg-[#FFB6C9] border-2 border-[#472C20] text-xs font-black uppercase tracking-widest px-4 py-1 rounded-full">✨ Cafe Twins Found</span>
+                          <p className="text-sm font-medium opacity-80">Looks like someone experienced the café almost exactly like you!</p>
+                          
+                          <div className="bg-white border-4 border-[#472C20] rounded-2xl p-4 shadow-[4px_4px_0_#472C20] relative text-left">
+                            <h4 className="font-black text-base">👤 {twin.name || 'Cozy Wanderer'}</h4>
+                            <p className="text-xs font-bold text-[#FF9F29] mt-0.5">Vibe: {twin.vibe || 'Food Adventure'}</p>
+                            <p className="text-xs mt-2 italic bg-[#FAF6EE] p-2 rounded-lg border border-[#472C20]/20">"{twin.review || 'Loved the space!'}"</p>
+                          </div>
+
+                          <div className="flex justify-center text-[#FF9F29] animate-bounce my-1">
+                            <Heart size={28} fill="currentColor" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 py-6">
+                          <div className="text-5xl">🌱</div>
+                          <h3 className="text-xl font-serif font-black">You are a complete original today!</h3>
+                          <p className="text-xs font-medium opacity-70 max-w-sm mx-auto">Looks like you're the first to have this exact experience. Maybe someone will match with you soon.</p>
+                        </div>
+                      )}
+
+                      {/* --- INSTAGRAM INTEGRATION AND NAVIGATION FOOTER --- */}
+                      <div className="border-t-2 border-dashed border-[#472C20]/20 pt-6 mt-4 space-y-4">
+                        <div className="bg-[#A8E6CF]/30 border-2 border-[#472C20] rounded-xl p-4 text-sm font-bold">
+                          ☕ Thanks for spending time with us. Your memory has been added to our Café Wall. Come back soon!
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-2 w-full">
+                          <button
+                            onClick={handleInstagramShare}
+                            className="flex-1 bg-gradient-to-r from-[#8a3ab9] via-[#cd486b] to-[#fbad50] text-white font-black text-xs uppercase tracking-wider py-3 rounded-xl border-2 border-[#472C20] flex items-center justify-center gap-2 shadow-[2px_2px_0_#472C20]"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                            </svg>
+                            Share Scrapbook to Stories
+                          </button>
+                          
+                          <button
+                            onClick={() => onNavigate('home')}
+                            className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl"
+                          >
+                            Return to Café
+                          </button>
+                        </div>
+                      </div>
+
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+              </div>
+            )}
+
+          </motion.div>
+        </AnimatePresence>
+
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/App.jsx">
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+
+// --- CONTEXT & PERSISTENCE ---
+import { AvatarProvider } from './context/AvatarContext';
+import GlobalCompanion from './components/GlobalCompanion';
+import VinylPlayer from './components/VinylPlayer';
+
+// --- MAIN PAGES ---
+import LandingPage from './pages/LandingPage';
+import AvatarCreatorPage from './pages/AvatarCreatorPage';
+import Home from './pages/Home';
+import ReviewWizard from './pages/ReviewWizard';
+import ThankYou from './pages/ThankYou';
+import MemoryWall from './pages/MemoryWall';
+import MenuBoard from './pages/MenuBoard';
+import ChronicleBoard from './pages/ChronicleBoard';
+import Directory from './pages/Directory';
+import OwnerPortal from './pages/OwnerPortal';
+import Games from './pages/Games';
+import HueHunt from './pages/HueHunt';
+import Icebreakers from './pages/IceBreakers';
+
+import { THEMES, DEFAULT_MEMORIES } from './constants/data';
+
+function MainLayoutContent() {
+  const [memories, setMemories] = useState([]);
+  const [reviewData, setReviewData] = useState(null);
+  const [theme, setTheme] = useState(THEMES.cream);
+  const [twin, setTwin] = useState(null);
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMemories(DEFAULT_MEMORIES);
+  }, []);
+
+  const handleSaveMemory = async (newMemory) => {
+    const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
+    if (match) setTwin(match);
+    const memoryToSave = { ...newMemory, createdAt: Date.now() };
+    setReviewData(memoryToSave);
+    setMemories(prev => [memoryToSave, ...prev]);
+  };
+
+  const handleNavigate = (page, newTheme = THEMES.cream) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTheme(newTheme);
+    if (page === 'welcome') navigate('/');
+    else if (page === 'avatar-studio') navigate('/avatar-studio');
+    else if (page === 'home') navigate('/cafe');
+    else if (page === 'hue-hunt') navigate('/games/hue-hunt');
+    else if (page === 'icebreakers') navigate('/games/icebreakers');
+    else navigate(`/${page}`);
+  };
+
+  // The landing page and avatar creator do not show the regular cafe navbar
+  const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
+
+  return (
+    <motion.div 
+      animate={{ 
+        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg, 
+        color: isOnboarding ? '#472C20' : theme.text 
+      }} 
+      transition={{ duration: 0.5 }} 
+      className="min-h-screen font-sans selection:bg-white/30 relative"
+    >
+      {!isOnboarding && <VinylPlayer theme={theme} />}
+      
+      {/* PERSISTENT FLOATING AVATAR MASCOT */}
+      <GlobalCompanion />
+
+      {/* Main Cafe App Header */}
+      {!isOnboarding && (
+        <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-[100]">
+          <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
+            <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:rotate-12 transition-transform">🚪</div>
+            <div>
+              <h1 className="font-serif font-bold text-2xl tracking-tight">Dumble' Door</h1>
+              <p className="font-cursive text-xl opacity-80 -mt-1">Jagda, Rourkela</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2 items-center">
+            {location.pathname !== '/menu' && <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.border }} className="hidden sm:block text-sm font-medium px-5 py-2 rounded-full border hover:opacity-70 transition-opacity">Menu</button>}
+            <button onClick={() => handleNavigate('welcome')} className="text-xs font-black border-2 border-current px-4 py-1.5 rounded-full shadow hover:bg-white/10 transition-colors">Log Out</button>
+          </div>
+        </nav>
+      )}
+
+      <main className={isOnboarding ? "" : "pb-32 relative z-10"}>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            {/* Onboarding Entries - Landing page is now perfectly locked at "/" */}
+            <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
+            <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
+
+            {/* Core Cafe Internal App Dashboard pages */}
+            <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
+            <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
+            <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
+            <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
+            <Route path="/directory" element={<Directory theme={theme} />} />
+            <Route path="/owner" element={<OwnerPortal memories={memories} theme={theme} onNavigate={handleNavigate} />} />
+            
+            {/* Mini Games Cluster */}
+            <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
+            <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
+            <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+    </motion.div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AvatarProvider>
+        <MainLayoutContent />
+      </AvatarProvider>
+    </Router>
+  );
+}
+</file>
+
+<file path="src/pages/OwnerPortal.jsx">
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+
+const OwnerPortal = () => {
+  const [activeTab, setActiveTab] = useState('memories');
+  const [menuData, setMenuData] = useState(null);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
+      if (docSnap.exists()) setMenuData(docSnap.data().data);
+    };
+    fetchMenu();
+  }, []);
+
+  const updateMenuItem = (category, index, key, value) => {
+    const newData = { ...menuData };
+    newData[category].items[index][key] = value;
+    setMenuData(newData);
+  };
+
+  const saveMenuToFirebase = async () => {
+    await updateDoc(doc(db, "settings", "fullMenu"), { data: menuData });
+    alert("Menu updated successfully!");
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8">
+      <h1 className="text-3xl font-bold mb-8 text-white">Dumble' Door Admin</h1>
+      
+      <div className="flex gap-4 mb-8">
+        <button 
+          onClick={() => setActiveTab('memories')} 
+          className={`p-2 rounded ${activeTab === 'memories' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Memories
+        </button>
+        <button 
+          onClick={() => setActiveTab('menu')} 
+          className={`p-2 rounded ${activeTab === 'menu' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Menu Editor
+        </button>
+      </div>
+
+      {activeTab === 'memories' && (
+        <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-800">
+          <p className="text-slate-400">Memory management view active.</p>
+        </div>
+      )}
+
+      {activeTab === 'menu' && menuData && (
+        <div className="bg-[#1E293B] border border-slate-800 rounded-xl p-6 shadow-2xl">
+          <h2 className="text-xl font-bold text-white mb-6">Live Menu Editor</h2>
+          {Object.entries(menuData).map(([category, info]) => (
+            <div key={category} className="mb-8">
+              <h3 className="text-emerald-400 font-mono uppercase mb-4">{category}</h3>
+              {info.items.map((item, idx) => (
+                <div key={idx} className="flex gap-4 mb-2 items-center">
+                  <input 
+                    value={item.n} 
+                    onChange={(e) => updateMenuItem(category, idx, 'n', e.target.value)}
+                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-full"
+                  />
+                  <input 
+                    value={item.p} 
+                    onChange={(e) => updateMenuItem(category, idx, 'p', e.target.value)}
+                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-20"
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+          <button onClick={saveMenuToFirebase} className="bg-emerald-600 px-6 py-2 rounded font-bold text-white mt-4">
+            Save Changes
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default OwnerPortal;
+</file>
+
+<file path="src/pages/MenuBoard.jsx">
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+
+// Fallback data to ensure the screen is never blank
+const MOCK_MENU = {
+  "Italian Pasta": {
+    theme: "blue",
+    items: [
+      { n: "Spaghetti Meatball Pasta", p: "209" },
+      { n: "Baked Mac & Cheese", p: "249" }
+    ]
+  },
+  "Burgers": {
+    theme: "red",
+    items: [{ n: "The Big Brown Burger", p: "159" }]
+  }
+};
+
+export default function MenuBoard({ setTheme }) {
+  const [menu, setMenu] = useState(null);
+  const [soldOutItems, setSoldOutItems] = useState([]);
+
+  useEffect(() => {
+    // We set the menu immediately to prevent the blank screen
+    console.log("MenuBoard: Initializing with fallback menu data.");
+    setMenu(MOCK_MENU);
+    setSoldOutItems(["Baked Mac & Cheese"]);
+  }, []);
+
+  // Simple loading state
+  if (!menu) return <div className="p-20 text-center font-mono text-xl">Brewing...</div>;
+
+  return (
+    <div style={{ backgroundColor: '#FAF6EE', minHeight: '100vh', padding: '2rem' }}>
+      <h1 className="text-7xl font-serif text-center mb-12">The Menu.</h1>
+      
+      <div className="max-w-4xl mx-auto space-y-12">
+        {Object.entries(menu).map(([category, info], idx) => (
+          <div key={category} className="bg-white p-8 rounded-2xl shadow-lg border-2 border-black">
+            <h2 className="text-4xl font-bold mb-6 underline">{category}</h2>
+            <ul className="space-y-4">
+              {info.items.map((item) => {
+                const isSoldOut = soldOutItems.includes(item.n);
+                return (
+                  <li key={item.n} className={`flex justify-between text-xl border-b border-gray-200 pb-2 ${isSoldOut ? 'opacity-50' : ''}`}>
+                    <span>{item.n} {isSoldOut && <span className="text-xs uppercase">(Sold Out)</span>}</span>
+                    <span className="font-bold">₹{item.p}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+//
+</file>
+
+</files>

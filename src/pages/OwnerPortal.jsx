@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { THEMES } from '../constants/data';
 
 const OwnerPortal = () => {
   const [activeTab, setActiveTab] = useState('memories');
@@ -52,28 +53,80 @@ const OwnerPortal = () => {
 
       {activeTab === 'menu' && menuData && (
         <div className="bg-[#1E293B] border border-slate-800 rounded-xl p-6 shadow-2xl">
-          <h2 className="text-xl font-bold text-white mb-6">Live Menu Editor</h2>
-          {Object.entries(menuData).map(([category, info]) => (
-            <div key={category} className="mb-8">
-              <h3 className="text-emerald-400 font-mono uppercase mb-4">{category}</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-white">Live Menu Editor</h2>
+            <button 
+              onClick={() => {
+                const name = prompt("Enter new category name:");
+                if (name) setMenuData({ ...menuData, [name]: { theme: THEMES.cream, items: [] } });
+              }}
+              className="bg-emerald-600 px-4 py-2 rounded text-sm font-bold hover:bg-emerald-500 transition-colors"
+            >
+              + Add Chapter
+            </button>
+          </div>
+
+          {Object.entries(menuData).map(([category, info], catIdx) => (
+            <div key={category} className="mb-8 p-4 bg-[#0F172A] rounded-lg border border-slate-700">
+              <h3 className="text-emerald-400 font-mono uppercase mb-4 flex justify-between items-center">
+                Chapter {catIdx + 1}: {category}
+                <button 
+                  onClick={() => { 
+                    const newData = {...menuData}; 
+                    delete newData[category]; 
+                    setMenuData(newData); 
+                  }} 
+                  className="text-red-400 hover:text-red-300 text-xs"
+                >
+                  Delete Category
+                </button>
+              </h3>
+              
               {info.items.map((item, idx) => (
-                <div key={idx} className="flex gap-4 mb-2 items-center">
+                <div key={idx} className="flex gap-2 mb-2 items-center">
                   <input 
                     value={item.n} 
                     onChange={(e) => updateMenuItem(category, idx, 'n', e.target.value)}
-                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-full"
+                    className="bg-[#1E293B] p-2 rounded w-full border border-slate-700"
+                    placeholder="Item name"
                   />
                   <input 
                     value={item.p} 
                     onChange={(e) => updateMenuItem(category, idx, 'p', e.target.value)}
-                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-20"
+                    className="bg-[#1E293B] p-2 rounded w-20 border border-slate-700"
+                    placeholder="Price"
                   />
+                  <button 
+                    onClick={() => {
+                      const newData = {...menuData};
+                      newData[category].items.splice(idx, 1);
+                      setMenuData(newData);
+                    }} 
+                    className="text-red-500 px-2 font-bold"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
+              
+              <button 
+                onClick={() => {
+                  const newData = {...menuData};
+                  newData[category].items.push({ n: "New Item", p: "0", soldOut: false });
+                  setMenuData(newData);
+                }} 
+                className="text-emerald-400 text-sm mt-3 hover:underline"
+              >
+                + Add Item
+              </button>
             </div>
           ))}
-          <button onClick={saveMenuToFirebase} className="bg-emerald-600 px-6 py-2 rounded font-bold text-white mt-4">
-            Save Changes
+          
+          <button 
+            onClick={saveMenuToFirebase} 
+            className="w-full bg-emerald-600 px-6 py-3 rounded font-bold text-white mt-4 hover:bg-emerald-500 transition-colors"
+          >
+            Save All Changes to Dumble' Door
           </button>
         </div>
       )}
