@@ -4,7 +4,7 @@ import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 
 // Mock menu items mapping standard features
 const CAFE_MENU = [
@@ -19,6 +19,17 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const { avatar } = useAvatar();
   const [step, setStep] = useState(1);
   const totalSteps = 8; 
+  const [menuData, setMenuData] = useState(null);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
+      if (docSnap.exists()) {
+        setMenuData(docSnap.data().data);
+      }
+    };
+    fetchMenu();
+  }, []);
 
   // --- WIZARD FORM STATE ---
   const [rating, setRating] = useState(null);
@@ -63,7 +74,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
           highlights: selectedHighlights,
           vibe,
           review, 
-          name: anonymousName || 'Anonymous Duckling',
+          name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
           createdAt: Date.now() // Added timestamp for sorting in Owner Portal
         };
 
@@ -203,38 +214,48 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
             )}
 
             {/* --- STEP 3: FOOD CARDS SELECTION --- */}
-            {step === 3 && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[220px] overflow-y-auto pr-2 py-1">
-                  {CAFE_MENU.map(dish => (
-                    <button
-                      key={dish.id}
-                      disabled={dish.soldOut}
-                      onClick={() => toggleItemSelection(dish.name)}
-                      className={`p-3 rounded-xl border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-sm transition-all relative ${
-                        dish.soldOut ? 'bg-gray-100 opacity-40 line-through cursor-not-allowed' :
-                        selectedItems.includes(dish.name) ? 'bg-[#A8E6CF] translate-x-1 shadow-[2px_2px_0_#472C20]' : 'bg-white'
-                      }`}
-                    >
-                      <span>{dish.name}</span>
-                      {dish.soldOut ? (
-                        <span className="text-[9px] font-black uppercase bg-red-400 text-white px-2 py-0.5 rounded border border-[#472C20]">Sold Out</span>
-                      ) : selectedItems.includes(dish.name) && (
-                        <div className="flex items-center gap-1 text-[#472C20] font-black text-xs">
-                          <Check size={14} className="stroke-[4]" /> ✓ Sticker
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex justify-end pt-2">
-                  <button onClick={handleNextStep} disabled={selectedItems.length === 0} className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1">
-                    Continue <ArrowRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* --- STEP 3: DYNAMIC CATEGORY DROPDOWNS --- */}
+{step === 3 && menuData && (
+  <div className="space-y-4">
+    <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
+    
+    <div className="max-h-[250px] overflow-y-auto pr-2 space-y-3">
+      {Object.entries(menuData).map(([category, info]) => (
+        <details key={category} className="group bg-white border-2 border-[#472C20] rounded-xl shadow-[2px_2px_0_#472C20]">
+          <summary className="cursor-pointer p-4 font-black uppercase tracking-widest text-sm flex justify-between items-center outline-none">
+            {category} 
+            <span className="group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          
+          <div className="p-3 border-t-2 border-[#472C20] grid grid-cols-1 gap-2 bg-[#FAF6EE]">
+            {info.items.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => toggleItemSelection(item.n)}
+                className={`p-3 rounded-lg border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-xs transition-all ${
+                  selectedItems.includes(item.n) ? 'bg-[#A8E6CF] shadow-[2px_2px_0_#472C20]' : 'bg-white'
+                }`}
+              >
+                <span>{item.n}</span>
+                {selectedItems.includes(item.n) && <span>✓</span>}
+              </button>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <div className="flex justify-end pt-2">
+      <button 
+        onClick={handleNextStep} 
+        disabled={selectedItems.length === 0} 
+        className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1"
+      >
+        Continue <ArrowRight size={14} />
+      </button>
+    </div>
+  </div>
+)}
 
             {/* --- STEP 4: MAIN CHARACTER DISH --- */}
             {step === 4 && (
