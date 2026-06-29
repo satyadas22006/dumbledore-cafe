@@ -11,7 +11,7 @@ export default function LandingPage({ onNavigate }) {
       linear-gradient(rgba(162, 194, 232, 0.4) 50%, transparent 50%)
     `,
     backgroundSize: '40px 40px'
-  };
+  }; 
 
   return (
     <div 

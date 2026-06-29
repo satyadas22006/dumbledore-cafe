@@ -7,6 +7,7 @@ import AdminLogin from './pages/AdminLogin';
 import { AvatarProvider } from './context/AvatarContext';
 import GlobalCompanion from './components/GlobalCompanion';
 import VinylPlayer from './components/VinylPlayer';
+import ScrapbookBackground from './components/ScrapbookBackground';
 
 // --- MAIN PAGES ---
 import LandingPage from './pages/LandingPage';

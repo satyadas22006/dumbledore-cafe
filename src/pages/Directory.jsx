@@ -14,7 +14,6 @@ const Directory = () => {
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.6 }}
-      style={gridBackground}
       className="min-h-screen text-[#4A3B32] py-20 px-6 overflow-hidden"
     >
       <div className="max-w-5xl mx-auto text-center mt-10">
