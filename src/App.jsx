@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminLogin from './pages/AdminLogin';
 // --- CONTEXT & PERSISTENCE ---
 import { AvatarProvider } from './context/AvatarContext';
 import GlobalCompanion from './components/GlobalCompanion';
@@ -106,9 +107,9 @@ function MainLayoutContent() {
             <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
             <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
             <Route path="/directory" element={<Directory theme={theme} />} />
-            <Route path="/owner" element={<OwnerPortal memories={memories} theme={theme} onNavigate={handleNavigate} />} />
-            
+            <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
             {/* Mini Games Cluster */}
+            <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
             <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
             <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />

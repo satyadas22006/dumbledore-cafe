@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { THEMES } from '../constants/data';
+import { getAuth, signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const OwnerPortal = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('memories');
   const [menuData, setMenuData] = useState(null);
   const [memories, setMemories] = useState([]);
-
+  
   // Stats tab states
   const [itemSearch, setItemSearch] = useState('');
   const [itemSort, setItemSort] = useState('name');
@@ -35,6 +38,15 @@ const OwnerPortal = () => {
     return () => unsubscribeMemories();
   }, []);
 
+  const handleLogout = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth); // This destroys the Firebase session
+      navigate('/admin-login'); // Sends you back to the login screen
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
   // --- FIREBASE DELETE FUNCTION ---
   const handleDeleteMemory = async (memoryId) => {
     const confirmDelete = window.confirm("Are you sure you want to permanently delete this memory from the database?");
@@ -60,7 +72,16 @@ const OwnerPortal = () => {
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8 pb-24">
-      <h1 className="text-4xl font-serif font-bold mb-8 text-white">Dumble' Door Admin</h1>
+      <div className="flex justify-between items-center mb-8">
+  <h1 className="text-4xl font-serif font-bold text-white">Dumble' Door Admin</h1>
+  
+  <button 
+    onClick={handleLogout}
+    className="px-4 py-2 bg-slate-800 hover:bg-red-600/80 rounded-full text-sm font-bold text-white transition-colors border border-slate-600"
+  >
+    Log Out
+  </button>
+</div>
       
       <div className="flex gap-4 mb-8">
         {['memories', 'menu', 'stats'].map(tab => (
