@@ -4,17 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 @layer base {
-  body {
+  body, html, #root {
+    width: 100%;
+    min-height: 100vh;
     background-color: #FDFBF7;
     font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
   }
-  h1, h2, h3, h4, .font-serif {
-    font-family: 'Playfair Display', serif;
-  }
+  h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
 }
 
 @layer utilities {

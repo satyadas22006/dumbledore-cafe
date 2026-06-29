@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MapPin, UtensilsCrossed, Sparkles, BookOpen, Gamepad2, Layers } from 'lucide-react';
+import { Heart, MapPin, UtensilsCrossed, BookOpen, Gamepad2, Layers } from 'lucide-react';
 import { THEMES } from '../constants/data';
 
 const ScrapbookCard = ({ children, onClick, className }) => (
@@ -13,14 +13,34 @@ const ScrapbookCard = ({ children, onClick, className }) => (
   </motion.div>
 );
 
-const Home = ({ onNavigate, theme }) => (
-  <div className="min-h-screen py-20 px-6" style={{ 
-    backgroundColor: '#FAF6EE', 
-    backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
-    backgroundSize: '24px 24px' 
-  }}>
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto">
-      
+const Home = ({ onNavigate }) => (
+  <motion.div 
+    initial={{ opacity: 0 }} 
+    animate={{ opacity: 1 }} 
+    className="min-h-screen w-full"
+    style={{ 
+      backgroundColor: '#FDFBF7',
+      backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
+      backgroundSize: '40px 40px'
+    }}
+  >
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      {/* Page-specific Navigation */}
+      <div className="flex justify-end gap-4 mb-8">
+        <button 
+          onClick={() => onNavigate('menu', THEMES.forest)} 
+          className="text-sm font-medium px-5 py-2 rounded-full border border-[#472C20] hover:bg-[#472C20] hover:text-white transition-colors"
+        >
+          Menu
+        </button>
+        <button 
+          onClick={() => onNavigate('welcome')} 
+          className="text-xs font-black border-2 border-[#472C20] px-4 py-1.5 rounded-full hover:bg-[#472C20] hover:text-white transition-colors"
+        >
+          Log Out
+        </button>
+      </div>
+
       {/* Hero Section */}
       <section className="text-center mb-16 space-y-6">
         <h1 className="text-7xl font-cursive text-[#472C20]">Dumble' Door.</h1>
@@ -63,7 +83,7 @@ const Home = ({ onNavigate, theme }) => (
         </ScrapbookCard>
       </div>
 
-      {/* Memory Wall Link - Styled as a special pinned note */}
+      {/* Memory Wall Link */}
       <motion.div 
         whileHover={{ rotate: -1 }}
         onClick={() => onNavigate('wall', THEMES.navy)}
@@ -72,9 +92,8 @@ const Home = ({ onNavigate, theme }) => (
         <Layers size={24} />
         <span className="font-black uppercase tracking-widest">Or browse the full Memory Wall →</span>
       </motion.div>
-
-    </motion.div>
-  </div>
+    </div>
+  </motion.div>
 );
 
 export default Home;
