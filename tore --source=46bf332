@@ -1,0 +1,16 @@
+[33med22703[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m hmm
+[33m46bf332[m adminportal
+[33me808bba[m updated review menu board
+[33m7388ee0[m owner portal and database linked
+[33mf50e83f[m Visit page updated
+[33mbe4b782[m deploy
+[33mb397211[m Force deployment to trigger Vercel update
+[33me320992[m Add frontend updates
+[33m6bf38b5[m Restored original aesthetic with real-time Firebase menu sync
+[33m023f118[m no
+[33m2e53f75[m Restored original menu aesthetic with live Firebase data
+[33mbf6caa1[m Fixed: MenuBoard now uses real-time Firebase data
+[33m3093b52[m Cleanup: Removed migration tools, stabilized UI
+[33m86bbe18[m Added Firebase menu migration and live editor to Admin Portal
+[33m42c4422[m Added vercel.json for route handling
+[33ma353e20[m Cafe Memory Wall & Secure Admin Portal ready for launch!

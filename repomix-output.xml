@@ -57,8 +57,6 @@ src/components/AvatarRenderer.jsx
 src/components/Barcode.jsx
 src/components/GlobalCompanion.jsx
 src/components/Icons.jsx
-src/components/ProtectedRoute.jsx
-src/components/ScrapbookBackground.jsx
 src/components/VinylPlayer.jsx
 src/constants/data.js
 src/context/AvatarContext.jsx
@@ -66,7 +64,6 @@ src/firebase.js
 src/index.css
 src/main.jsx
 src/migration.js
-src/pages/AdminLogin.jsx
 src/pages/AvatarCreatorPage.jsx
 src/pages/ChronicleBoard.jsx
 src/pages/Directory.jsx
@@ -87,77 +84,6 @@ vite.config.js
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path="src/components/ScrapbookBackground.jsx">
-import React from 'react';
-
-const ScrapbookBackground = () => {
-  return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      {/* 1. THE FULL-SCREEN GRAPH PAPER GRID */}
-      <div 
-        className="absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage: 'linear-gradient(currentColor 1.5px, transparent 1.5px), linear-gradient(90deg, currentColor 1.5px, transparent 1.5px)',
-          backgroundSize: '36px 36px',
-        }}
-      />
-
-      {/* --- CUTE HAND-DRAWN STICKERS --- */}
-      
-      {/* Top Left Cluster */}
-      <div className="absolute top-10 left-10 opacity-80">
-        <svg width="60" height="60" viewBox="0 0 100 100" className="transform -rotate-12 drop-shadow-md text-[#472C20]">
-          <path d="M50 5 L61 35 L95 35 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 L39 35 Z" fill="#FFFDF9" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-        <svg width="35" height="35" viewBox="0 0 100 100" className="transform rotate-12 drop-shadow-sm text-[#472C20] absolute top-12 left-12">
-          <path d="M50 5 L61 35 L95 35 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 L39 35 Z" fill="#FFB6C9" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      {/* Top Right Cluster */}
-      <div className="absolute top-16 right-12 opacity-80">
-        <svg width="45" height="45" viewBox="0 0 100 100" className="transform rotate-45 drop-shadow-md text-[#472C20]">
-          <path d="M50 0 C50 40 60 50 100 50 C60 50 50 60 50 100 C50 60 40 50 0 50 C40 50 50 40 50 0 Z" fill="#FFE08A" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      {/* Middle Left (Scattered Sparkle) */}
-      <div className="absolute top-1/2 left-8 opacity-60">
-        <svg width="30" height="30" viewBox="0 0 100 100" className="transform -rotate-12 drop-shadow-sm text-[#472C20]">
-          <path d="M50 0 C50 40 60 50 100 50 C60 50 50 60 50 100 C50 60 40 50 0 50 C40 50 50 40 50 0 Z" fill="#FFFDF9" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      {/* Middle Right (Small Star) */}
-      <div className="absolute top-1/3 right-10 opacity-50">
-        <svg width="25" height="25" viewBox="0 0 100 100" className="transform rotate-12 text-[#472C20]">
-          <path d="M50 5 L61 35 L95 35 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 L39 35 Z" fill="#D4EBFF" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      {/* Bottom Left Cluster */}
-      <div className="absolute bottom-20 left-12 opacity-80">
-        <svg width="50" height="50" viewBox="0 0 100 100" className="transform -rotate-6 drop-shadow-md text-[#472C20]">
-          <path d="M50 0 C50 40 60 50 100 50 C60 50 50 60 50 100 C50 60 40 50 0 50 C40 50 50 40 50 0 Z" fill="#A8E6CF" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-
-      {/* Bottom Right Cluster (Behind Mascot) */}
-      <div className="absolute bottom-16 right-24 opacity-80">
-        <svg width="55" height="55" viewBox="0 0 100 100" className="transform rotate-12 drop-shadow-md text-[#472C20]">
-          <path d="M50 5 L61 35 L95 35 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 L39 35 Z" fill="#FFFDF9" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-        <svg width="25" height="25" viewBox="0 0 100 100" className="transform -rotate-12 drop-shadow-sm text-[#472C20] absolute -top-4 -right-4">
-          <path d="M50 5 L61 35 L95 35 L67 55 L78 85 L50 65 L22 85 L33 55 L5 35 L39 35 Z" fill="#E5D3FF" stroke="currentColor" strokeWidth="6" strokeLinejoin="round"/>
-        </svg>
-      </div>
-    </div>
-  );
-};
-
-export default ScrapbookBackground;
-</file>
 
 <file path=".gitignore">
 # Logs
@@ -821,75 +747,6 @@ export const TwitterIcon = ({ size = 24 }) => (
 );
 </file>
 
-<file path="src/components/ProtectedRoute.jsx">
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Make sure this path points to your firebase config file
-
-const ProtectedRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-
-  useEffect(() => {
-    const auth = getAuth();
-    
-    // Listen for the live authentication state
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          // Fetch the dynamic list of allowed emails from Firestore
-          const docRef = doc(db, 'settings', 'adminAccess');
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            const allowedAdmins = docSnap.data().emails || [];
-            
-            // Check if the logged-in user's email is in the database array
-            if (allowedAdmins.includes(user.email)) {
-              setIsAuthenticated(true);
-              return; // Success! Exit the function.
-            }
-          }
-          
-          // If the email isn't in the array, or the document is missing
-          console.warn("Unauthorized email attempted to access portal.");
-          setIsAuthenticated(false);
-          
-        } catch (error) {
-          console.error("Error verifying admin credentials from database:", error);
-          setIsAuthenticated(false);
-        }
-      } else {
-        // No user is logged in at all
-        setIsAuthenticated(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // Show a loading screen while Firebase checks the Auth token AND the Database
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-emerald-400 font-mono font-bold tracking-widest">
-        Verifying Database Credentials...
-      </div>
-    );
-  }
-
-  // If not logged in OR not in the database array, redirect to login
-  if (!isAuthenticated) {
-    return <Navigate to="/admin-login" replace />;
-  }
-
-  // If they pass both checks, let them into the dashboard!
-  return children;
-};
-
-export default ProtectedRoute;
-</file>
-
 <file path="src/components/VinylPlayer.jsx">
 import React, { useState, useEffect, useRef } from 'react';
 import { Disc3 } from 'lucide-react';
@@ -1157,93 +1014,6 @@ export const migrateMenu = async () => {
 };
 </file>
 
-<file path="src/pages/AdminLogin.jsx">
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-
-const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Prevents the page from refreshing when you hit enter
-    setError('');
-    setLoading(true);
-    
-    const auth = getAuth();
-
-    try {
-      // 1. Ask Firebase if these credentials are valid
-      await signInWithEmailAndPassword(auth, email, password);
-      
-      // 2. If valid, send them to the Owner Portal
-      navigate('/owner'); 
-    } catch (err) {
-      // 3. If invalid, show a red error message
-      setError('Invalid email or password. Access Denied.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#0F172A] flex flex-col items-center justify-center p-6">
-      <div className="bg-[#1E293B] p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-700">
-        <h1 className="text-3xl font-serif font-black mb-6 text-emerald-400 text-center">Admin Access</h1>
-
-        {/* Error Message Box */}
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded mb-6 text-sm text-center font-bold">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-slate-400 text-sm font-bold mb-2">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0F172A] border border-slate-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="Enter admin email..."
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-400 text-sm font-bold mb-2">Master Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0F172A] border border-slate-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-6 disabled:opacity-50"
-          >
-            {loading ? 'Verifying Credentials...' : 'Unlock Portal'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-export default AdminLogin;
-</file>
-
 <file path="src/pages/AvatarCreatorPage.jsx">
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -1405,6 +1175,105 @@ export default function AvatarCreatorPage({ onNavigate }) {
     </div>
   );
 }
+</file>
+
+<file path="src/pages/Directory.jsx">
+import React from 'react';
+import { motion } from 'framer-motion';
+
+const Directory = () => {
+  // Soft Purple / Lavender grid background
+  const gridBackground = {
+    backgroundImage: 'linear-gradient(#E9D8FD 1px, transparent 1px), linear-gradient(90deg, #E9D8FD 1px, transparent 1px)',
+    backgroundSize: '40px 40px',
+    backgroundColor: '#FAF5FF' // Soft lavender base
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.6 }}
+      style={gridBackground}
+      className="min-h-screen text-[#4A3B32] py-20 px-6 overflow-hidden"
+    >
+      <div className="max-w-5xl mx-auto text-center mt-10">
+        
+        {/* Cute Header Section */}
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-20"
+        >
+          <h1 className="text-7xl md:text-9xl font-serif text-[#4A3B32] mb-4 tracking-tight">
+            Visit Us.
+          </h1>
+          <p className="text-2xl md:text-3xl font-cursive italic opacity-80 mt-6 transform -rotate-2">
+            "A place remembered through people."
+          </p>
+        </motion.div>
+
+        {/* Retro Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 text-left">
+          
+          {/* Hours Card */}
+          <motion.div 
+            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
+            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
+          >
+            {/* Cute Pastel Tag */}
+            <div className="inline-block bg-[#A7F3D0] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
+              Hours
+            </div>
+            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Tue - Sun</h3>
+            <p className="font-mono text-2xl font-bold opacity-80 text-[#4A3B32]">11:30 AM - 9:00 PM</p>
+            
+            {/* Cute Red Monday Closed Badge */}
+            <div className="mt-6 inline-block bg-[#FF9B9B] px-4 py-1.5 rounded-full border-2 border-[#4A3B32] shadow-[3px_3px_0px_#4A3B32] transform rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
+              <p className="font-mono font-bold text-[#4A3B32] text-sm uppercase tracking-wider">
+                Monday: Closed 💤
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Location Card */}
+          <motion.div 
+            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
+            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
+          >
+            {/* Cute Pastel Tag */}
+            <div className="inline-block bg-[#FFD1DC] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
+              Location
+            </div>
+            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Shop 1 & 2</h3>
+            <p className="font-serif text-2xl opacity-90 text-[#4A3B32]">Near M.G.M School, Jagda</p>
+          </motion.div>
+        </div>
+
+        {/* Map Section with heavy retro styling */}
+        <motion.div 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="w-full h-[450px] rounded-[3rem] overflow-hidden border-[4px] border-[#4A3B32] shadow-[10px_10px_0px_#4A3B32] bg-[#FFFDF8]"
+        >
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3692.651765476317!2d84.8812!3d22.2533!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a201f0000000001%3A0x8b1b2c3d4e5f6g7h!2sDumble%20Door%20Cafe!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Directory;
 </file>
 
 <file path="src/pages/Games.jsx">
@@ -2171,6 +2040,16 @@ export default defineConfig({
 })
 </file>
 
+<file path="src/firebase.js">
+// src/firebase.js
+console.log("Firebase placeholder active - running in mock UI mode.");
+
+// Add a 'type' property so we can detect this is a mock
+export const db = {
+  type: 'mock'
+};
+</file>
+
 <file path="src/pages/ChronicleBoard.jsx">
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -2233,105 +2112,6 @@ const ChronicleBoard = ({ memories, theme }) => {
 };
 
 export default ChronicleBoard;
-</file>
-
-<file path="src/pages/Directory.jsx">
-import React from 'react';
-import { motion } from 'framer-motion';
-
-const Directory = () => {
-  // Soft Purple / Lavender grid background
-  const gridBackground = {
-    backgroundImage: 'linear-gradient(#E9D8FD 1px, transparent 1px), linear-gradient(90deg, #E9D8FD 1px, transparent 1px)',
-    backgroundSize: '40px 40px',
-    backgroundColor: '#FAF5FF' // Soft lavender base
-  };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      transition={{ duration: 0.6 }}
-      style={gridBackground}
-      className="min-h-screen text-[#4A3B32] py-20 px-6 overflow-hidden"
-    >
-      <div className="max-w-5xl mx-auto text-center mt-10">
-        
-        {/* Cute Header Section */}
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-20"
-        >
-          <h1 className="text-7xl md:text-9xl font-serif text-[#4A3B32] mb-4 tracking-tight">
-            Visit Us.
-          </h1>
-          <p className="text-2xl md:text-3xl font-cursive italic opacity-80 mt-6 transform -rotate-2">
-            "A place remembered through people."
-          </p>
-        </motion.div>
-
-        {/* Retro Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 text-left">
-          
-          {/* Hours Card */}
-          <motion.div 
-            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
-            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
-          >
-            {/* Cute Pastel Tag */}
-            <div className="inline-block bg-[#A7F3D0] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
-              Hours
-            </div>
-            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Tue - Sun</h3>
-            <p className="font-mono text-2xl font-bold opacity-80 text-[#4A3B32]">11:30 AM - 9:00 PM</p>
-            
-            {/* Cute Red Monday Closed Badge */}
-            <div className="mt-6 inline-block bg-[#FF9B9B] px-4 py-1.5 rounded-full border-2 border-[#4A3B32] shadow-[3px_3px_0px_#4A3B32] transform rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
-              <p className="font-mono font-bold text-[#4A3B32] text-sm uppercase tracking-wider">
-                Monday: Closed 💤
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Location Card */}
-          <motion.div 
-            whileHover={{ y: -4, x: -4, boxShadow: "12px 12px 0px #4A3B32" }}
-            className="bg-[#FFFDF8] p-10 rounded-[2.5rem] border-[4px] border-[#4A3B32] shadow-[8px_8px_0px_#4A3B32] transition-all duration-300"
-          >
-            {/* Cute Pastel Tag */}
-            <div className="inline-block bg-[#FFD1DC] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
-              Location
-            </div>
-            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Shop 1 & 2</h3>
-            <p className="font-serif text-2xl opacity-90 text-[#4A3B32]">Near M.G.M School, Jagda</p>
-          </motion.div>
-        </div>
-
-        {/* Map Section with heavy retro styling */}
-        <motion.div 
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="w-full h-[450px] rounded-[3rem] overflow-hidden border-[4px] border-[#4A3B32] shadow-[10px_10px_0px_#4A3B32] bg-[#FFFDF8]"
-        >
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3692.651765476317!2d84.8812!3d22.2533!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a201f0000000001%3A0x8b1b2c3d4e5f6g7h!2sDumble%20Door%20Cafe!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
-
-export default Directory;
 </file>
 
 <file path="src/pages/Home.jsx">
@@ -2417,175 +2197,12 @@ const Home = ({ onNavigate, theme }) => (
 export default Home;
 </file>
 
-<file path="src/firebase.js">
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyClVEexjHJaN1TOl_t3j1LJMIIWSAKTOPM",
-  authDomain: "cafewebsite-dd487.firebaseapp.com",
-  projectId: "cafewebsite-dd487",
-  storageBucket: "cafewebsite-dd487.firebasestorage.app",
-  messagingSenderId: "960205199767",
-  appId: "1:960205199767:web:4735fca2cabdabf3390cd2",
-  measurementId: "G-NS2FBDHQV7"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const db = getFirestore(app);
-</file>
-
-<file path="src/App.jsx">
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminLogin from './pages/AdminLogin';
-// --- CONTEXT & PERSISTENCE ---
-import { AvatarProvider } from './context/AvatarContext';
-import GlobalCompanion from './components/GlobalCompanion';
-import VinylPlayer from './components/VinylPlayer';
-import ScrapbookBackground from './components/ScrapbookBackground';
-
-// --- MAIN PAGES ---
-import LandingPage from './pages/LandingPage';
-import AvatarCreatorPage from './pages/AvatarCreatorPage';
-import Home from './pages/Home';
-import ReviewWizard from './pages/ReviewWizard';
-import ThankYou from './pages/ThankYou';
-import MemoryWall from './pages/MemoryWall';
-import MenuBoard from './pages/MenuBoard';
-import ChronicleBoard from './pages/ChronicleBoard';
-import Directory from './pages/Directory';
-import OwnerPortal from './pages/OwnerPortal';
-import Games from './pages/Games';
-import HueHunt from './pages/HueHunt';
-import Icebreakers from './pages/IceBreakers';
-
-import { THEMES, DEFAULT_MEMORIES } from './constants/data';
-
-function MainLayoutContent() {
-  const [memories, setMemories] = useState([]);
-  const [reviewData, setReviewData] = useState(null);
-  const [theme, setTheme] = useState(THEMES.cream);
-  const [twin, setTwin] = useState(null);
-  
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    setMemories(DEFAULT_MEMORIES);
-  }, []);
-
-  const handleSaveMemory = async (newMemory) => {
-    const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
-    if (match) setTwin(match);
-    const memoryToSave = { ...newMemory, createdAt: Date.now() };
-    setReviewData(memoryToSave);
-    setMemories(prev => [memoryToSave, ...prev]);
-  };
-
-  const handleNavigate = (page, newTheme = THEMES.cream) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTheme(newTheme);
-    if (page === 'welcome') navigate('/');
-    else if (page === 'avatar-studio') navigate('/avatar-studio');
-    else if (page === 'home') navigate('/cafe');
-    else if (page === 'hue-hunt') navigate('/games/hue-hunt');
-    else if (page === 'icebreakers') navigate('/games/icebreakers');
-    else navigate(`/${page}`);
-  };
-
-  // The landing page and avatar creator do not show the regular cafe navbar
-  const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
-
-  return (
-    <motion.div 
-      animate={{ 
-        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg, 
-        color: isOnboarding ? '#472C20' : theme.text 
-      }} 
-      transition={{ duration: 0.5 }} 
-      className="min-h-screen font-sans selection:bg-white/30 relative"
-    >
-      {!isOnboarding && <VinylPlayer theme={theme} />}
-      
-      {/* PERSISTENT FLOATING AVATAR MASCOT */}
-      <GlobalCompanion />
-
-      {/* Main Cafe App Header */}
-      {!isOnboarding && (
-        <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-[100]">
-          <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
-            <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:rotate-12 transition-transform">🚪</div>
-            <div>
-              <h1 className="font-serif font-bold text-2xl tracking-tight">Dumble' Door</h1>
-              <p className="font-cursive text-xl opacity-80 -mt-1">Jagda, Rourkela</p>
-            </div>
-          </div>
-          
-          <div className="flex gap-2 items-center">
-            {location.pathname !== '/menu' && <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.border }} className="hidden sm:block text-sm font-medium px-5 py-2 rounded-full border hover:opacity-70 transition-opacity">Menu</button>}
-            <button onClick={() => handleNavigate('welcome')} className="text-xs font-black border-2 border-current px-4 py-1.5 rounded-full shadow hover:bg-white/10 transition-colors">Log Out</button>
-          </div>
-        </nav>
-      )}
-
-      <main className={isOnboarding ? "" : "pb-32 relative z-10"}>
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            {/* Onboarding Entries - Landing page is now perfectly locked at "/" */}
-            <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
-            <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
-
-            {/* Core Cafe Internal App Dashboard pages */}
-            <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
-            <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
-            <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
-            <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
-            <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
-            <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
-            <Route path="/directory" element={<Directory theme={theme} />} />
-            <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
-            {/* Mini Games Cluster */}
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
-            <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
-            <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />
-          </Routes>
-        </AnimatePresence>
-      </main>
-    </motion.div>
-  );
-}
-
-export default function App() {
-  return (
-    <Router>
-      <AvatarProvider>
-        <MainLayoutContent />
-      </AvatarProvider>
-    </Router>
-  );
-}
-</file>
-
 <file path="src/pages/ReviewWizard.jsx">
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search } from 'lucide-react';
-import { db } from '../firebase';
-import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 
 // Mock menu items mapping standard features
 const CAFE_MENU = [
@@ -2600,17 +2217,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const { avatar } = useAvatar();
   const [step, setStep] = useState(1);
   const totalSteps = 8; 
-  const [menuData, setMenuData] = useState(null);
-
-  useEffect(() => {
-    const fetchMenu = async () => {
-      const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
-      if (docSnap.exists()) {
-        setMenuData(docSnap.data().data);
-      }
-    };
-    fetchMenu();
-  }, []);
 
   // --- WIZARD FORM STATE ---
   const [rating, setRating] = useState(null);
@@ -2645,7 +2251,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 
   useEffect(() => {
     if (step === 8 && isSearchingTwin) {
-      const timer = setTimeout(async () => {
+      const timer = setTimeout(() => {
         setIsSearchingTwin(false);
         const completeMemory = {
           rating,
@@ -2654,18 +2260,9 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
           dish: favoriteDish,
           highlights: selectedHighlights,
           vibe,
-          review, 
-          name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-          createdAt: Date.now() // Added timestamp for sorting in Owner Portal
+          review, // Fixed: Sends the matching 'review' key directly to App.jsx state arrays
+          name: anonymousName || 'Anonymous Duckling'
         };
-
-        // Push data to Firebase
-        try {
-          await addDoc(collection(db, "memories"), completeMemory);
-        } catch (error) {
-          console.error("Failed to save memory to Firebase:", error);
-        }
-
         onComplete(completeMemory);
       }, 3500);
       return () => clearTimeout(timer);
@@ -2795,48 +2392,38 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
             )}
 
             {/* --- STEP 3: FOOD CARDS SELECTION --- */}
-            {/* --- STEP 3: DYNAMIC CATEGORY DROPDOWNS --- */}
-{step === 3 && menuData && (
-  <div className="space-y-4">
-    <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
-    
-    <div className="max-h-[250px] overflow-y-auto pr-2 space-y-3">
-      {Object.entries(menuData).map(([category, info]) => (
-        <details key={category} className="group bg-white border-2 border-[#472C20] rounded-xl shadow-[2px_2px_0_#472C20]">
-          <summary className="cursor-pointer p-4 font-black uppercase tracking-widest text-sm flex justify-between items-center outline-none">
-            {category} 
-            <span className="group-open:rotate-180 transition-transform">▼</span>
-          </summary>
-          
-          <div className="p-3 border-t-2 border-[#472C20] grid grid-cols-1 gap-2 bg-[#FAF6EE]">
-            {info.items.map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => toggleItemSelection(item.n)}
-                className={`p-3 rounded-lg border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-xs transition-all ${
-                  selectedItems.includes(item.n) ? 'bg-[#A8E6CF] shadow-[2px_2px_0_#472C20]' : 'bg-white'
-                }`}
-              >
-                <span>{item.n}</span>
-                {selectedItems.includes(item.n) && <span>✓</span>}
-              </button>
-            ))}
-          </div>
-        </details>
-      ))}
-    </div>
-
-    <div className="flex justify-end pt-2">
-      <button 
-        onClick={handleNextStep} 
-        disabled={selectedItems.length === 0} 
-        className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1"
-      >
-        Continue <ArrowRight size={14} />
-      </button>
-    </div>
-  </div>
-)}
+            {step === 3 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[220px] overflow-y-auto pr-2 py-1">
+                  {CAFE_MENU.map(dish => (
+                    <button
+                      key={dish.id}
+                      disabled={dish.soldOut}
+                      onClick={() => toggleItemSelection(dish.name)}
+                      className={`p-3 rounded-xl border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-sm transition-all relative ${
+                        dish.soldOut ? 'bg-gray-100 opacity-40 line-through cursor-not-allowed' :
+                        selectedItems.includes(dish.name) ? 'bg-[#A8E6CF] translate-x-1 shadow-[2px_2px_0_#472C20]' : 'bg-white'
+                      }`}
+                    >
+                      <span>{dish.name}</span>
+                      {dish.soldOut ? (
+                        <span className="text-[9px] font-black uppercase bg-red-400 text-white px-2 py-0.5 rounded border border-[#472C20]">Sold Out</span>
+                      ) : selectedItems.includes(dish.name) && (
+                        <div className="flex items-center gap-1 text-[#472C20] font-black text-xs">
+                          <Check size={14} className="stroke-[4]" /> ✓ Sticker
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleNextStep} disabled={selectedItems.length === 0} className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1">
+                    Continue <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* --- STEP 4: MAIN CHARACTER DISH --- */}
             {step === 4 && (
@@ -3023,67 +2610,155 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 }
 </file>
 
+<file path="src/App.jsx">
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+
+// --- CONTEXT & PERSISTENCE ---
+import { AvatarProvider } from './context/AvatarContext';
+import GlobalCompanion from './components/GlobalCompanion';
+import VinylPlayer from './components/VinylPlayer';
+
+// --- MAIN PAGES ---
+import LandingPage from './pages/LandingPage';
+import AvatarCreatorPage from './pages/AvatarCreatorPage';
+import Home from './pages/Home';
+import ReviewWizard from './pages/ReviewWizard';
+import ThankYou from './pages/ThankYou';
+import MemoryWall from './pages/MemoryWall';
+import MenuBoard from './pages/MenuBoard';
+import ChronicleBoard from './pages/ChronicleBoard';
+import Directory from './pages/Directory';
+import OwnerPortal from './pages/OwnerPortal';
+import Games from './pages/Games';
+import HueHunt from './pages/HueHunt';
+import Icebreakers from './pages/IceBreakers';
+
+import { THEMES, DEFAULT_MEMORIES } from './constants/data';
+
+function MainLayoutContent() {
+  const [memories, setMemories] = useState([]);
+  const [reviewData, setReviewData] = useState(null);
+  const [theme, setTheme] = useState(THEMES.cream);
+  const [twin, setTwin] = useState(null);
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMemories(DEFAULT_MEMORIES);
+  }, []);
+
+  const handleSaveMemory = async (newMemory) => {
+    const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
+    if (match) setTwin(match);
+    const memoryToSave = { ...newMemory, createdAt: Date.now() };
+    setReviewData(memoryToSave);
+    setMemories(prev => [memoryToSave, ...prev]);
+  };
+
+  const handleNavigate = (page, newTheme = THEMES.cream) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTheme(newTheme);
+    if (page === 'welcome') navigate('/');
+    else if (page === 'avatar-studio') navigate('/avatar-studio');
+    else if (page === 'home') navigate('/cafe');
+    else if (page === 'hue-hunt') navigate('/games/hue-hunt');
+    else if (page === 'icebreakers') navigate('/games/icebreakers');
+    else navigate(`/${page}`);
+  };
+
+  // The landing page and avatar creator do not show the regular cafe navbar
+  const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
+
+  return (
+    <motion.div 
+      animate={{ 
+        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg, 
+        color: isOnboarding ? '#472C20' : theme.text 
+      }} 
+      transition={{ duration: 0.5 }} 
+      className="min-h-screen font-sans selection:bg-white/30 relative"
+    >
+      {!isOnboarding && <VinylPlayer theme={theme} />}
+      
+      {/* PERSISTENT FLOATING AVATAR MASCOT */}
+      <GlobalCompanion />
+
+      {/* Main Cafe App Header */}
+      {!isOnboarding && (
+        <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-[100]">
+          <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
+            <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:rotate-12 transition-transform">🚪</div>
+            <div>
+              <h1 className="font-serif font-bold text-2xl tracking-tight">Dumble' Door</h1>
+              <p className="font-cursive text-xl opacity-80 -mt-1">Jagda, Rourkela</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2 items-center">
+            {location.pathname !== '/menu' && <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.border }} className="hidden sm:block text-sm font-medium px-5 py-2 rounded-full border hover:opacity-70 transition-opacity">Menu</button>}
+            <button onClick={() => handleNavigate('welcome')} className="text-xs font-black border-2 border-current px-4 py-1.5 rounded-full shadow hover:bg-white/10 transition-colors">Log Out</button>
+          </div>
+        </nav>
+      )}
+
+      <main className={isOnboarding ? "" : "pb-32 relative z-10"}>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            {/* Onboarding Entries - Landing page is now perfectly locked at "/" */}
+            <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
+            <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
+
+            {/* Core Cafe Internal App Dashboard pages */}
+            <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
+            <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
+            <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
+            <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
+            <Route path="/directory" element={<Directory theme={theme} />} />
+            <Route path="/owner" element={<OwnerPortal memories={memories} theme={theme} onNavigate={handleNavigate} />} />
+            
+            {/* Mini Games Cluster */}
+            <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
+            <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
+            <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+    </motion.div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AvatarProvider>
+        <MainLayoutContent />
+      </AvatarProvider>
+    </Router>
+  );
+}
+</file>
+
 <file path="src/pages/OwnerPortal.jsx">
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
-import { THEMES } from '../constants/data';
-import { getAuth, signOut } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const OwnerPortal = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('memories');
   const [menuData, setMenuData] = useState(null);
-  const [memories, setMemories] = useState([]);
-  
-  // Stats tab states
-  const [itemSearch, setItemSearch] = useState('');
-  const [itemSort, setItemSort] = useState('name');
-  const [guestSearch, setGuestSearch] = useState('');
-  const [guestSort, setGuestSort] = useState('latest');
-  const [newCategoryName, setNewCategoryName] = useState('');
 
   useEffect(() => {
-    // 1. Fetch Menu Data
     const fetchMenu = async () => {
       const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
       if (docSnap.exists()) setMenuData(docSnap.data().data);
     };
     fetchMenu();
-
-    // 2. Listen to Memories Live from Firebase
-    const unsubscribeMemories = onSnapshot(collection(db, "memories"), (snapshot) => {
-      const fetchedMemories = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setMemories(fetchedMemories);
-    });
-
-    return () => unsubscribeMemories();
   }, []);
-
-  const handleLogout = async () => {
-    const auth = getAuth();
-    try {
-      await signOut(auth); // This destroys the Firebase session
-      navigate('/admin-login'); // Sends you back to the login screen
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
-  // --- FIREBASE DELETE FUNCTION ---
-  const handleDeleteMemory = async (memoryId) => {
-    const confirmDelete = window.confirm("Are you sure you want to permanently delete this memory from the database?");
-    if (confirmDelete) {
-      try {
-        await deleteDoc(doc(db, "memories", memoryId));
-      } catch (error) {
-        console.error("Error deleting memory:", error);
-      }
-    }
-  };
 
   const updateMenuItem = (category, index, key, value) => {
     const newData = { ...menuData };
@@ -3093,236 +2768,59 @@ const OwnerPortal = () => {
 
   const saveMenuToFirebase = async () => {
     await updateDoc(doc(db, "settings", "fullMenu"), { data: menuData });
-    alert("Menu Updated!");
+    alert("Menu updated successfully!");
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8 pb-24">
-      <div className="flex justify-between items-center mb-8">
-  <h1 className="text-4xl font-serif font-bold text-white">Dumble' Door Admin</h1>
-  
-  <button 
-    onClick={handleLogout}
-    className="px-4 py-2 bg-slate-800 hover:bg-red-600/80 rounded-full text-sm font-bold text-white transition-colors border border-slate-600"
-  >
-    Log Out
-  </button>
-</div>
+    <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8">
+      <h1 className="text-3xl font-bold mb-8 text-white">Dumble' Door Admin</h1>
       
       <div className="flex gap-4 mb-8">
-        {['memories', 'menu', 'stats'].map(tab => (
-          <button 
-            key={tab} 
-            onClick={() => setActiveTab(tab)} 
-            className={`px-6 py-2 rounded font-bold capitalize transition-colors ${activeTab === tab ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700'}`}
-          >
-            {tab}
-          </button>
-        ))}
+        <button 
+          onClick={() => setActiveTab('memories')} 
+          className={`p-2 rounded ${activeTab === 'memories' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Memories
+        </button>
+        <button 
+          onClick={() => setActiveTab('menu')} 
+          className={`p-2 rounded ${activeTab === 'menu' ? 'bg-emerald-600' : 'bg-slate-800'}`}
+        >
+          Menu Editor
+        </button>
       </div>
 
-      {/* --- MEMORIES TAB --- */}
       {activeTab === 'memories' && (
-        <div className="grid gap-4">
-          {memories.length === 0 ? (
-            <p className="text-slate-400 italic p-4 bg-[#1E293B] rounded">No memories found in the database.</p>
-          ) : (
-            memories.map((m) => (
-              <div key={m.id} className="bg-[#1E293B] p-5 rounded-xl flex justify-between items-center border border-slate-700 gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <p className="font-bold text-emerald-400 text-lg">{m.name || 'Anonymous'}</p>
-                    <span className="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded">
-                      {m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'No date'}
-                    </span>
-                  </div>
-                  <p className="text-slate-300 italic">"{m.review || m.text || 'No review left.'}"</p>
-                  {m.items && m.items.length > 0 && (
-                    <p className="text-xs text-slate-400 mt-2">
-                      Picked: <span className="font-semibold text-emerald-300">{m.items.join(', ')}</span>
-                    </p>
-                  )}
-                </div>
-                <button 
-                  onClick={() => handleDeleteMemory(m.id)} 
-                  className="text-red-400 border border-red-400/30 bg-red-400/10 px-4 py-2 rounded hover:bg-red-400/20 hover:text-red-300 transition-colors font-bold"
-                >
-                  Delete
-                </button>
-              </div>
-            ))
-          )}
+        <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-800">
+          <p className="text-slate-400">Memory management view active.</p>
         </div>
       )}
 
-      {/* --- MENU EDITOR TAB --- */}
       {activeTab === 'menu' && menuData && (
-        <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-6">
-          <div className="flex gap-2 mb-8 bg-[#0F172A] p-4 rounded-lg border border-slate-700">
-            <input 
-              type="text"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="Type new chapter name (e.g., Beverages)..."
-              className="bg-[#1E293B] p-2 rounded flex-1 border border-slate-600 text-white outline-none focus:border-emerald-500"
-            />
-            <button 
-              onClick={() => { 
-                if (newCategoryName.trim() !== "") {
-                  setMenuData(prevMenu => ({
-                    ...prevMenu, 
-                    [newCategoryName.trim()]: { 
-                      theme: { bg: '#FAF6EE', text: '#472C20' }, 
-                      items: [] 
-                    }
-                  }));
-                  setNewCategoryName(''); // Clear the input field after adding
-                }
-              }} 
-              className="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded font-bold text-white transition-colors"
-            >
-              + Add Chapter
-            </button>
-          </div>
-          
-          {Object.entries(menuData).map(([cat, info], index) => (
-            <div key={cat} className="mb-8 p-4 bg-[#0F172A] rounded-lg border border-slate-700">
-              <h3 className="text-emerald-400 font-bold mb-4 font-mono uppercase flex justify-between items-center">
-                <span>Chapter {index + 1}: {cat}</span>
-                <button 
-                  onClick={() => { 
-                    // Removed window.confirm so VS Code stops blocking the deletion!
-                    const d = {...menuData}; 
-                    delete d[cat]; 
-                    setMenuData(d); 
-                  }} 
-                  className="text-red-400 text-xs hover:text-red-300 font-sans tracking-wide border border-red-400/30 px-2 py-1 rounded"
-                >
-                  Delete Chapter
-                </button>
-              </h3>
-              
-              {info.items && info.items.map((item, idx) => (
-                <div key={idx} className="flex gap-2 mb-2">
+        <div className="bg-[#1E293B] border border-slate-800 rounded-xl p-6 shadow-2xl">
+          <h2 className="text-xl font-bold text-white mb-6">Live Menu Editor</h2>
+          {Object.entries(menuData).map(([category, info]) => (
+            <div key={category} className="mb-8">
+              <h3 className="text-emerald-400 font-mono uppercase mb-4">{category}</h3>
+              {info.items.map((item, idx) => (
+                <div key={idx} className="flex gap-4 mb-2 items-center">
                   <input 
                     value={item.n} 
-                    onChange={(e) => updateMenuItem(cat, idx, 'n', e.target.value)} 
-                    placeholder="Item Name"
-                    className="bg-[#1E293B] p-2 rounded w-full border border-slate-600 text-white" 
+                    onChange={(e) => updateMenuItem(category, idx, 'n', e.target.value)}
+                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-full"
                   />
                   <input 
                     value={item.p} 
-                    onChange={(e) => updateMenuItem(cat, idx, 'p', e.target.value)} 
-                    placeholder="Price"
-                    className="bg-[#1E293B] p-2 rounded w-24 border border-slate-600 text-white" 
+                    onChange={(e) => updateMenuItem(category, idx, 'p', e.target.value)}
+                    className="bg-[#0F172A] p-2 rounded border border-slate-700 w-20"
                   />
-                  <button 
-                    onClick={() => { 
-                      // Switched from .splice() to .filter() for bulletproof React state updates
-                      setMenuData(prev => ({
-                        ...prev,
-                        [cat]: {
-                          ...prev[cat],
-                          items: prev[cat].items.filter((_, i) => i !== idx)
-                        }
-                      }));
-                    }} 
-                    className="text-red-500 px-3 font-bold hover:text-red-400 bg-red-500/10 rounded border border-red-500/20"
-                  >
-                    ×
-                  </button>
                 </div>
               ))}
-              
-              <button 
-                onClick={() => { 
-                  setMenuData(prev => ({
-                    ...prev,
-                    [cat]: {
-                      ...prev[cat],
-                      items: [...prev[cat].items, {n:'', p:''}]
-                    }
-                  }));
-                }} 
-                className="text-sm font-bold text-emerald-500 mt-2 hover:text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded border border-emerald-500/20"
-              >
-                + Add Item
-              </button>
             </div>
           ))}
-          
-          <button 
-            onClick={saveMenuToFirebase} 
-            className="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded font-bold mt-6 text-white transition-colors text-lg"
-          >
-            Save All Changes to Dumble' Door
+          <button onClick={saveMenuToFirebase} className="bg-emerald-600 px-6 py-2 rounded font-bold text-white mt-4">
+            Save Changes
           </button>
-        </div>
-      )}
-
-      {/* --- STATS TAB --- */}
-      {activeTab === 'stats' && (
-        <div className="space-y-12">
-          {/* FOOD SECTION */}
-          <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-700">
-            <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-              <h2 className="text-xl font-bold text-emerald-400">Food Item Popularity</h2>
-              <div className="flex gap-2">
-                <input placeholder="Search items..." onChange={(e) => setItemSearch(e.target.value)} className="bg-[#0F172A] px-3 py-1 rounded text-sm border border-slate-600 text-white" />
-                <select onChange={(e) => setItemSort(e.target.value)} className="bg-[#0F172A] px-2 rounded text-sm border border-slate-600 text-white">
-                  <option value="name">Sort: Name</option>
-                  <option value="most">Popular: Most</option>
-                  <option value="least">Popular: Least</option>
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(memories.flatMap(m => m.items || []).reduce((acc, item) => ({...acc, [item]: (acc[item] || 0) + 1}), {}))
-                .filter(([name]) => name.toLowerCase().includes(itemSearch.toLowerCase()))
-                .sort((a, b) => itemSort === 'name' ? a[0].localeCompare(b[0]) : itemSort === 'most' ? b[1] - a[1] : a[1] - b[1])
-                .map(([item, count]) => (
-                  <div key={item} className="bg-[#0F172A] p-4 rounded border border-slate-700 flex justify-between items-center">
-                    <span className="font-bold">{item}</span>
-                    <span className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-sm">{count} selections</span>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {/* GUEST SECTION */}
-          <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-700">
-            <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-              <h2 className="text-xl font-bold text-emerald-400">Guest Activity Ledger</h2>
-              <div className="flex gap-2">
-                <input placeholder="Search guest..." onChange={(e) => setGuestSearch(e.target.value)} className="bg-[#0F172A] px-3 py-1 rounded text-sm border border-slate-600 text-white" />
-                <select onChange={(e) => setGuestSort(e.target.value)} className="bg-[#0F172A] px-2 rounded text-sm border border-slate-600 text-white">
-                  <option value="latest">Latest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="name">Sort: Name</option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {[...memories]
-                .filter(m => (m.name || '').toLowerCase().includes(guestSearch.toLowerCase()))
-                .sort((a, b) => guestSort === 'latest' ? (b.createdAt || 0) - (a.createdAt || 0) : guestSort === 'oldest' ? (a.createdAt || 0) - (b.createdAt || 0) : (a.name || '').localeCompare(b.name || ''))
-                .map((m, i) => (
-                  <div key={i} className="bg-[#0F172A] p-4 rounded border border-slate-700 grid md:grid-cols-3 gap-4 items-center">
-                    <div>
-                      <p className="font-bold text-white text-lg">{m.name || 'Anonymous'}</p>
-                      <p className="text-xs text-slate-400 mt-1">{m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'No date'}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400">Picked:</p>
-                      <p className="font-semibold text-emerald-300">{m.items ? m.items.join(', ') : 'Nothing'}</p>
-                    </div>
-                    <div className="italic text-slate-300 text-sm border-l pl-4 border-slate-600">
-                      "{m.review || m.text || 'No review'}"
-                    </div>
-                  </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
     </div>
@@ -3333,161 +2831,64 @@ export default OwnerPortal;
 </file>
 
 <file path="src/pages/MenuBoard.jsx">
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { db } from '../firebase'; 
-import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
-// --- SMOOTH SCROLLING SECTION COMPONENT ---
-// --- SMOOTH SCROLLING SECTION COMPONENT ---
-const MenuSection = ({ title, info, idx, setTheme }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { margin: "-50% 0px -50% 0px", once: false });
-
-  // 8 matching pastel themes that cycle
-  const palettes = [
-    { bg: '#A8E6CF', text: '#2D5A4D' }, // Mint
-    { bg: '#FFB6C9', text: '#5D2E3A' }, // Rose
-    { bg: '#FFE08A', text: '#5D4A25' }, // Cream
-    { bg: '#D4EBFF', text: '#2A4B66' }, // Sky
-    { bg: '#E5D3FF', text: '#4B3A66' }, // Lavender
-    { bg: '#FFD3B6', text: '#664A35' }, // Peach
-    { bg: '#D4F1F4', text: '#2A5D5A' }, // Aqua
-    { bg: '#FADADD', text: '#663A40' }  // Pale Pink
-  ];
-
-  // Logic: Cycle back to index 0 if idx >= 8
-  const currentPalette = palettes[idx % palettes.length];
-
-  useEffect(() => {
-    if (isInView) {
-      // Pass the actual palette object to App.jsx so the entire page shifts
-      setTheme(currentPalette);
-    }
-  }, [isInView, currentPalette, setTheme]);
-
-  return (
-    <motion.div 
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, margin: "-100px" }}
-      className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16 min-h-[70vh] py-16`}
-    >
-      <div className="w-full md:w-5/12 text-center md:text-left flex flex-col items-center md:items-start">
-        <div 
-          className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border-2 border-[#472C20] font-black text-[10px] text-[#472C20] uppercase tracking-widest shadow-[3px_3px_0_#472C20] mb-6"
-          style={{ backgroundColor: currentPalette.bg }}
-        >
-          <Sparkles size={12} /> Chapter {idx + 1}
-        </div>
-        <h2 className="text-6xl md:text-8xl font-cursive transform -rotate-3 drop-shadow-sm">
-          {title}
-        </h2>
-      </div>
-
-      <div className="w-full md:w-7/12 bg-[#FFFDF9] border-[4px] border-[#472C20] rounded-[2.5rem] p-8 md:p-10 shadow-[8px_8px_0_#472C20]">
-        <ul className="space-y-6 text-[#472C20]">
-          {(info.items || []).map((item, i) => (
-            <li key={i} className="flex justify-between items-end border-b-2 border-dashed border-[#472C20]/20 pb-4">
-              <span className="font-serif text-2xl md:text-3xl font-black">{item.n}</span>
-              <span className="font-mono font-black text-xl text-[#FF9F29] bg-white border-2 border-[#472C20] px-3 py-1.5 rounded-xl shadow-[3px_3px_0_#472C20]">
-                ₹{item.p}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </motion.div>
-  );
+// Fallback data to ensure the screen is never blank
+const MOCK_MENU = {
+  "Italian Pasta": {
+    theme: "blue",
+    items: [
+      { n: "Spaghetti Meatball Pasta", p: "209" },
+      { n: "Baked Mac & Cheese", p: "249" }
+    ]
+  },
+  "Burgers": {
+    theme: "red",
+    items: [{ n: "The Big Brown Burger", p: "159" }]
+  }
 };
 
-// --- MAIN MENU BOARD ---
-export default function MenuBoard({ setTheme, theme }) {
-  const navigate = useNavigate();
-  
-  // LIVE DATABASE STATE
-  const [menuData, setMenuData] = useState(null);
+export default function MenuBoard({ setTheme }) {
+  const [menu, setMenu] = useState(null);
+  const [soldOutItems, setSoldOutItems] = useState([]);
 
   useEffect(() => {
-    // Listen to Firebase directly
-    const unsubscribe = onSnapshot(doc(db, "settings", "fullMenu"), (docSnap) => {
-      if (docSnap.exists()) {
-        setMenuData(docSnap.data().data);
-      } else {
-        setMenuData({});
-      }
-    });
-    return () => unsubscribe();
+    // We set the menu immediately to prevent the blank screen
+    console.log("MenuBoard: Initializing with fallback menu data.");
+    setMenu(MOCK_MENU);
+    setSoldOutItems(["Baked Mac & Cheese"]);
   }, []);
 
-  // Dynamic grid that uses the current text color at 10% opacity
-  const dynamicGridStyle = {
-    backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
-    backgroundSize: '32px 32px',
-    opacity: 0.1, 
-    position: 'absolute',
-    inset: 0,
-    zIndex: 0,
-    pointerEvents: 'none'
-  };
+  // Simple loading state
+  if (!menu) return <div className="p-20 text-center font-mono text-xl">Brewing...</div>;
 
   return (
-    <div className="min-h-screen relative overflow-hidden select-none pb-24 transition-colors duration-700">
-      {/* Background Grid Overlay */}
-      <div style={dynamicGridStyle}></div>
-
-      <div className="max-w-6xl mx-auto px-6 pt-12 relative z-10">
-        
-        {/* Navigation */}
-        <div className="mb-16 flex justify-between items-center">
-          <button 
-            onClick={() => navigate('/cafe')} 
-            className="flex items-center gap-2 text-sm font-black tracking-wider uppercase hover:opacity-70 transition-opacity bg-white border-2 border-[#472C20] text-[#472C20] px-4 py-2 rounded-full shadow-[3px_3px_0_#472C20]"
-          >
-            <ArrowLeft size={16} className="stroke-[3]" /> Back to Cafe
-          </button>
-        </div>
-
-        {/* Big Title */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-24 relative"
-        >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 w-24 h-8 bg-white/20 backdrop-blur-sm rotate-[-2deg] shadow-sm z-20 border border-white/40"></div>
-          <h1 className="text-8xl md:text-[9rem] font-serif font-black tracking-tighter">
-            The Menu.
-          </h1>
-          <p className="font-cursive text-3xl opacity-80 mt-2 transform rotate-2">
-            Freshly cooked, just for you.
-          </p>
-        </motion.div>
-        
-        {/* Render Menu Sections or Loading State */}
-        <div className="space-y-12 min-h-[50vh]">
-          {!menuData ? (
-            <div className="flex flex-col items-center justify-center h-full opacity-60">
-              <Loader2 size={48} className="animate-spin mb-4" />
-              <p className="font-mono font-bold tracking-widest uppercase">Brewing the menu...</p>
-            </div>
-          ) : Object.keys(menuData).length === 0 ? (
-            <div className="text-center font-mono font-bold tracking-widest uppercase opacity-60">
-              The menu is currently being rewritten. Check back soon!
-            </div>
-          ) : (
-            Object.entries(menuData).map(([category, info], idx) => (
-              <MenuSection key={category} title={category} info={info} idx={idx} setTheme={setTheme} />
-            ))
-          )}
-        </div>
-
+    <div style={{ backgroundColor: '#FAF6EE', minHeight: '100vh', padding: '2rem' }}>
+      <h1 className="text-7xl font-serif text-center mb-12">The Menu.</h1>
+      
+      <div className="max-w-4xl mx-auto space-y-12">
+        {Object.entries(menu).map(([category, info], idx) => (
+          <div key={category} className="bg-white p-8 rounded-2xl shadow-lg border-2 border-black">
+            <h2 className="text-4xl font-bold mb-6 underline">{category}</h2>
+            <ul className="space-y-4">
+              {info.items.map((item) => {
+                const isSoldOut = soldOutItems.includes(item.n);
+                return (
+                  <li key={item.n} className={`flex justify-between text-xl border-b border-gray-200 pb-2 ${isSoldOut ? 'opacity-50' : ''}`}>
+                    <span>{item.n} {isSoldOut && <span className="text-xs uppercase">(Sold Out)</span>}</span>
+                    <span className="font-bold">₹{item.p}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+//
 </file>
 
 </files>

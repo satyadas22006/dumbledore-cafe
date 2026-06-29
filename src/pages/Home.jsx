@@ -14,7 +14,11 @@ const ScrapbookCard = ({ children, onClick, className }) => (
 );
 
 const Home = ({ onNavigate, theme }) => (
-  <div className="min-h-screen py-20 px-6">
+  <div className="min-h-screen py-20 px-6" style={{ 
+    backgroundColor: '#FAF6EE', 
+    backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
+    backgroundSize: '24px 24px' 
+  }}>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto">
       
       {/* Hero Section */}
