@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search } from 'lucide-react';
+import { db } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 // Mock menu items mapping standard features
 const CAFE_MENU = [
@@ -51,7 +53,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 
   useEffect(() => {
     if (step === 8 && isSearchingTwin) {
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
         setIsSearchingTwin(false);
         const completeMemory = {
           rating,
@@ -60,9 +62,18 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
           dish: favoriteDish,
           highlights: selectedHighlights,
           vibe,
-          review, // Fixed: Sends the matching 'review' key directly to App.jsx state arrays
-          name: anonymousName || 'Anonymous Duckling'
+          review, 
+          name: anonymousName || 'Anonymous Duckling',
+          createdAt: Date.now() // Added timestamp for sorting in Owner Portal
         };
+
+        // Push data to Firebase
+        try {
+          await addDoc(collection(db, "memories"), completeMemory);
+        } catch (error) {
+          console.error("Failed to save memory to Firebase:", error);
+        }
+
         onComplete(completeMemory);
       }, 3500);
       return () => clearTimeout(timer);

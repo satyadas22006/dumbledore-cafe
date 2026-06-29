@@ -1,67 +1,51 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { THEMES } from '../constants/data';
 import { db } from '../firebase'; 
 import { doc, onSnapshot } from 'firebase/firestore';
-// --- DUMMY DATA FOR DESIGN TESTING ---
-const DUMMY_MENU = {
-  "Italian Pasta": {
-    theme: THEMES.navy,
-    items: [
-      { n: "Spaghetti Meatball Pasta", p: "209", soldOut: false },
-      { n: "Baked Mac & Cheese", p: "249", soldOut: true },
-      { n: "Truffle Mushroom Risotto", p: "289", soldOut: false }
-    ]
-  },
-  "Cozy Burgers": {
-    theme: THEMES.terra,
-    items: [
-      { n: "The Big Brown Burger", p: "159", soldOut: false },
-      { n: "Crispy Shroom Slider", p: "129", soldOut: false },
-      { n: "Spicy Paneer Crunch", p: "149", soldOut: false }
-    ]
-  },
-  "Sweet Tooth": {
-    theme: THEMES.rose,
-    items: [
-      { n: "Matcha Affogato", p: "149", soldOut: false },
-      { n: "Mochi Waffles", p: "199", soldOut: false },
-      { n: "Lavender Cold Brew", p: "129", soldOut: false }
-    ]
-  }
-};
 
+// --- SMOOTH SCROLLING SECTION COMPONENT ---
 // --- SMOOTH SCROLLING SECTION COMPONENT ---
 const MenuSection = ({ title, info, idx, setTheme }) => {
   const ref = useRef(null);
-  
-  // Triggers when the section hits the exact middle of the screen
   const isInView = useInView(ref, { margin: "-50% 0px -50% 0px", once: false });
+
+  // 8 matching pastel themes that cycle
+  const palettes = [
+    { bg: '#A8E6CF', text: '#2D5A4D' }, // Mint
+    { bg: '#FFB6C9', text: '#5D2E3A' }, // Rose
+    { bg: '#FFE08A', text: '#5D4A25' }, // Cream
+    { bg: '#D4EBFF', text: '#2A4B66' }, // Sky
+    { bg: '#E5D3FF', text: '#4B3A66' }, // Lavender
+    { bg: '#FFD3B6', text: '#664A35' }, // Peach
+    { bg: '#D4F1F4', text: '#2A5D5A' }, // Aqua
+    { bg: '#FADADD', text: '#663A40' }  // Pale Pink
+  ];
+
+  // Logic: Cycle back to index 0 if idx >= 8
+  const currentPalette = palettes[idx % palettes.length];
 
   useEffect(() => {
     if (isInView) {
-      setTheme(info.theme);
+      // Pass the actual palette object to App.jsx so the entire page shifts
+      setTheme(currentPalette);
     }
-  }, [isInView, info.theme, setTheme]);
-
-  // Alternate pastel tags
-  const tagColors = ['bg-[#A8E6CF]', 'bg-[#FFB6C9]', 'bg-[#FFE08A]', 'bg-[#D4EBFF]'];
-  const tagColor = tagColors[idx % tagColors.length];
+  }, [isInView, currentPalette, setTheme]);
 
   return (
     <motion.div 
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+      viewport={{ once: false, margin: "-100px" }}
       className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16 min-h-[70vh] py-16`}
     >
-      {/* Category Title Area (Inherits global text color automatically) */}
       <div className="w-full md:w-5/12 text-center md:text-left flex flex-col items-center md:items-start">
-        <div className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-full border-2 border-[#472C20] font-black text-[10px] text-[#472C20] uppercase tracking-widest shadow-[3px_3px_0_#472C20] mb-6 ${tagColor}`}>
+        <div 
+          className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full border-2 border-[#472C20] font-black text-[10px] text-[#472C20] uppercase tracking-widest shadow-[3px_3px_0_#472C20] mb-6"
+          style={{ backgroundColor: currentPalette.bg }}
+        >
           <Sparkles size={12} /> Chapter {idx + 1}
         </div>
         <h2 className="text-6xl md:text-8xl font-cursive transform -rotate-3 drop-shadow-sm">
@@ -69,28 +53,16 @@ const MenuSection = ({ title, info, idx, setTheme }) => {
         </h2>
       </div>
 
-      {/* Menu Items Card (Explicitly styled to not inherit global white text) */}
-      <div className="w-full md:w-7/12 bg-[#FFFDF9] border-[4px] border-[#472C20] rounded-[2.5rem] p-8 md:p-10 shadow-[8px_8px_0_#472C20] hover:shadow-[12px_12px_0_#472C20] transition-shadow duration-300">
+      <div className="w-full md:w-7/12 bg-[#FFFDF9] border-[4px] border-[#472C20] rounded-[2.5rem] p-8 md:p-10 shadow-[8px_8px_0_#472C20]">
         <ul className="space-y-6 text-[#472C20]">
-          {info.items.map((item, i) => {
-            return (
-              <li key={i} className={`flex justify-between items-end border-b-2 border-dashed border-[#472C20]/20 pb-4 transition-all ${item.soldOut ? 'opacity-40 grayscale' : 'hover:translate-x-2'}`}>
-                <div className="flex flex-col gap-1">
-                  <span className="font-serif text-2xl md:text-3xl font-black flex items-center gap-3">
-                    {item.n}
-                    {item.soldOut && (
-                      <span className="text-[10px] font-mono font-black uppercase tracking-widest bg-[#FF9B9B] px-2 py-1 rounded-full border-2 border-[#472C20] shadow-[2px_2px_0_#472C20]">
-                        Sold Out
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <span className="font-mono font-black text-xl text-[#FF9F29] shrink-0 bg-white border-2 border-[#472C20] px-3 py-1.5 rounded-xl shadow-[3px_3px_0_#472C20]">
-                  ₹{item.p}
-                </span>
-              </li>
-            );
-          })}
+          {(info.items || []).map((item, i) => (
+            <li key={i} className="flex justify-between items-end border-b-2 border-dashed border-[#472C20]/20 pb-4">
+              <span className="font-serif text-2xl md:text-3xl font-black">{item.n}</span>
+              <span className="font-mono font-black text-xl text-[#FF9F29] bg-white border-2 border-[#472C20] px-3 py-1.5 rounded-xl shadow-[3px_3px_0_#472C20]">
+                ₹{item.p}
+              </span>
+            </li>
+          ))}
         </ul>
       </div>
     </motion.div>
@@ -100,12 +72,27 @@ const MenuSection = ({ title, info, idx, setTheme }) => {
 // --- MAIN MENU BOARD ---
 export default function MenuBoard({ setTheme, theme }) {
   const navigate = useNavigate();
+  
+  // LIVE DATABASE STATE
+  const [menuData, setMenuData] = useState(null);
+
+  useEffect(() => {
+    // Listen to Firebase directly
+    const unsubscribe = onSnapshot(doc(db, "settings", "fullMenu"), (docSnap) => {
+      if (docSnap.exists()) {
+        setMenuData(docSnap.data().data);
+      } else {
+        setMenuData({});
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Dynamic grid that uses the current text color at 10% opacity
   const dynamicGridStyle = {
     backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
     backgroundSize: '32px 32px',
-    opacity: 0.1, // Keeps the grid subtle against the shifting background colors
+    opacity: 0.1, 
     position: 'absolute',
     inset: 0,
     zIndex: 0,
@@ -144,11 +131,22 @@ export default function MenuBoard({ setTheme, theme }) {
           </p>
         </motion.div>
         
-        {/* Render Menu Sections */}
-        <div className="space-y-12">
-          {Object.entries(DUMMY_MENU).map(([category, info], idx) => (
-            <MenuSection key={category} title={category} info={info} idx={idx} setTheme={setTheme} />
-          ))}
+        {/* Render Menu Sections or Loading State */}
+        <div className="space-y-12 min-h-[50vh]">
+          {!menuData ? (
+            <div className="flex flex-col items-center justify-center h-full opacity-60">
+              <Loader2 size={48} className="animate-spin mb-4" />
+              <p className="font-mono font-bold tracking-widest uppercase">Brewing the menu...</p>
+            </div>
+          ) : Object.keys(menuData).length === 0 ? (
+            <div className="text-center font-mono font-bold tracking-widest uppercase opacity-60">
+              The menu is currently being rewritten. Check back soon!
+            </div>
+          ) : (
+            Object.entries(menuData).map(([category, info], idx) => (
+              <MenuSection key={category} title={category} info={info} idx={idx} setTheme={setTheme} />
+            ))
+          )}
         </div>
 
       </div>
