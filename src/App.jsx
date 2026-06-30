@@ -22,7 +22,7 @@ import OwnerPortal from './pages/OwnerPortal';
 import Games from './pages/Games';
 import HueHunt from './pages/HueHunt';
 import Icebreakers from './pages/IceBreakers';
-
+import GlobalGrid from './components/GlobalGrid';
 import { THEMES, DEFAULT_MEMORIES } from './constants/data';
 
 function MainLayoutContent() {
@@ -31,8 +31,26 @@ function MainLayoutContent() {
   const [theme, setTheme] = useState(THEMES.cream);
   const [twin, setTwin] = useState(null);
   
+ 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    setMemories(DEFAULT_MEMORIES);
+  }, []);
+
+  // ---> ADD THIS NEW BLOCK <---
+  // This forces the correct theme whenever the browser back/forward buttons are clicked
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
+    else if (path === '/menu') setTheme(THEMES.forest);
+    else if (path === '/chronicle') setTheme(THEMES.sand);
+    else if (path === '/directory') setTheme(THEMES.lavender);
+    else if (path === '/review') setTheme(THEMES.rose);
+    else if (path === '/wall') setTheme(THEMES.navy);
+  }, [location.pathname]);
+  // -----------------------------
 
   useEffect(() => {
     setMemories(DEFAULT_MEMORIES);
@@ -69,6 +87,9 @@ function MainLayoutContent() {
       transition={{ duration: 0.5 }} 
       className="min-h-screen font-sans selection:bg-white/30 relative"
     >
+      {/* ---> YOUR NEW BULLETPROOF GRID OVERLAY <--- */}
+      <GlobalGrid />
+
       {!isOnboarding && <VinylPlayer theme={theme} />}
       
       {/* PERSISTENT FLOATING AVATAR MASCOT */}

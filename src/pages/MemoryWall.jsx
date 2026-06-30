@@ -1,9 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import BackToCafeButton from '../components/BackToCafeButton';
 
 const MemoryWall = ({ memories }) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-6 py-20 relative">
+      
+      <BackToCafeButton />
+
       <h1 className="text-7xl font-serif text-center mb-32">The Wall.</h1>
       
       <div className="masonry-grid columns-1 md:columns-2 lg:columns-3">

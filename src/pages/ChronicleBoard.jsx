@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import BackToCafeButton from '../components/BackToCafeButton';
 
 const ScrapbookCard = ({ children, className, rotation = 0 }) => (
   <motion.div 
@@ -13,11 +14,12 @@ const ScrapbookCard = ({ children, className, rotation = 0 }) => (
 
 const ChronicleBoard = ({ memories, theme }) => {
   return (
-    <div className="min-h-screen py-20 px-6" style={{ 
-      backgroundColor: '#FAF6EE', 
-      backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
-      backgroundSize: '24px 24px' 
-    }}>
+    <div className="min-h-screen py-20 px-6">
+      
+      <div className="max-w-6xl mx-auto">
+        <BackToCafeButton />
+      </div>
+
       <motion.h1 initial={{ y: -20 }} animate={{ y: 0 }} className="text-7xl font-cursive text-center mb-16 text-[#472C20]">
         The Chronicle.
       </motion.h1>

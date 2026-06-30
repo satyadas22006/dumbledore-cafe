@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Sparkles, Smile } from 'lucide-react';
+import BackToCafeButton from '../components/BackToCafeButton';
 
 const Games = ({ onNavigate }) => {
   return (
@@ -11,14 +12,7 @@ const Games = ({ onNavigate }) => {
       className="max-w-4xl mx-auto px-6 pt-12 select-none"
     >
       {/* Back button */}
-      <div className="mb-8">
-        <button 
-          onClick={() => onNavigate('home')} 
-          className="flex items-center gap-2 text-sm font-bold tracking-wider hover:opacity-70 transition-opacity text-[#4A3728]"
-        >
-          <ArrowLeft size={18} className="stroke-[2.5]" /> back to the cafe
-        </button>
-      </div>
+      <BackToCafeButton className="mb-10" />
 
       {/* Main Hand-drawn Window Board */}
       <div className="bg-[#F9F6F0] text-[#3C2F2F] border-4 border-[#3C2F2F] rounded-[2.5rem] shadow-[8px_8px_0px_0px_#3C2F2F] p-6 md:p-10 relative overflow-hidden">

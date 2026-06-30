@@ -6,7 +6,8 @@ export const THEMES = {
   navy: { bg: '#1E293B', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#1E293B', border: 'rgba(253,251,247,0.1)' },
   rose: { bg: '#E2C7C0', text: '#2C241B', btn: '#2C241B', btnText: '#E2C7C0', border: 'rgba(44,36,27,0.1)' },
   sand: { bg: '#D1C7BD', text: '#2C241B', btn: '#2C241B', btnText: '#D1C7BD', border: 'rgba(44,36,27,0.1)' },
-  charcoal: { bg: '#222222', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#222222', border: 'rgba(253,251,247,0.1)' }
+  charcoal: { bg: '#222222', text: '#FDFBF7', btn: '#FDFBF7', btnText: '#222222', border: 'rgba(253,251,247,0.1)' },
+  lavender: { bg: '#FAF5FF', text: '#4A3B32', btn: '#4A3B32', btnText: '#FAF5FF', border: 'rgba(74,59,50,0.1)' }
 };
 
 export const FULL_MENU = {

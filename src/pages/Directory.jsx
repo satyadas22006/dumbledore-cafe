@@ -1,32 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import BackToCafeButton from '../components/BackToCafeButton';
+
 
 const Directory = () => {
-  // Soft Purple / Lavender grid background
-  const gridBackground = {
-    backgroundImage: 'linear-gradient(#E9D8FD 1px, transparent 1px), linear-gradient(90deg, #E9D8FD 1px, transparent 1px)',
-    backgroundSize: '40px 40px',
-    backgroundColor: '#FAF5FF' // Soft lavender base
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.6 }}
-      style={gridBackground}
-      className="min-h-screen text-[#4A3B32] py-20 px-6 overflow-hidden"
+      className="min-h-screen py-20 px-6 overflow-hidden"
     >
-      <div className="max-w-5xl mx-auto text-center mt-10">
+      <div className="max-w-5xl mx-auto mt-10">
         
+        <BackToCafeButton />
+
         {/* Cute Header Section */}
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mb-20"
+          className="mb-20 text-center"
         >
-          <h1 className="text-7xl md:text-9xl font-serif text-[#4A3B32] mb-4 tracking-tight">
+          <h1 className="text-7xl md:text-9xl font-serif  mb-4 tracking-tight">
             Visit Us.
           </h1>
           <p className="text-2xl md:text-3xl font-cursive italic opacity-80 mt-6 transform -rotate-2">
@@ -46,12 +42,12 @@ const Directory = () => {
             <div className="inline-block bg-[#A7F3D0] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
               Hours
             </div>
-            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Tue - Sun</h3>
-            <p className="font-mono text-2xl font-bold opacity-80 text-[#4A3B32]">11:30 AM - 9:00 PM</p>
+            <h3 className="font-serif text-4xl mb-2 ">Tue - Sun</h3>
+            <p className="font-mono text-2xl font-bold opacity-80 ">11:30 AM - 9:00 PM</p>
             
             {/* Cute Red Monday Closed Badge */}
             <div className="mt-6 inline-block bg-[#FF9B9B] px-4 py-1.5 rounded-full border-2 border-[#4A3B32] shadow-[3px_3px_0px_#4A3B32] transform rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
-              <p className="font-mono font-bold text-[#4A3B32] text-sm uppercase tracking-wider">
+              <p className="font-mono font-bold  text-sm uppercase tracking-wider">
                 Monday: Closed 💤
               </p>
             </div>
@@ -66,8 +62,8 @@ const Directory = () => {
             <div className="inline-block bg-[#FFD1DC] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest border-2 border-[#4A3B32] mb-8 shadow-[2px_2px_0px_#4A3B32]">
               Location
             </div>
-            <h3 className="font-serif text-4xl mb-2 text-[#4A3B32]">Shop 1 & 2</h3>
-            <p className="font-serif text-2xl opacity-90 text-[#4A3B32]">Near M.G.M School, Jagda</p>
+            <h3 className="font-serif text-4xl mb-2 ">Shop 1 & 2</h3>
+            <p className="font-serif text-2xl opacity-90 ">Near M.G.M School, Jagda</p>
           </motion.div>
         </div>
 

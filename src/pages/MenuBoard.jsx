@@ -4,7 +4,8 @@ import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase'; 
 import { doc, onSnapshot } from 'firebase/firestore';
-
+import { THEMES } from '../constants/data';
+import BackToCafeButton from '../components/BackToCafeButton';
 // --- SMOOTH SCROLLING SECTION COMPONENT ---
 // --- SMOOTH SCROLLING SECTION COMPONENT ---
 const MenuSection = ({ title, info, idx, setTheme }) => {
@@ -56,11 +57,25 @@ const MenuSection = ({ title, info, idx, setTheme }) => {
       <div className="w-full md:w-7/12 bg-[#FFFDF9] border-[4px] border-[#472C20] rounded-[2.5rem] p-8 md:p-10 shadow-[8px_8px_0_#472C20]">
         <ul className="space-y-6 text-[#472C20]">
           {(info.items || []).map((item, i) => (
-            <li key={i} className="flex justify-between items-end border-b-2 border-dashed border-[#472C20]/20 pb-4">
-              <span className="font-serif text-2xl md:text-3xl font-black">{item.n}</span>
-              <span className="font-mono font-black text-xl text-[#FF9F29] bg-white border-2 border-[#472C20] px-3 py-1.5 rounded-xl shadow-[3px_3px_0_#472C20]">
+            <li key={i} className={`flex justify-between items-end border-b-2 border-dashed border-[#472C20]/20 pb-4 transition-all ${item.soldOut ? 'opacity-60 grayscale' : ''}`}>
+              
+              {/* Item Name & Cute Sold Out Badge */}
+              <div className="flex items-center gap-3">
+                <span className={`font-serif text-2xl md:text-3xl font-black ${item.soldOut ? 'line-through decoration-[3px] decoration-[#472C20]/60' : ''}`}>
+                  {item.n}
+                </span>
+                {item.soldOut && (
+                  <span className="font-cursive text-xl text-rose-500 transform -rotate-6 font-bold tracking-wide">
+                    *all gone!*
+                  </span>
+                )}
+              </div>
+
+              {/* Price Tag */}
+              <span className={`font-mono font-black text-xl bg-white border-2 border-[#472C20] px-3 py-1.5 rounded-xl shadow-[3px_3px_0_#472C20] ${item.soldOut ? 'text-[#472C20]/50 line-through decoration-2' : 'text-[#FF9F29]'}`}>
                 ₹{item.p}
               </span>
+
             </li>
           ))}
         </ul>
@@ -89,32 +104,25 @@ export default function MenuBoard({ setTheme, theme }) {
   }, []);
 
   // Dynamic grid that uses the current text color at 10% opacity
-  const dynamicGridStyle = {
-    backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
-    backgroundSize: '32px 32px',
-    opacity: 0.1, 
-    position: 'absolute',
-    inset: 0,
-    zIndex: 0,
-    pointerEvents: 'none'
-  };
+  // const dynamicGridStyle = {
+  //   backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
+  //   backgroundSize: '32px 32px',
+  //   opacity: 0.1, 
+  //   position: 'absolute',
+  //   inset: 0,
+  //   zIndex: 0,
+  //   pointerEvents: 'none'
+  // };
 
   return (
     <div className="min-h-screen relative overflow-hidden select-none pb-24 transition-colors duration-700">
       {/* Background Grid Overlay */}
-      <div style={dynamicGridStyle}></div>
+      {/* <div style={dynamicGridStyle}></div> */}
 
       <div className="max-w-6xl mx-auto px-6 pt-12 relative z-10">
         
         {/* Navigation */}
-        <div className="mb-16 flex justify-between items-center">
-          <button 
-            onClick={() => navigate('/cafe')} 
-            className="flex items-center gap-2 text-sm font-black tracking-wider uppercase hover:opacity-70 transition-opacity bg-white border-2 border-[#472C20] text-[#472C20] px-4 py-2 rounded-full shadow-[3px_3px_0_#472C20]"
-          >
-            <ArrowLeft size={16} className="stroke-[3]" /> Back to Cafe
-          </button>
-        </div>
+        <BackToCafeButton className="mb-16" />
 
         {/* Big Title */}
         <motion.div 

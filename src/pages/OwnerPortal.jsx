@@ -177,20 +177,29 @@ const OwnerPortal = () => {
               </h3>
               
               {info.items && info.items.map((item, idx) => (
-                <div key={idx} className="flex gap-2 mb-2">
+                <div key={idx} className="flex gap-2 mb-2 items-center">
                   <input 
                     value={item.n} 
                     onChange={(e) => updateMenuItem(cat, idx, 'n', e.target.value)} 
                     placeholder="Item Name"
-                    className="bg-[#1E293B] p-2 rounded w-full border border-slate-600 text-white" 
+                    className={`bg-[#1E293B] p-2 rounded flex-1 border outline-none focus:border-emerald-500 transition-colors ${item.soldOut ? 'border-rose-500 text-slate-400 line-through' : 'border-slate-600 text-white'}`} 
                   />
                   <input 
                     value={item.p} 
                     onChange={(e) => updateMenuItem(cat, idx, 'p', e.target.value)} 
                     placeholder="Price"
-                    className="bg-[#1E293B] p-2 rounded w-24 border border-slate-600 text-white" 
+                    className="bg-[#1E293B] p-2 rounded w-20 border border-slate-600 text-white outline-none focus:border-emerald-500" 
                   />
-                  <button 
+                  
+                  {/* NEW SOLD OUT TOGGLE BUTTON */}
+                  <button
+                    onClick={() => updateMenuItem(cat, idx, 'soldOut', !item.soldOut)}
+                    className={`px-3 py-2 rounded font-bold text-xs border transition-colors ${item.soldOut ? 'bg-rose-500/20 text-rose-400 border-rose-500/50' : 'bg-slate-700 text-slate-400 border-slate-600 hover:text-white'}`}
+                  >
+                    {item.soldOut ? 'Sold Out' : 'In Stock'}
+                  </button>
+
+                  <button
                     onClick={() => { 
                       // Switched from .splice() to .filter() for bulletproof React state updates
                       setMenuData(prev => ({

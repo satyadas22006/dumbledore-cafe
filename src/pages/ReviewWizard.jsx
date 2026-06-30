@@ -44,14 +44,14 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [isSearchingTwin, setIsSearchingTwin] = useState(false);
 
   // Styling mimics the clean graph grid paper background from 5207355816114460.jpg
-  const journalGridStyle = {
-    backgroundColor: '#FAF6EE',
-    backgroundImage: `
-      linear-gradient(#E8E2D5 1px, transparent 1px),
-      linear-gradient(90deg, #E8E2D5 1px, transparent 1px)
-    `,
-    backgroundSize: '24px 24px'
-  };
+  // const journalGridStyle = {
+  //   backgroundColor: '#FAF6EE',
+  //   backgroundImage: `
+  //     linear-gradient(#E8E2D5 1px, transparent 1px),
+  //     linear-gradient(90deg, #E8E2D5 1px, transparent 1px)
+  //   `,
+  //   backgroundSize: '24px 24px'
+  // };
 
   const handleNextStep = () => {
     if (step < 7) {
@@ -116,8 +116,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     exit: { opacity: 0, rotateY: 30, transformOrigin: "right center", transition: { duration: 0.4 } }
   };
 
+  // ... (some code) ...
+
   return (
-    <div style={journalGridStyle} className="min-h-screen text-[#472C20] py-12 px-4 flex flex-col items-center justify-center relative overflow-hidden select-none">
+    <div className="min-h-screen text-[#472C20] py-12 px-4 flex flex-col items-center justify-center relative overflow-hidden select-none">
       
       {/* Decorative scrapbooked star badges tracking 5207355816114460.jpg */}
       <div className="absolute top-4 right-6 text-6xl opacity-20">⭐</div>

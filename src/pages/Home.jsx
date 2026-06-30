@@ -14,11 +14,7 @@ const ScrapbookCard = ({ children, onClick, className }) => (
 );
 
 const Home = ({ onNavigate, theme }) => (
-  <div className="min-h-screen py-20 px-6" style={{ 
-    backgroundColor: '#FAF6EE', 
-    backgroundImage: `linear-gradient(#E8E2D5 1px, transparent 1px), linear-gradient(90deg, #E8E2D5 1px, transparent 1px)`, 
-    backgroundSize: '24px 24px' 
-  }}>
+  <div className="min-h-screen py-20 px-6">
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto">
       
       {/* Hero Section */}
@@ -56,7 +52,7 @@ const Home = ({ onNavigate, theme }) => (
           <p className="text-sm opacity-60">Retro games.</p>
         </ScrapbookCard>
 
-        <ScrapbookCard onClick={() => onNavigate('directory', THEMES.charcoal)}>
+        <ScrapbookCard onClick={() => onNavigate('directory', THEMES.lavender)}>
           <MapPin size={40} className="mb-4" />
           <h3 className="font-bold text-2xl">Visit Us</h3>
           <p className="text-sm opacity-60">Maps & Directions.</p>
