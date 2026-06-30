@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
-import { THEMES } from '../constants/data';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 const OwnerPortal = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('memories');
+  
+  // Database States
   const [menuData, setMenuData] = useState(null);
   const [memories, setMemories] = useState([]);
+  const [hueHuntMatches, setHueHuntMatches] = useState([]); // NEW: Arcade Games State
   
   // Stats tab states
   const [itemSearch, setItemSearch] = useState('');
@@ -19,12 +21,34 @@ const OwnerPortal = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
 
   useEffect(() => {
+    // --- 🚨 SECURITY CHECK: 24-HOUR AUTO LOGOUT ---
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    if (user) {
+      // Get the time they logged in and calculate the difference
+      const lastSignIn = new Date(user.metadata.lastSignInTime).getTime();
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+      if (now - lastSignIn > twentyFourHours) {
+        alert("Session expired for security reasons. Please log in again.");
+        signOut(auth);
+        navigate('/admin-login');
+        return; // Stop running the rest of the code
+      }
+    }
+    // ----------------------------------------------
+
     // 1. Fetch Menu Data
     const fetchMenu = async () => {
       const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
       if (docSnap.exists()) setMenuData(docSnap.data().data);
     };
     fetchMenu();
+
+    // 2. Listen to Memories Live from Firebase
+    // ... rest of your code ...
 
     // 2. Listen to Memories Live from Firebase
     const unsubscribeMemories = onSnapshot(collection(db, "memories"), (snapshot) => {
@@ -35,26 +59,40 @@ const OwnerPortal = () => {
       setMemories(fetchedMemories);
     });
 
-    return () => unsubscribeMemories();
+    // 3. NEW: Listen to Hue Hunt Matches Live from Firebase
+    const unsubscribeGames = onSnapshot(collection(db, "hue_hunt_matches"), (snapshot) => {
+      const fetchedMatches = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Sort newest games first automatically
+      setHueHuntMatches(fetchedMatches.sort((a, b) => b.playedAt - a.playedAt));
+    });
+
+    // Cleanup all listeners when owner logs out or leaves page
+    return () => {
+      unsubscribeMemories();
+      unsubscribeGames();
+    };
   }, []);
 
   const handleLogout = async () => {
     const auth = getAuth();
     try {
-      await signOut(auth); // This destroys the Firebase session
-      navigate('/admin-login'); // Sends you back to the login screen
+      await signOut(auth);
+      navigate('/admin-login');
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
-  // --- FIREBASE DELETE FUNCTION ---
-  const handleDeleteMemory = async (memoryId) => {
-    const confirmDelete = window.confirm("Are you sure you want to permanently delete this memory from the database?");
+
+  const handleDeleteMemory = async (memoryId, collectionName = "memories") => {
+    const confirmDelete = window.confirm("Are you sure you want to permanently delete this record?");
     if (confirmDelete) {
       try {
-        await deleteDoc(doc(db, "memories", memoryId));
+        await deleteDoc(doc(db, collectionName, memoryId));
       } catch (error) {
-        console.error("Error deleting memory:", error);
+        console.error("Error deleting record:", error);
       }
     }
   };
@@ -73,22 +111,22 @@ const OwnerPortal = () => {
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8 pb-24">
       <div className="flex justify-between items-center mb-8">
-  <h1 className="text-4xl font-serif font-bold text-white">Dumble' Door Admin</h1>
-  
-  <button 
-    onClick={handleLogout}
-    className="px-4 py-2 bg-slate-800 hover:bg-red-600/80 rounded-full text-sm font-bold text-white transition-colors border border-slate-600"
-  >
-    Log Out
-  </button>
-</div>
+        <h1 className="text-4xl font-serif font-bold text-white">Dumble' Door Admin</h1>
+        <button 
+          onClick={handleLogout}
+          className="px-4 py-2 bg-slate-800 hover:bg-red-600/80 rounded-full text-sm font-bold text-white transition-colors border border-slate-600"
+        >
+          Log Out
+        </button>
+      </div>
       
-      <div className="flex gap-4 mb-8">
-        {['memories', 'menu', 'stats'].map(tab => (
+      {/* --- MASTER NAVIGATION TABS --- */}
+      <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
+        {['memories', 'menu', 'stats', 'games'].map(tab => (
           <button 
             key={tab} 
             onClick={() => setActiveTab(tab)} 
-            className={`px-6 py-2 rounded font-bold capitalize transition-colors ${activeTab === tab ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700'}`}
+            className={`px-6 py-2 rounded font-bold capitalize transition-colors whitespace-nowrap ${activeTab === tab ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700'}`}
           >
             {tab}
           </button>
@@ -107,7 +145,7 @@ const OwnerPortal = () => {
                   <div className="flex items-center gap-3 mb-1">
                     <p className="font-bold text-emerald-400 text-lg">{m.name || 'Anonymous'}</p>
                     <span className="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded">
-                      {m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'No date'}
+                      {m.createdAt ? new Date(m.createdAt).toLocaleString() : 'No date'}
                     </span>
                   </div>
                   <p className="text-slate-300 italic">"{m.review || m.text || 'No review left.'}"</p>
@@ -118,7 +156,7 @@ const OwnerPortal = () => {
                   )}
                 </div>
                 <button 
-                  onClick={() => handleDeleteMemory(m.id)} 
+                  onClick={() => handleDeleteMemory(m.id, "memories")} 
                   className="text-red-400 border border-red-400/30 bg-red-400/10 px-4 py-2 rounded hover:bg-red-400/20 hover:text-red-300 transition-colors font-bold"
                 >
                   Delete
@@ -150,7 +188,7 @@ const OwnerPortal = () => {
                       items: [] 
                     }
                   }));
-                  setNewCategoryName(''); // Clear the input field after adding
+                  setNewCategoryName(''); 
                 }
               }} 
               className="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded font-bold text-white transition-colors"
@@ -165,7 +203,6 @@ const OwnerPortal = () => {
                 <span>Chapter {index + 1}: {cat}</span>
                 <button 
                   onClick={() => { 
-                    // Removed window.confirm so VS Code stops blocking the deletion!
                     const d = {...menuData}; 
                     delete d[cat]; 
                     setMenuData(d); 
@@ -191,7 +228,6 @@ const OwnerPortal = () => {
                     className="bg-[#1E293B] p-2 rounded w-20 border border-slate-600 text-white outline-none focus:border-emerald-500" 
                   />
                   
-                  {/* NEW SOLD OUT TOGGLE BUTTON */}
                   <button
                     onClick={() => updateMenuItem(cat, idx, 'soldOut', !item.soldOut)}
                     className={`px-3 py-2 rounded font-bold text-xs border transition-colors ${item.soldOut ? 'bg-rose-500/20 text-rose-400 border-rose-500/50' : 'bg-slate-700 text-slate-400 border-slate-600 hover:text-white'}`}
@@ -199,9 +235,8 @@ const OwnerPortal = () => {
                     {item.soldOut ? 'Sold Out' : 'In Stock'}
                   </button>
 
-                  <button
+                  <button 
                     onClick={() => { 
-                      // Switched from .splice() to .filter() for bulletproof React state updates
                       setMenuData(prev => ({
                         ...prev,
                         [cat]: {
@@ -210,7 +245,7 @@ const OwnerPortal = () => {
                         }
                       }));
                     }} 
-                    className="text-red-500 px-3 font-bold hover:text-red-400 bg-red-500/10 rounded border border-red-500/20"
+                    className="text-red-500 px-3 font-bold hover:text-red-400 bg-red-500/10 rounded border border-red-500/20 py-2"
                   >
                     ×
                   </button>
@@ -243,7 +278,86 @@ const OwnerPortal = () => {
         </div>
       )}
 
-      {/* --- STATS TAB --- */}
+      {/* --- ARCADE / GAMES TAB --- */}
+      {activeTab === 'games' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-end mb-4 border-b border-slate-700 pb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-emerald-400">Hue Hunt Arcade Ledger</h2>
+              <p className="text-sm text-slate-400 mt-1">Review player scores and verifying computer vision logs.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {hueHuntMatches.length === 0 ? (
+              <p className="text-slate-400 italic">No games have been played yet.</p>
+            ) : (
+              hueHuntMatches.map((match) => (
+                <div key={match.id} className="bg-[#1E293B] border border-slate-700 rounded-xl overflow-hidden shadow-lg flex flex-col">
+                  
+                  {/* Card Header */}
+                  <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-[#0F172A]/50">
+                    <div>
+                      <p className="font-black text-lg text-white">{match.playerName}</p>
+                      <p className="text-xs text-slate-400 font-mono">
+                        {match.playedAt ? new Date(match.playedAt).toLocaleString() : 'Unknown Date'}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteMemory(match.id, "hue_hunt_matches")} 
+                      className="text-red-400 border border-red-400/30 bg-red-400/10 px-3 py-1 text-xs rounded hover:bg-red-400/20 transition-colors font-bold"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  {/* Match Stats */}
+                  <div className="p-4 grid grid-cols-2 gap-4 border-b border-slate-700">
+                    <div className="flex items-center gap-3">
+                      {/* Color Swatch Display */}
+                      <div className="w-10 h-10 rounded-full border-2 border-slate-600 shadow-inner" style={{ backgroundColor: match.colorHex }}></div>
+                      <div>
+                        <p className="text-xs text-slate-400 uppercase tracking-widest">Target Color</p>
+                        <p className="font-bold text-sm text-slate-200">{match.targetColor}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-slate-400 uppercase tracking-widest">Final Score</p>
+                      <p className={`font-black text-2xl ${match.finalScore >= 80 ? 'text-emerald-400' : match.finalScore >= 50 ? 'text-blue-400' : 'text-red-400'}`}>
+                        {match.finalScore}%
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Uploaded Photos Grid */}
+                  <div className="p-4 bg-[#0F172A]/20">
+                    <p className="text-xs text-slate-400 uppercase tracking-widest mb-3">Snapshots Captured</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {match.photoLedgerBase64 && match.photoLedgerBase64.length > 0 ? (
+                        match.photoLedgerBase64.map((photoBase64, idx) => (
+                          <div key={idx} className="aspect-square bg-slate-800 rounded-lg overflow-hidden border border-slate-600 group relative">
+                            {/* Standard img tag handles Base64 strings natively! */}
+                            <img 
+                              src={photoBase64} 
+                              alt={`Snap ${idx + 1}`} 
+                              className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-slate-500 italic col-span-3">No photos attached to this record.</p>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* --- STATS TAB (Unchanged) --- */}
       {activeTab === 'stats' && (
         <div className="space-y-12">
           {/* FOOD SECTION */}
