@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
-import { Sparkles, Heart, Coffee, Check, ArrowRight, Search } from 'lucide-react';
+import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 
@@ -18,8 +18,15 @@ const CAFE_MENU = [
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
   const [step, setStep] = useState(1);
-  const totalSteps = 8; 
+  const totalSteps = 9; 
   const [menuData, setMenuData] = useState(null);
+
+  // Camera States
+  const [cameraStream, setCameraStream] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [cameraError, setCameraError] = useState('');
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -31,6 +38,14 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     fetchMenu();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [cameraStream]);
+
   // --- WIZARD FORM STATE ---
   const [rating, setRating] = useState(null);
   const [purpose, setPurpose] = useState('');
@@ -38,20 +53,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [favoriteDish, setFavoriteDish] = useState('');
   const [selectedHighlights, setSelectedHighlights] = useState([]);
   const [vibe, setVibe] = useState('');
-  const [review, setReview] = useState(''); // Fixed: Changed from 'whisper' to match application core state expectations
+  const [review, setReview] = useState(''); 
   const [anonymousName, setAnonymousName] = useState('');
   
   const [isSearchingTwin, setIsSearchingTwin] = useState(false);
-
-  // Styling mimics the clean graph grid paper background from 5207355816114460.jpg
-  // const journalGridStyle = {
-  //   backgroundColor: '#FAF6EE',
-  //   backgroundImage: `
-  //     linear-gradient(#E8E2D5 1px, transparent 1px),
-  //     linear-gradient(90deg, #E8E2D5 1px, transparent 1px)
-  //   `,
-  //   backgroundSize: '24px 24px'
-  // };
 
   const handleNextStep = () => {
     if (step < 7) {
@@ -59,6 +64,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     } else if (step === 7) {
       setStep(8);
       setIsSearchingTwin(true);
+    } else if (step === 8) {
+      setStep(9);
     }
   };
 
@@ -75,21 +82,61 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
           vibe,
           review, 
           name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-          createdAt: Date.now() // Added timestamp for sorting in Owner Portal
+          createdAt: Date.now(),
+          photo: capturedImage 
         };
 
-        // Push data to Firebase
         try {
           await addDoc(collection(db, "memories"), completeMemory);
         } catch (error) {
           console.error("Failed to save memory to Firebase:", error);
         }
-
-        onComplete(completeMemory);
       }, 3500);
       return () => clearTimeout(timer);
     }
   }, [step, isSearchingTwin]);
+
+  const startCamera = async () => {
+    setCameraError('');
+    setCapturedImage(null);
+    try {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+        audio: false
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Error accessing camera: ", err);
+      setCameraError('Could not launch lens. Tap below to retry or check browser permissions!');
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageDataUrl = canvas.toDataURL('image/png');
+      setCapturedImage(imageDataUrl);
+
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        setCameraStream(null);
+      }
+    }
+  };
 
   const toggleItemSelection = (itemName) => {
     if (selectedItems.includes(itemName)) {
@@ -110,45 +157,57 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
   };
 
+  const handleFinalizeWizard = () => {
+    const finalMemory = {
+      rating,
+      purpose,
+      items: selectedItems,
+      dish: favoriteDish,
+      highlights: selectedHighlights,
+      vibe,
+      review, 
+      name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
+      createdAt: Date.now(),
+      photo: capturedImage
+    };
+    onComplete(finalMemory);
+  };
+
   const pageVariants = {
     initial: { opacity: 0, rotateY: -30, transformOrigin: "left center" },
     animate: { opacity: 1, rotateY: 0, transition: { duration: 0.5, ease: "easeOut" } },
     exit: { opacity: 0, rotateY: 30, transformOrigin: "right center", transition: { duration: 0.4 } }
   };
 
-  // ... (some code) ...
-
   return (
     <div className="min-h-screen text-[#472C20] py-12 px-4 flex flex-col items-center justify-center relative overflow-hidden select-none">
       
-      {/* Decorative scrapbooked star badges tracking 5207355816114460.jpg */}
       <div className="absolute top-4 right-6 text-6xl opacity-20">⭐</div>
       <div className="absolute bottom-6 left-8 text-5xl opacity-15">⭐</div>
 
-      {/* --- PROGRESS BAR: COFFEE FILL SYSTEM --- */}
-      {step <= 7 && (
+      {/* --- PROGRESS BAR --- */}
+      {step <= totalSteps && (
         <div className="mb-8 flex flex-col items-center bg-white/60 border-2 border-[#472C20] rounded-2xl px-6 py-3 shadow-[4px_4px_0_#472C20]">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 border-2 border-[#472C20] rounded-b-xl rounded-t-sm flex items-end overflow-hidden bg-white">
               <motion.div 
                 className="w-full bg-[#C19A6B]" 
-                animate={{ height: `${(step / 7) * 100}%` }} 
+                animate={{ height: `${(step / totalSteps) * 100}%` }} 
                 transition={{ duration: 0.4 }}
               />
               <div className="absolute top-1 right-[-6px] w-2 h-4 border-2 border-[#472C20] rounded-r-md"></div>
             </div>
             <span className="text-xs font-black uppercase tracking-widest">
-              Filling your memory journal ({step}/7)
+              Filling your memory journal ({step}/{totalSteps})
             </span>
           </div>
         </div>
       )}
 
-      {/* --- MAIN SCRAPBOOK PAGE CONTAINER --- */}
+      {/* --- MAIN SCRAPBOOK CONTAINER --- */}
       <div className="w-full max-w-2xl min-h-[460px] bg-[#FFFDF9] border-[5px] border-[#472C20] rounded-[32px] shadow-[12px_12px_0_#472C20] p-8 flex flex-col justify-between relative">
         
-        {/* AVATAR COMPANION REACTION HUB */}
-        {step <= 7 && (
+        {step <= totalSteps && (
           <div className="absolute -top-12 -right-4 flex items-center gap-2 bg-[#FFE08A] border-4 border-[#472C20] rounded-full p-1 shadow-md z-20">
             <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-white/50">
               <AvatarRenderer config={avatar} size={50} animate={true} />
@@ -157,7 +216,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               {step === 1 && "Be honest! 💛"}
               {step === 3 && "Any snacks? 🥞"}
               {step === 7 && "Write nicely! 🖋️"}
-              {step !== 1 && step !== 3 && step !== 7 && "Looks neat! ✨"}
+              {step === 9 && "Say Cheese! 📸"}
+              {step !== 1 && step !== 3 && step !== 7 && step !== 9 && "Looks neat! ✨"}
             </div>
           </div>
         )}
@@ -190,7 +250,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 2: PURPOSE POSTCARDS --- */}
+            {/* --- STEP 2: PURPOSE --- */}
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center mb-4">Why were you visiting us?</h2>
@@ -215,51 +275,47 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 3: FOOD CARDS SELECTION --- */}
-            {/* --- STEP 3: DYNAMIC CATEGORY DROPDOWNS --- */}
-{step === 3 && menuData && (
-  <div className="space-y-4">
-    <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
-    
-    <div className="max-h-[250px] overflow-y-auto pr-2 space-y-3">
-      {Object.entries(menuData).map(([category, info]) => (
-        <details key={category} className="group bg-white border-2 border-[#472C20] rounded-xl shadow-[2px_2px_0_#472C20]">
-          <summary className="cursor-pointer p-4 font-black uppercase tracking-widest text-sm flex justify-between items-center outline-none">
-            {category} 
-            <span className="group-open:rotate-180 transition-transform">▼</span>
-          </summary>
-          
-          <div className="p-3 border-t-2 border-[#472C20] grid grid-cols-1 gap-2 bg-[#FAF6EE]">
-            {info.items.map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => toggleItemSelection(item.n)}
-                className={`p-3 rounded-lg border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-xs transition-all ${
-                  selectedItems.includes(item.n) ? 'bg-[#A8E6CF] shadow-[2px_2px_0_#472C20]' : 'bg-white'
-                }`}
-              >
-                <span>{item.n}</span>
-                {selectedItems.includes(item.n) && <span>✓</span>}
-              </button>
-            ))}
-          </div>
-        </details>
-      ))}
-    </div>
+            {/* --- STEP 3: DYNAMIC MENU --- */}
+            {step === 3 && menuData && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
+                <div className="max-h-[250px] overflow-y-auto pr-2 space-y-3">
+                  {Object.entries(menuData).map(([category, info]) => (
+                    <details key={category} className="group bg-white border-2 border-[#472C20] rounded-xl shadow-[2px_2px_0_#472C20]">
+                      <summary className="cursor-pointer p-4 font-black uppercase tracking-widest text-sm flex justify-between items-center outline-none">
+                        {category} 
+                        <span className="group-open:rotate-180 transition-transform">▼</span>
+                      </summary>
+                      <div className="p-3 border-t-2 border-[#472C20] grid grid-cols-1 gap-2 bg-[#FAF6EE]">
+                        {info.items.map((item, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => toggleItemSelection(item.n)}
+                            className={`p-3 rounded-lg border-2 border-[#472C20] flex justify-between items-center text-left font-bold text-xs transition-all ${
+                              selectedItems.includes(item.n) ? 'bg-[#A8E6CF] shadow-[2px_2px_0_#472C20]' : 'bg-white'
+                            }`}
+                          >
+                            <span>{item.n}</span>
+                            {selectedItems.includes(item.n) && <span>✓</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+                <div className="flex justify-end pt-2">
+                  <button 
+                    onClick={handleNextStep} 
+                    disabled={selectedItems.length === 0} 
+                    className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1"
+                  >
+                    Continue <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
 
-    <div className="flex justify-end pt-2">
-      <button 
-        onClick={handleNextStep} 
-        disabled={selectedItems.length === 0} 
-        className="bg-[#472C20] text-white text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40 flex items-center gap-1"
-      >
-        Continue <ArrowRight size={14} />
-      </button>
-    </div>
-  </div>
-)}
-
-            {/* --- STEP 4: MAIN CHARACTER DISH --- */}
+            {/* --- STEP 4: MAIN CHARACTER --- */}
             {step === 4 && (
               <div className="text-center space-y-4">
                 <h2 className="text-2xl font-serif font-black">Which one was the Main Character of your meal?</h2>
@@ -278,7 +334,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 5: COLLECTIBLE STICKERS HIGHLIGHTS --- */}
+            {/* --- STEP 5: STICKERS --- */}
             {step === 5 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Collect your review stickers</h2>
@@ -309,7 +365,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 6: CHOOSE MOOD VIBE --- */}
+            {/* --- STEP 6: MOOD VIBE --- */}
             {step === 6 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Capture today's exact mood vibe</h2>
@@ -332,13 +388,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 7: GUESTBOOK LEAVE A WHISPER --- */}
+            {/* --- STEP 7: GUESTBOOK --- */}
             {step === 7 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Leave a little memory whisper...</h2>
                 <div className="bg-[#FFFDF9] border-2 border-dashed border-[#472C20]/40 rounded-xl p-4 relative shadow-inner">
                   <div className="absolute bottom-2 right-2 w-12 h-12 rounded-full border-4 border-amber-900/5 pointer-events-none"></div>
-                  
                   <textarea
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
@@ -346,7 +401,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                     className="w-full h-24 bg-transparent resize-none border-none focus:ring-0 text-sm font-medium outline-none"
                   />
                 </div>
-
                 <input
                   type="text"
                   value={anonymousName}
@@ -354,7 +408,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   placeholder="Sign with an anonymous handle (or leave blank for custom name)..."
                   className="w-full bg-white border-2 border-[#472C20] rounded-xl px-3 py-2 text-xs font-bold outline-none"
                 />
-
                 <button
                   onClick={handleNextStep}
                   className="w-full bg-[#FF9F29] text-white border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20]"
@@ -364,7 +417,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 8: TWIN REVEAL MATRIX --- */}
+            {/* --- STEP 8: TWIN REVEAL --- */}
             {step === 8 && (
               <div className="text-center py-6 flex flex-col items-center justify-center">
                 <AnimatePresence mode="wait">
@@ -381,13 +434,11 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                         <div className="space-y-4 w-full">
                           <span className="bg-[#FFB6C9] border-2 border-[#472C20] text-xs font-black uppercase tracking-widest px-4 py-1 rounded-full">✨ Cafe Twins Found</span>
                           <p className="text-sm font-medium opacity-80">Looks like someone experienced the café almost exactly like you!</p>
-                          
                           <div className="bg-white border-4 border-[#472C20] rounded-2xl p-4 shadow-[4px_4px_0_#472C20] relative text-left">
                             <h4 className="font-black text-base">👤 {twin.name || 'Cozy Wanderer'}</h4>
                             <p className="text-xs font-bold text-[#FF9F29] mt-0.5">Vibe: {twin.vibe || 'Food Adventure'}</p>
                             <p className="text-xs mt-2 italic bg-[#FAF6EE] p-2 rounded-lg border border-[#472C20]/20">"{twin.review || 'Loved the space!'}"</p>
                           </div>
-
                           <div className="flex justify-center text-[#FF9F29] animate-bounce my-1">
                             <Heart size={28} fill="currentColor" />
                           </div>
@@ -396,48 +447,182 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                         <div className="space-y-3 py-6">
                           <div className="text-5xl">🌱</div>
                           <h3 className="text-xl font-serif font-black">You are a complete original today!</h3>
-                          <p className="text-xs font-medium opacity-70 max-w-sm mx-auto">Looks like you're the first to have this exact experience. Maybe someone will match with you soon.</p>
+                          <p className="text-xs font-medium opacity-70 max-w-sm mx-auto">Looks like you're the first to have this exact experience.</p>
                         </div>
                       )}
-
-                      {/* --- INSTAGRAM INTEGRATION AND NAVIGATION FOOTER --- */}
-                      <div className="border-t-2 border-dashed border-[#472C20]/20 pt-6 mt-4 space-y-4">
-                        <div className="bg-[#A8E6CF]/30 border-2 border-[#472C20] rounded-xl p-4 text-sm font-bold">
-                          ☕ Thanks for spending time with us. Your memory has been added to our Café Wall. Come back soon!
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-2 w-full">
-                          <button
-                            onClick={handleInstagramShare}
-                            className="flex-1 bg-gradient-to-r from-[#8a3ab9] via-[#cd486b] to-[#fbad50] text-white font-black text-xs uppercase tracking-wider py-3 rounded-xl border-2 border-[#472C20] flex items-center justify-center gap-2 shadow-[2px_2px_0_#472C20]"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                            </svg>
-                            Share Scrapbook to Stories
-                          </button>
-                          
-                          <button
-                            onClick={() => onNavigate('home')}
-                            className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl"
-                          >
-                            Return to Café
-                          </button>
-                        </div>
-                      </div>
-
+                      <button
+                        onClick={handleNextStep}
+                        className="w-full bg-[#472C20] text-white border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider"
+                      >
+                        Add a Scrapbook Photo 📸
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </div>
+            )}
 
+            {/* --- STEP 9: RETRO DIGICAM CHASSIS UI (Inspired by 9359111722237313_2.webp) --- */}
+            {step === 9 && (
+              <div className="space-y-6 text-center">
+                <div>
+                  <h2 className="text-2xl font-serif font-black">Capture your snapshot memory</h2>
+                  <p className="text-xs font-medium opacity-70">Say cheese for our retro camera framework!</p>
+                </div>
+
+                {/* DIGICAM HOUSING CONTAINER */}
+                <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-[#E2DDD3] via-[#D1C9BC] to-[#BCB2A1] border-4 border-[#472C20] rounded-3xl p-4 shadow-[8px_8px_0_#472C20] relative flex flex-col md:flex-row gap-4 items-center">
+                  
+                  {/* Decorative Camera viewfinders & lens indicators on top bar */}
+                  <div className="absolute top-2 left-6 flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-radial from-[#555] to-black border-2 border-[#A8A093] shadow-inner" />
+                    <div className="flex flex-col gap-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#472C20]/40" />
+                    </div>
+                  </div>
+                  <div className="absolute top-3 left-28 text-[9px] font-mono font-bold tracking-widest text-[#665B4E] uppercase opacity-60">
+                    DIGITAL LENS FX
+                  </div>
+
+                  {/* LEFT SIDE: CAMERA LCD DISPLAY SCREEN */}
+                  <div className="w-full md:w-[65%] aspect-[4/3] bg-[#EFEFEF] border-4 border-[#5E5345] rounded-xl p-2 relative overflow-hidden shadow-inner flex flex-col justify-between">
+                    
+                    {/* Brand stamp tracking layout of 9359111722237313_2.webp */}
+                    <div className="text-[10px] font-serif font-black text-center text-[#472C20]/70 tracking-wider mb-1">
+                      ✨ Cafécam Classic ✨
+                    </div>
+
+                    {/* Viewfinder Stream / Screen Frame Box */}
+                    <div className="w-full flex-1 bg-black rounded-md overflow-hidden border-2 border-[#472C20] relative flex items-center justify-center">
+                      {cameraStream && !capturedImage && (
+                        <video 
+                          ref={videoRef} 
+                          autoPlay 
+                          playsInline 
+                          className="w-full h-full object-cover transform -scale-x-100"
+                        />
+                      )}
+
+                      {capturedImage && (
+                        <img 
+                          src={capturedImage} 
+                          alt="Captured memory snapshot" 
+                          className="w-full h-full object-cover" 
+                        />
+                      )}
+
+                      {!cameraStream && !capturedImage && (
+                        <div className="p-3 text-center space-y-2">
+                          <Camera size={28} className="mx-auto text-gray-400" />
+                          <p className="text-[10px] font-bold text-gray-400">LCD Preview Dark</p>
+                          <button 
+                            onClick={startCamera} 
+                            className="bg-[#FF9F29] text-[#472C20] border-2 border-[#472C20] px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider"
+                          >
+                            Power Lens On
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Display Screen Overlay Text */}
+                      {(cameraStream || capturedImage) && (
+                        <div className="absolute top-1 left-2 text-[9px] text-[#A8E6CF] font-mono tracking-tighter uppercase drop-shadow">
+                          ● LIVE REC [AWB]
+                        </div>
+                      )}
+                    </div>
+
+                    {cameraError && (
+                      <p className="mt-1 text-[9px] text-red-600 font-bold bg-red-100 p-1 rounded border border-red-300">
+                        {cameraError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* RIGHT SIDE: DIGICAM CONTROL INTERFACE PANEL */}
+                  <div className="w-full md:w-[35%] flex flex-col items-center justify-between py-2 space-y-4">
+                    {/* Mode Slider / Slits */}
+                    <div className="w-16 h-3 bg-[#B0A695] border-2 border-[#472C20] rounded-sm flex justify-around p-0.5">
+                      <div className="w-2 h-full bg-[#472C20] rounded-xs" />
+                      <div className="w-2 h-full bg-transparent" />
+                      <div className="w-2 h-full bg-transparent" />
+                    </div>
+
+                    {/* Metallic Circular Navigation Wheel D-Pad */}
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-b from-[#FAF8F5] via-[#D8CEBF] to-[#B5A893] border-4 border-[#5E5345] shadow-md relative flex items-center justify-center">
+                      <div className="absolute top-1 text-[8px] font-bold text-[#5E5345]">▲</div>
+                      <div className="absolute bottom-1 text-[8px] font-bold text-[#5E5345]">▼</div>
+                      <div className="absolute left-1 text-[8px] font-bold text-[#5E5345]">◀</div>
+                      <div className="absolute right-1 text-[8px] font-bold text-[#5E5345]">▶</div>
+                      
+                      {/* Center Action Button */}
+                      {cameraStream && !capturedImage ? (
+                        <button
+                          onClick={capturePhoto}
+                          className="w-10 h-10 rounded-full bg-[#FF9F29] border-2 border-[#472C20] shadow-inner flex items-center justify-center font-black text-[9px] text-white uppercase active:scale-95 transition-transform"
+                          title="Snap Photo"
+                        >
+                          SNAP
+                        </button>
+                      ) : (
+                        <button
+                          onClick={startCamera}
+                          className="w-10 h-10 rounded-full bg-[#FFFDF9] border-2 border-[#472C20] shadow-inner flex items-center justify-center font-black text-[9px] text-[#472C20] uppercase active:scale-95 transition-transform"
+                          title={capturedImage ? "Retake Photo" : "Turn Camera On"}
+                        >
+                          {capturedImage ? <RefreshCw size={12} /> : 'SET'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Mic Grille + Secondary Menu Buttons */}
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="grid grid-cols-3 gap-0.5 opacity-50">
+                        {[...Array(6)].map((_, i) => <div key={i} className="w-1 h-1 rounded-full bg-[#472C20]" />)}
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#C4BBAE] border border-[#5E5345] shadow-sm flex items-center justify-center text-[7px] font-bold text-[#5E5345]">MENU</div>
+                        <div className="w-4 h-4 rounded-full bg-[#C4BBAE] border border-[#5E5345] shadow-sm flex items-center justify-center text-[7px] font-bold text-[#5E5345]">DISP</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* --- FOOTER OPTIONS --- */}
+                <div className="border-t-2 border-dashed border-[#472C20]/20 pt-4 space-y-4">
+                  <div className="bg-[#A8E6CF]/30 border-2 border-[#472C20] rounded-xl p-3 text-xs font-bold">
+                    ☕ Thanks for spending time with us. Your memory layout is ready for the collection ledger!
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2 w-full">
+                    <button
+                      onClick={handleInstagramShare}
+                      className="flex-1 bg-gradient-to-r from-[#8a3ab9] via-[#cd486b] to-[#fbad50] text-white font-black text-xs uppercase tracking-wider py-3 rounded-xl border-2 border-[#472C20] flex items-center justify-center gap-2 shadow-[2px_2px_0_#472C20]"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                      </svg>
+                      Share Scrapbook to Stories
+                    </button>
+                    <button
+                      onClick={handleFinalizeWizard}
+                      className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl border-2 border-transparent shadow-[2px_2px_0_#000]"
+                    >
+                      Return to Café
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
           </motion.div>
         </AnimatePresence>
 
+        <canvas ref={canvasRef} className="hidden" />
       </div>
     </div>
   );

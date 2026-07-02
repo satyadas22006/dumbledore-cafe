@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLogin from './pages/AdminLogin';
+
 // --- CONTEXT & PERSISTENCE ---
 import { AvatarProvider } from './context/AvatarContext';
+import { CartProvider } from './context/CartContext'; // Added Cart Context Import
 import GlobalCompanion from './components/GlobalCompanion';
 import VinylPlayer from './components/VinylPlayer';
 
@@ -31,7 +33,6 @@ function MainLayoutContent() {
   const [theme, setTheme] = useState(THEMES.cream);
   const [twin, setTwin] = useState(null);
   
- 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +40,6 @@ function MainLayoutContent() {
     setMemories(DEFAULT_MEMORIES);
   }, []);
 
-  // ---> ADD THIS NEW BLOCK <---
   // This forces the correct theme whenever the browser back/forward buttons are clicked
   useEffect(() => {
     const path = location.pathname;
@@ -50,11 +50,6 @@ function MainLayoutContent() {
     else if (path === '/review') setTheme(THEMES.rose);
     else if (path === '/wall') setTheme(THEMES.navy);
   }, [location.pathname]);
-  // -----------------------------
-
-  useEffect(() => {
-    setMemories(DEFAULT_MEMORIES);
-  }, []);
 
   const handleSaveMemory = async (newMemory) => {
     const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
@@ -75,7 +70,6 @@ function MainLayoutContent() {
     else navigate(`/${page}`);
   };
 
-  // The landing page and avatar creator do not show the regular cafe navbar
   const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
 
   return (
@@ -87,12 +81,10 @@ function MainLayoutContent() {
       transition={{ duration: 0.5 }} 
       className="min-h-screen font-sans selection:bg-white/30 relative"
     >
-      {/* ---> YOUR NEW BULLETPROOF GRID OVERLAY <--- */}
       <GlobalGrid />
 
       {!isOnboarding && <VinylPlayer theme={theme} />}
       
-      {/* PERSISTENT FLOATING AVATAR MASCOT */}
       <GlobalCompanion />
 
       {/* Main Cafe App Header */}
@@ -116,11 +108,8 @@ function MainLayoutContent() {
       <main className={isOnboarding ? "" : "pb-32 relative z-10"}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            {/* Onboarding Entries - Landing page is now perfectly locked at "/" */}
             <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
             <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
-
-            {/* Core Cafe Internal App Dashboard pages */}
             <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
             <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
             <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
@@ -129,7 +118,6 @@ function MainLayoutContent() {
             <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
             <Route path="/directory" element={<Directory theme={theme} />} />
             <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
-            {/* Mini Games Cluster */}
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
             <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
@@ -144,9 +132,11 @@ function MainLayoutContent() {
 export default function App() {
   return (
     <Router>
-      <AvatarProvider>
-        <MainLayoutContent />
-      </AvatarProvider>
+      <CartProvider>
+        <AvatarProvider>
+          <MainLayoutContent />
+        </AvatarProvider>
+      </CartProvider>
     </Router>
   );
 }
