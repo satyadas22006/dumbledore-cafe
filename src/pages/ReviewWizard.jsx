@@ -157,6 +157,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
   };
 
+  // We make sure this saves everything and routes instantly!
   const handleFinalizeWizard = () => {
     const finalMemory = {
       rating,
@@ -171,6 +172,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       photo: capturedImage
     };
     onComplete(finalMemory);
+    onNavigate('thank-you'); 
   };
 
   const pageVariants = {
@@ -450,19 +452,31 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           <p className="text-xs font-medium opacity-70 max-w-sm mx-auto">Looks like you're the first to have this exact experience.</p>
                         </div>
                       )}
-                      <button
-                        onClick={handleNextStep}
-                        className="w-full bg-[#472C20] text-white border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider"
-                      >
-                        Add a Scrapbook Photo 📸
-                      </button>
+                      
+                      <div className="flex flex-col gap-3 w-full mt-4">
+                        <button
+                          onClick={handleNextStep}
+                          className="w-full bg-[#472C20] text-white border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider transition-transform active:translate-y-1 active:shadow-none"
+                        >
+                          Add a Scrapbook Photo 📸
+                        </button>
+                        
+                        {/* THE NEW SKIP BUTTON */}
+                        <button
+                          onClick={handleFinalizeWizard}
+                          className="w-full bg-white text-[#472C20] border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider transition-transform active:translate-y-1 active:shadow-none"
+                        >
+                          Skip & Get Receipt 🧾
+                        </button>
+                      </div>
+
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             )}
 
-            {/* --- STEP 9: RETRO DIGICAM CHASSIS UI (Inspired by 9359111722237313_2.webp) --- */}
+            {/* --- STEP 9: RETRO DIGICAM CHASSIS UI --- */}
             {step === 9 && (
               <div className="space-y-6 text-center">
                 <div>
@@ -488,7 +502,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   {/* LEFT SIDE: CAMERA LCD DISPLAY SCREEN */}
                   <div className="w-full md:w-[65%] aspect-[4/3] bg-[#EFEFEF] border-4 border-[#5E5345] rounded-xl p-2 relative overflow-hidden shadow-inner flex flex-col justify-between">
                     
-                    {/* Brand stamp tracking layout of 9359111722237313_2.webp */}
+                    {/* Brand stamp tracking layout */}
                     <div className="text-[10px] font-serif font-black text-center text-[#472C20]/70 tracking-wider mb-1">
                       ✨ Cafécam Classic ✨
                     </div>
@@ -612,7 +626,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                       onClick={handleFinalizeWizard}
                       className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl border-2 border-transparent shadow-[2px_2px_0_#000]"
                     >
-                      Return to Café
+                      View Receipt 🧾
                     </button>
                   </div>
                 </div>
