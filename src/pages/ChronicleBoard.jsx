@@ -180,7 +180,7 @@ export default function ChronicleBoard() {
         
         {/* Playful top tape header decoration */}
         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-pink-300/60 mix-blend-multiply px-8 py-1 text-[11px] uppercase tracking-widest font-mono text-[#472C20] rotate-[-1deg] border-b border-pink-400/30">
-          📌 Community Board 
+          📌 Community Board Snapshot
         </div>
 
         <motion.h1 initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-6xl font-cursive text-center mt-6 mb-12 text-[#472C20]">
@@ -195,7 +195,7 @@ export default function ChronicleBoard() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-red-300 pb-2 mb-4">
                 <div>
                   <span className="bg-[#FFB6C9] border border-[#472C20]/40 text-[9px] font-mono font-black uppercase tracking-widest px-2.5 py-0.5 rounded text-[#472C20]">
-                    Dear Diary : 
+                    📝 Live Guestbook Whisper
                   </span>
                   <h3 className="font-bold text-lg text-[#472C20] mt-1 font-serif">Today's Entry</h3>
                 </div>
@@ -233,7 +233,7 @@ export default function ChronicleBoard() {
           <ScrapbookCard rotation={0.5} className="w-full flex flex-col items-center justify-center relative">
             <div className="w-full text-center max-w-xl mx-auto mb-4">
               <span className="bg-[#A8E6CF] border border-[#472C20]/30 text-[9px] font-mono font-black uppercase tracking-widest px-3 py-1 rounded text-[#472C20]">
-               Whats the Vibe chat ?
+                📊 Live Vibe Analytics
               </span>
               <h3 className="font-serif font-black text-2xl text-[#472C20] mt-3">The Shared Ledger</h3>
               
