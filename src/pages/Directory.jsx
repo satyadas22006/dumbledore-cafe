@@ -1,17 +1,87 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, Phone, Navigation, ArrowLeft } from 'lucide-react';
+import { MapPin, Clock, Phone, Navigation, ArrowLeft, Camera, Minus, Square, X } from 'lucide-react';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
-const WashiTape = ({ className, color = "bg-white/60" }) => (
+// --- INTERACTIVE DRAGGABLE STICKERS ---
+const SDCardSticker = ({ constraintsRef, className }) => (
+  <motion.div 
+    drag dragConstraints={constraintsRef} whileDrag={{ scale: 1.1, rotate: 5, zIndex: 50 }} whileHover={{ scale: 1.05 }}
+    className={`absolute w-20 h-28 bg-[#2A2A2A] rounded-sm rounded-tr-2xl border-[3px] border-[#111] shadow-[4px_4px_0_rgba(0,0,0,0.3)] flex flex-col p-1.5 cursor-grab active:cursor-grabbing z-30 ${className}`}
+  >
+    <div className="flex gap-[2px] h-4 mb-2">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className={`bg-gradient-to-b from-yellow-300 to-yellow-600 border border-[#111] ${i === 0 || i === 5 ? 'flex-1' : 'w-2'}`}></div>
+      ))}
+    </div>
+    <div className="flex-1 border border-[#444] p-1 flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] bg-[size:4px_4px]"></div>
+      <p className="font-cursive text-white text-[10px] leading-tight text-center transform -rotate-6">taking a<br/>picture<br/>of us</p>
+    </div>
+  </motion.div>
+);
+
+const PixelWarningSticker = ({ constraintsRef, className }) => (
+  <motion.div 
+    drag dragConstraints={constraintsRef} whileDrag={{ scale: 1.1, zIndex: 50 }} whileHover={{ scale: 1.05 }}
+    className={`absolute bg-white border-[3px] border-[#111] shadow-[4px_4px_0_#111] w-40 cursor-grab active:cursor-grabbing z-30 ${className}`}
+  >
+    <div className="bg-[#1E3A8A] text-white px-2 py-0.5 flex justify-between items-center border-b-[3px] border-[#111]">
+      <span className="font-mono text-[8px] font-bold tracking-widest uppercase">WARNING.EXE</span>
+      <div className="bg-white border-2 border-[#111] w-3 h-3 flex items-center justify-center"><X size={8} className="text-[#111]" strokeWidth={4} /></div>
+    </div>
+    <div className="p-2 text-center">
+      <p className="font-mono text-[9px] font-bold text-[#111] mb-2 uppercase">Ready for coffee?</p>
+      <div className="flex gap-2 justify-center">
+        <div className="border-2 border-[#111] px-3 py-0.5 text-[8px] font-bold shadow-[2px_2px_0_#111] hover:bg-gray-200">YES</div>
+        <div className="border-2 border-[#111] px-3 py-0.5 text-[8px] font-bold shadow-[2px_2px_0_#111] hover:bg-gray-200">YEP</div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const Tape = ({ className, color = "bg-rose-400" }) => (
   <div 
-    className={`absolute w-24 h-8 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
-    style={{ borderLeft: '3px dashed rgba(71, 44, 32, 0.2)', borderRight: '3px dashed rgba(71, 44, 32, 0.2)' }} 
+    className={`absolute w-24 h-8 backdrop-blur-sm shadow-sm z-40 mix-blend-multiply ${color} ${className}`}
+    style={{ borderLeft: '3px dashed rgba(255,255,255,0.4)', borderRight: '3px dashed rgba(255,255,255,0.4)' }} 
   />
 );
 
+// --- FLOATING SCATTERED SKETCHES ---
+const FloatingSketch = ({ src, className, animateVals, style, duration }) => (
+  <motion.div 
+    animate={animateVals}
+    transition={{ duration: duration, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+    className={`absolute pointer-events-none z-0 ${className}`}
+    style={style}
+  >
+    <img src={src} alt="" className="w-full h-full object-contain opacity-50" style={{ filter: 'grayscale(100%) contrast(150%)', mixBlendMode: 'multiply' }} />
+  </motion.div>
+);
+
+// --- GUARANTEED VISIBLE ARTSY BACKGROUND ---
+const SketchBackground = ({ src, className, animateVals }) => (
+  <motion.div 
+    animate={animateVals}
+    transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+    className={`absolute pointer-events-none z-0 ${className}`}
+  >
+    <img 
+      src={src} 
+      alt="" 
+      className="w-full h-full object-contain"
+      style={{
+        filter: 'grayscale(100%) contrast(120%) brightness(110%) opacity(0.3)',
+        mixBlendMode: 'multiply'
+      }}
+    />
+  </motion.div>
+);
+
 const Directory = ({ onNavigate }) => {
+  const constraintsRef = useRef(null);
+  
   const [cafeInfo, setCafeInfo] = useState({
     name: "Dumble' Door",
     locationText: "Jagda, Rourkela",
@@ -24,20 +94,18 @@ const Directory = ({ onNavigate }) => {
 
   useEffect(() => {
     const unsubInfo = onSnapshot(doc(db, "settings", "cafeInfo"), (docSnap) => {
-      if (docSnap.exists()) {
-        setCafeInfo(docSnap.data());
-      }
+      if (docSnap.exists()) setCafeInfo(docSnap.data());
     });
     return () => unsubInfo();
   }, []);
 
-  const notebookBackgroundStyle = {
-    backgroundColor: '#FDFBF7',
+  const purpleGridBackground = {
+    backgroundColor: '#EBE5F5', 
     backgroundImage: `
-      linear-gradient(transparent 95%, #E8E2D5 95%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E")
+      linear-gradient(rgba(71, 44, 32, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(71, 44, 32, 0.05) 1px, transparent 1px)
     `,
-    backgroundSize: '100% 32px, 150px 150px',
+    backgroundSize: '30px 30px',
   };
 
   const handleDirections = () => {
@@ -48,110 +116,190 @@ const Directory = ({ onNavigate }) => {
     }
   };
 
+  // Randomized anchor zones + randomized image mapping per reload
+  const randomizedSketchConfig = useMemo(() => {
+    const images = ['/split_1.png', '/split_2.png', '/split_3.png', '/split_4.png', '/split_5.png', '/split_6.png', '/split_7.png', '/split_8.png', '/split_9.png'];
+    
+    // Shuffle images array
+    for (let i = images.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [images[i], images[j]] = [images[j], images[i]];
+    }
+
+    const zones = [
+        { top: '-2%', left: '-2%' }, { top: '-5%', left: '40%' }, { top: '-2%', right: '-2%' },
+        { top: '35%', left: '-5%' }, { top: '45%', right: '-5%' }, { bottom: '-2%', left: '-2%' },
+        { bottom: '-5%', left: '45%' }, { bottom: '-2%', right: '-2%' }, { top: '25%', left: '25%' }
+    ];
+
+    return images.map((src, i) => ({
+        src,
+        style: zones[i],
+        anim: {
+            x: [0, Math.random() * 50 - 25, 0],
+            y: [0, Math.random() * 50 - 25, 0],
+            rotate: [Math.random() * -5, Math.random() * 5, Math.random() * -5]
+        },
+        duration: 15 + Math.random() * 10
+    }));
+  }, []);
+
   return (
-    <div style={notebookBackgroundStyle} className="min-h-screen py-10 px-6 relative overflow-hidden select-none">
+    <div ref={constraintsRef} style={purpleGridBackground} className="min-h-screen py-10 px-6 relative overflow-hidden select-none flex flex-col">
       
-      {/* Top Nav */}
-      <div className="max-w-4xl mx-auto relative z-20 mb-8">
+      {/* --- RANDOMIZED SPLIT IMAGES --- */}
+      {randomizedSketchConfig.map((config, i) => (
+        <FloatingSketch 
+          key={i} 
+          src={config.src} 
+          className="w-40 h-40 md:w-56 md:h-56" 
+          animateVals={config.anim} 
+          style={config.style}
+          duration={config.duration}
+        />
+      ))}
+
+      {/* --- ARTSY BACKGROUND SKETCHES --- */}
+      <SketchBackground src="/image_9d2e2e.jpg" className="top-0 left-0 w-96 h-96" animateVals={{ y: [0, 20, 0], rotate: [-2, 2, -2] }} />
+      <SketchBackground src="/image_9d2e66.jpg" className="bottom-0 right-0 w-[30rem] h-[30rem]" animateVals={{ y: [0, -25, 0], rotate: [2, -2, 2] }} />
+      <SketchBackground src="/image_9d2ea4.jpg" className="top-10 right-[15%] w-80 h-80" animateVals={{ x: [0, -15, 0], rotate: [-1, 1, -1] }} />
+
+      {/* --- DRAGGABLE STICKERS --- */}
+      <SDCardSticker constraintsRef={constraintsRef} className="top-[12%] left-[4%] rotate-[-12deg] hidden md:flex" />
+      <PixelWarningSticker constraintsRef={constraintsRef} className="bottom-[15%] right-[5%] rotate-[8deg] hidden md:block" />
+
+      {/* --- TOP NAV BUTTON --- */}
+      <div className="max-w-5xl mx-auto w-full relative z-40 mb-8 pt-4">
         <button 
           onClick={() => onNavigate('home')} 
-          className="flex items-center gap-2 bg-[#FDFBF7] border-2 border-[#472C20] px-5 py-2.5 rounded-full font-bold uppercase text-sm tracking-wider text-[#472C20] shadow-[3px_3px_0_#472C20] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#472C20] transition-all"
+          className="flex items-center gap-2 bg-white border-[3px] border-[#472C20] px-5 py-2.5 rounded-full font-bold uppercase text-sm tracking-wider text-[#472C20] shadow-[3px_4px_0_#472C20] hover:translate-y-[2px] hover:shadow-[1px_2px_0_#472C20] transition-all"
         >
           <ArrowLeft size={18} strokeWidth={2.5} /> BACK TO CAFE
         </button>
       </div>
 
-      <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 relative z-10">
+      {/* --- MAIN 2-COLUMN LAYOUT --- */}
+      <div className="max-w-5xl mx-auto w-full flex flex-col md:flex-row gap-10 md:gap-16 relative z-10 items-center md:items-stretch">
         
-        {/* LEFT SIDE: Big Polaroid Map Card */}
+        {/* LEFT SIDE: Polaroid Map with Radiating Strips */}
         <motion.div 
-          initial={{ opacity: 0, rotate: -5, x: -50 }}
-          animate={{ opacity: 1, rotate: -2, x: 0 }}
-          transition={{ type: 'spring', bounce: 0.4 }}
-          className="flex-1 bg-white p-4 pb-12 border-2 border-[#472C20]/20 shadow-[8px_12px_20px_rgba(71,44,32,0.15)] relative transform -rotate-2 group"
+          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4 }}
+          className="flex-1 w-full max-w-md relative flex flex-col items-center self-center mt-10 md:mt-0"
         >
-          <WashiTape className="-top-4 left-1/2 -translate-x-1/2 rotate-2 bg-[#B4C5E4]/80" />
-          
-          <div className="w-full aspect-square bg-[#E8E2D5] border border-[#472C20]/10 flex flex-col items-center justify-center relative overflow-hidden group-hover:bg-[#E2D5CA] transition-colors cursor-pointer" onClick={handleDirections}>
-            
-            {/* Conditional Map Rendering */}
-            {cafeInfo.mapLink ? (
-              <>
-                {/* Real Google Map Embed using location text */}
-                <iframe
-                  className="absolute inset-0 w-full h-full pointer-events-none opacity-80 filter contrast-125 saturate-50 sepia-[0.3]"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(cafeInfo.name + ' ' + cafeInfo.locationText)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  frameBorder="0"
-                  scrolling="no"
-                  marginHeight="0"
-                  marginWidth="0"
-                ></iframe>
-                {/* Vintage overlay tint */}
-                <div className="absolute inset-0 bg-[#E8E2D5]/20 group-hover:bg-transparent transition-colors z-0 pointer-events-none"></div>
-              </>
-            ) : (
-              /* Fallback Geometric Pattern */
-              <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#472C20_25%,transparent_25%,transparent_75%,#472C20_75%,#472C20)] bg-[length:20px_20px] z-0"></div>
-            )}
-
-            <MapPin size={64} fill="white" className="text-[#D97757] relative z-10 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)]" />
-            <span className="font-mono text-sm font-bold uppercase tracking-widest text-[#472C20] relative z-10 border-2 border-[#472C20] px-4 py-2 bg-white/90 backdrop-blur-sm shadow-[3px_3px_0_#472C20]">Click for Map</span>
+          {/* Radiating Collage Strips */}
+          <div className="absolute inset-[-40px] z-0 flex justify-center items-end opacity-80 pointer-events-none">
+            <div className="w-20 h-72 bg-rose-200 border-[3px] border-[#472C20] origin-bottom -rotate-12 -translate-x-12 translate-y-12 shadow-sm"></div>
+            <div className="w-20 h-80 bg-blue-200 border-[3px] border-[#472C20] origin-bottom z-10 translate-y-8 shadow-sm"></div>
+            <div className="w-20 h-72 bg-emerald-200 border-[3px] border-[#472C20] origin-bottom rotate-12 translate-x-12 translate-y-12 shadow-sm"></div>
           </div>
 
-          <p className="font-cursive text-center text-2xl text-[#472C20] mt-6 opacity-80">where the magic happens</p>
+          {/* Actual Polaroid */}
+          <div className="bg-white p-4 pb-16 border-[3px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,0.15)] relative transform rotate-2 group w-full z-10">
+            {/* Exactly placed Tapes */}
+            <Tape className="-top-4 left-[20%] rotate-[-2deg] bg-[#F4A896]" />
+            <Tape className="bottom-16 -left-8 rotate-[-5deg] bg-[#FACC15]" />
+            
+            {/* Map Area */}
+            <div className="w-full aspect-square bg-[#E8E2D5] border-[3px] border-[#472C20] flex flex-col items-center justify-center relative overflow-hidden group-hover:bg-[#E2D5CA] transition-colors cursor-pointer" onClick={handleDirections}>
+              {cafeInfo.mapLink ? (
+                <>
+                  <iframe
+                    className="absolute inset-0 w-full h-full pointer-events-none filter contrast-125 saturate-50 sepia-[0.2]"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(cafeInfo.name + ' ' + cafeInfo.locationText)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                    frameBorder="0" scrolling="no" marginHeight="0" marginWidth="0"
+                  ></iframe>
+                  <div className="absolute inset-0 bg-[#A78BFA]/10 group-hover:bg-transparent transition-colors z-0 pointer-events-none mix-blend-multiply"></div>
+                </>
+              ) : (
+                <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#472C20_25%,transparent_25%,transparent_75%,#472C20_75%,#472C20)] bg-[length:20px_20px] z-0"></div>
+              )}
+              {/* Overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-white border-[3px] border-[#472C20] px-4 py-2 flex items-center gap-2 shadow-[4px_4px_0_#472C20] transform scale-110">
+                  <MapPin size={18} className="text-[#D97757] animate-bounce" />
+                  <span className="font-mono text-xs font-black uppercase tracking-widest text-[#472C20]">Click to Open</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Camera Icon */}
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-[3px] border-[#472C20] rounded-full flex items-center justify-center shadow-[4px_4px_0_#472C20] z-20">
+              <Camera size={28} className="text-[#D97757]" />
+            </div>
+            
+            <p className="font-cursive text-center text-2xl text-[#472C20] mt-8 opacity-80">where the magic happens</p>
+          </div>
         </motion.div>
 
-        {/* RIGHT SIDE: Taped Info Details */}
-        <div className="flex-1 flex flex-col justify-center gap-8">
+        {/* RIGHT SIDE: Text & Directory.exe */}
+        <div className="flex-1 flex flex-col justify-center w-full z-10 mt-10 md:mt-0">
           
-          {/* Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h1 className="text-5xl md:text-7xl font-serif font-black text-[#472C20] leading-none mb-2">
-              Come <span className="font-cursive text-[#D97757] font-normal transform -rotate-2 inline-block">say hi!</span>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-6 text-center md:text-left">
+            <h1 className="text-6xl md:text-7xl font-serif font-black text-[#472C20] leading-[0.9]">
+              Come <span className="font-cursive text-[#A78BFA] font-normal transform -rotate-3 inline-block ml-2 drop-shadow-sm">say hi!</span>
             </h1>
-            <p className="font-mono text-sm uppercase tracking-widest text-[#8D5B4C] border-b border-[#8D5B4C]/20 pb-2 inline-block">
-              {cafeInfo.name} Directory
-            </p>
           </motion.div>
 
-          {/* Info Card - Torn Paper Look */}
+          {/* Retro OS Window */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="bg-[#FEF6E4] p-8 border border-[#472C20]/10 shadow-[4px_4px_0_rgba(71,44,32,0.1)] relative transform rotate-1"
+            className="bg-[#FFFDF9] border-[4px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,1)] relative flex flex-col overflow-visible"
           >
-            <WashiTape className="-top-4 right-8 rotate-[15deg] bg-[#E2C7C0]/80" />
+            {/* Title Bar */}
+            <div className="bg-[#472C20] text-white px-4 py-2 flex justify-between items-center border-b-[4px] border-[#472C20]">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                <Navigation size={14}/> directory.exe
+              </span>
+              <div className="flex gap-2">
+                <div className="w-3 h-3 border-2 border-white rounded-full bg-transparent flex items-center justify-center"><Minus size={8} /></div>
+                <div className="w-3 h-3 border-2 border-white rounded-full bg-transparent flex items-center justify-center"><Square size={6} /></div>
+                <div className="w-3 h-3 border-2 border-white rounded-full bg-[#D97757] flex items-center justify-center"><X size={8} /></div>
+              </div>
+            </div>
             
-            <div className="space-y-6">
+            {/* Red Tint Tab on Top Right */}
+            <div className="absolute -top-3 right-8 w-16 h-6 bg-red-900/80 backdrop-blur-sm shadow-sm rounded-t-md z-[-1]"></div>
+
+            {/* Window Content */}
+            <div className="p-8 space-y-8 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10">
               
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white border border-[#472C20]/20 flex items-center justify-center flex-shrink-0 text-[#472C20]">
-                  <MapPin size={20} />
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-none bg-[#A78BFA] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform -rotate-3">
+                  <MapPin size={24} />
                 </div>
                 <div>
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8D5B4C] mb-1">Location</p>
-                  <p className="font-serif text-2xl font-bold text-[#472C20]">{cafeInfo.locationText}</p>
+                  <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#A78BFA] mb-1">Location</p>
+                  <p className="font-serif text-xl md:text-2xl font-bold text-[#472C20] leading-snug">
+                    {cafeInfo.locationText}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white border border-[#472C20]/20 flex items-center justify-center flex-shrink-0 text-[#472C20]">
-                  <Clock size={20} />
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-none bg-[#D97757] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform rotate-2">
+                  <Clock size={24} />
                 </div>
                 <div>
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8D5B4C] mb-1">Hours</p>
-                  <p className="font-serif text-2xl font-bold text-[#472C20]">{cafeInfo.startDay} – {cafeInfo.endDay}</p>
-                  <p className="font-cursive text-xl text-[#D97757]">{cafeInfo.hours}</p>
+                  <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D97757] mb-1">Hours</p>
+                  <p className="font-serif text-xl md:text-2xl font-bold text-[#472C20]">
+                    {cafeInfo.startDay} – {cafeInfo.endDay}
+                  </p>
+                  <p className="font-mono font-bold text-lg text-[#8D5B4C] mt-1 bg-white border-2 border-[#472C20] inline-block px-2 shadow-sm">
+                    {cafeInfo.hours}
+                  </p>
                 </div>
               </div>
 
               {cafeInfo.phone && (
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white border border-[#472C20]/20 flex items-center justify-center flex-shrink-0 text-[#472C20]">
-                    <Phone size={20} />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-none bg-emerald-400 border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform -rotate-1">
+                    <Phone size={24} />
                   </div>
                   <div>
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8D5B4C] mb-1">Ring Us</p>
-                    <p className="font-mono font-bold text-lg text-[#472C20]">{cafeInfo.phone}</p>
+                    <p className="font-mono text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Ring Us</p>
+                    <p className="font-mono font-bold text-xl text-[#472C20]">
+                      {cafeInfo.phone}
+                    </p>
                   </div>
                 </div>
               )}
@@ -162,9 +310,11 @@ const Directory = ({ onNavigate }) => {
           <motion.button 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
             onClick={handleDirections}
-            className="bg-[#472C20] text-[#FDFBF7] font-mono font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-xl shadow-[6px_6px_0_#D97757] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#D97757] transition-all flex items-center justify-center gap-3 w-fit"
+            className="mt-6 mx-auto md:mx-0 bg-[#A78BFA] text-white font-mono font-bold uppercase tracking-[0.15em] text-sm px-10 py-5 border-[4px] border-[#472C20] shadow-[6px_6px_0_#472C20] hover:translate-y-[2px] hover:shadow-[4px_4px_0_#472C20] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center gap-3 w-fit relative overflow-hidden group"
           >
-            <Navigation size={18} /> Get Directions
+            <div className="absolute top-0 -left-[100%] w-1/2 h-full bg-white/20 skew-x-12 group-hover:animate-[shine_1s_ease-in-out]"></div>
+            <Navigation size={20} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> 
+            LAUNCH MAPS
           </motion.button>
 
         </div>
