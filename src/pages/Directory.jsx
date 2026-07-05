@@ -56,11 +56,10 @@ const FloatingSketch = ({ src, className, animateVals, style, duration }) => (
     className={`absolute pointer-events-none z-0 ${className}`}
     style={style}
   >
-    <img src={src} alt="" className="w-full h-full object-contain opacity-50" style={{ filter: 'grayscale(100%) contrast(150%)', mixBlendMode: 'multiply' }} />
+    <img src={src} alt="" className="w-full h-full object-contain opacity-40" style={{ filter: 'grayscale(100%) contrast(150%)', mixBlendMode: 'multiply' }} />
   </motion.div>
 );
 
-// --- GUARANTEED VISIBLE ARTSY BACKGROUND ---
 const SketchBackground = ({ src, className, animateVals }) => (
   <motion.div 
     animate={animateVals}
@@ -116,7 +115,7 @@ const Directory = ({ onNavigate }) => {
     }
   };
 
-  // Randomized anchor zones + randomized image mapping per reload
+  // Randomized anchor zones vertically distributed to peek OUT from the sides of the boxes
   const randomizedSketchConfig = useMemo(() => {
     const images = ['/split_1.png', '/split_2.png', '/split_3.png', '/split_4.png', '/split_5.png', '/split_6.png', '/split_7.png', '/split_8.png', '/split_9.png'];
     
@@ -126,18 +125,25 @@ const Directory = ({ onNavigate }) => {
         [images[i], images[j]] = [images[j], images[i]];
     }
 
+    // Top-to-bottom edge distribution so they don't hide in the center
     const zones = [
-        { top: '-2%', left: '-2%' }, { top: '-5%', left: '40%' }, { top: '-2%', right: '-2%' },
-        { top: '35%', left: '-5%' }, { top: '45%', right: '-5%' }, { bottom: '-2%', left: '-2%' },
-        { bottom: '-5%', left: '45%' }, { bottom: '-2%', right: '-2%' }, { top: '25%', left: '25%' }
+        { top: '3%', left: '2%' },       // Top Left
+        { top: '5%', right: '2%' },      // Top Right
+        { top: '22%', left: '-4%' },     // Mid-Top Left (peeking)
+        { top: '32%', right: '-4%' },    // Mid-Top Right (peeking)
+        { top: '50%', left: '0%' },      // Mid Left
+        { top: '65%', right: '2%' },     // Low-Mid Right
+        { top: '78%', left: '-2%' },     // Low Left
+        { top: '88%', right: '0%' },     // Bottom Right
+        { top: '12%', left: '45%' }      // Top Center-ish
     ];
 
     return images.map((src, i) => ({
         src,
         style: zones[i],
         anim: {
-            x: [0, Math.random() * 50 - 25, 0],
-            y: [0, Math.random() * 50 - 25, 0],
+            x: [0, Math.random() * 40 - 20, 0],
+            y: [0, Math.random() * 40 - 20, 0],
             rotate: [Math.random() * -5, Math.random() * 5, Math.random() * -5]
         },
         duration: 15 + Math.random() * 10
@@ -145,14 +151,14 @@ const Directory = ({ onNavigate }) => {
   }, []);
 
   return (
-    <div ref={constraintsRef} style={purpleGridBackground} className="min-h-screen py-10 px-6 relative overflow-hidden select-none flex flex-col">
+    <div ref={constraintsRef} style={purpleGridBackground} className="min-h-screen py-4 px-4 relative overflow-hidden select-none flex flex-col">
       
       {/* --- RANDOMIZED SPLIT IMAGES --- */}
       {randomizedSketchConfig.map((config, i) => (
         <FloatingSketch 
           key={i} 
           src={config.src} 
-          className="w-40 h-40 md:w-56 md:h-56" 
+          className="w-32 h-32 md:w-56 md:h-56" // Bumped up mobile size from 20 to 32 so they are clearly visible
           animateVals={config.anim} 
           style={config.style}
           duration={config.duration}
@@ -168,34 +174,26 @@ const Directory = ({ onNavigate }) => {
       <SDCardSticker constraintsRef={constraintsRef} className="top-[12%] left-[4%] rotate-[-12deg] hidden md:flex" />
       <PixelWarningSticker constraintsRef={constraintsRef} className="bottom-[15%] right-[5%] rotate-[8deg] hidden md:block" />
 
-      {/* --- TOP NAV BUTTON --- */}
-      <div className="max-w-5xl mx-auto w-full relative z-40 mb-8 pt-4">
+      {/* --- TOP NAV BUTTON (Adjusted Padding) --- */}
+      <div className="max-w-5xl mx-auto w-full relative z-40 pt-2 pb-4">
         <button 
           onClick={() => onNavigate('home')} 
-          className="flex items-center gap-2 bg-white border-[3px] border-[#472C20] px-5 py-2.5 rounded-full font-bold uppercase text-sm tracking-wider text-[#472C20] shadow-[3px_4px_0_#472C20] hover:translate-y-[2px] hover:shadow-[1px_2px_0_#472C20] transition-all"
+          className="flex items-center gap-2 bg-white border-[3px] border-[#472C20] px-5 py-2 rounded-full font-bold uppercase text-sm tracking-wider text-[#472C20] shadow-[3px_4px_0_#472C20] hover:translate-y-[2px] hover:shadow-[1px_2px_0_#472C20] transition-all"
         >
-          <ArrowLeft size={18} strokeWidth={2.5} /> BACK TO CAFE
+          <ArrowLeft size={16} strokeWidth={2.5} /> BACK
         </button>
       </div>
 
       {/* --- MAIN 2-COLUMN LAYOUT --- */}
-      <div className="max-w-5xl mx-auto w-full flex flex-col md:flex-row gap-10 md:gap-16 relative z-10 items-center md:items-stretch">
+      <div className="max-w-5xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-16 relative z-10 items-center md:items-stretch">
         
-        {/* LEFT SIDE: Polaroid Map with Radiating Strips */}
+        {/* LEFT SIDE: Polaroid Map */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4 }}
-          className="flex-1 w-full max-w-md relative flex flex-col items-center self-center mt-10 md:mt-0"
+          className="flex-1 w-full max-w-md relative flex flex-col items-center self-center mt-10 md:mt-0 z-10"
         >
-          {/* Radiating Collage Strips */}
-          <div className="absolute inset-[-40px] z-0 flex justify-center items-end opacity-80 pointer-events-none">
-            <div className="w-20 h-72 bg-rose-200 border-[3px] border-[#472C20] origin-bottom -rotate-12 -translate-x-12 translate-y-12 shadow-sm"></div>
-            <div className="w-20 h-80 bg-blue-200 border-[3px] border-[#472C20] origin-bottom z-10 translate-y-8 shadow-sm"></div>
-            <div className="w-20 h-72 bg-emerald-200 border-[3px] border-[#472C20] origin-bottom rotate-12 translate-x-12 translate-y-12 shadow-sm"></div>
-          </div>
-
           {/* Actual Polaroid */}
-          <div className="bg-white p-4 pb-16 border-[3px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,0.15)] relative transform rotate-2 group w-full z-10">
-            {/* Exactly placed Tapes */}
+          <div className="bg-white p-4 pb-16 border-[3px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,0.15)] relative transform rotate-2 group w-full">
             <Tape className="-top-4 left-[20%] rotate-[-2deg] bg-[#F4A896]" />
             <Tape className="bottom-16 -left-8 rotate-[-5deg] bg-[#FACC15]" />
             
