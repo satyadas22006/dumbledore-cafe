@@ -1,360 +1,331 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import BackToCafeButton from '../components/BackToCafeButton';
 import { db } from '../firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
-import html2canvas from 'html2canvas';
-
-// Styled to resemble the notepad aesthetic from 4574037118514075.jpg and 9429480467553114.webp
-const ScrapbookCard = ({ children, className, rotation = 0, variant = 'notebook' }) => {
-  const getVariantStyles = () => {
-    if (variant === 'lined') {
-      return {
-        background: 'linear-gradient(#fff 0px, transparent 0px), linear-gradient(#eef2f7 29px, #a5c8ed 30px)',
-        backgroundSize: '100% 30px',
-        paddingTop: '40px',
-        lineHeight: '30px'
-      };
-    }
-    // Default notebook blank sheet
-    return { backgroundColor: '#FFFDF9' };
-  };
-
-  return (
-    <motion.div 
-      whileHover={{ rotate: 0, scale: 1.012 }}
-      style={{ rotate: `${rotation}deg`, ...getVariantStyles() }}
-      className={`relative p-8 border border-neutral-300 shadow-md rounded-sm ${className}`}
-    >
-      {/* Decorative Binder Holes / Spiral Cutouts on left edge matching reference images */}
-      <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-around py-4 pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-3 h-3 rounded-full bg-[#FAF6EE] border border-neutral-300 shadow-inner" />
-        ))}
-      </div>
-
-      {/* Mock Paperclip Decorative Layer */}
-      <div className="absolute -top-4 right-8 w-6 h-12 border-4 border-pink-400 rounded-full opacity-80 pointer-events-none transform rotate-12 after:content-[''] after:absolute after:inset-1 after:border-2 after:border-pink-400 after:rounded-full" />
-
-      {/* Content wrapper padding to clear the left hole punches */}
-      <div className="pl-6">
-        {children}
-      </div>
-    </motion.div>
-  );
-};
+import { useAvatar } from '../context/AvatarContext';
+import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 
 const VIBE_CONFIGS = {
-  '🌧️ Rainy Day Comfort': { category: 'Rainy Day Comfort', emoji: '🌧️', color: '#9D446E', summary: 'Guests chose this for deep reflection, quiet moments, and warm, steady comfort on slower days.' },
-  '✨ Main Character Energy': { category: 'Main Character Energy', emoji: '✨', color: '#FF8B72', summary: 'An absolute vibrant aesthetic choice! Visitors felt highly inspired, productive, and beautifully in focus.' },
-  '☕ Coffee & Conversations': { category: 'Coffee & Conversations', emoji: '☕', color: '#FF4B72', summary: 'Fueled by shared stories, deep catching up sessions, laughter, and high social synergy.' },
-  '🌸 Peaceful Escape': { category: 'Peaceful Escape', emoji: '🌸', color: '#FFE094', summary: 'A sanctuary space where customers came to disconnect, escape reality, and slow down time.' }
-};
-
-const makePieSlices = (metrics) => {
-  let accumulatedAngle = 0;
-  return metrics.map((item) => {
-    const percentageAngle = (item.value / 100) * 360;
-    const startAngle = accumulatedAngle;
-    const endAngle = accumulatedAngle + percentageAngle;
-    accumulatedAngle = endAngle;
-    return { ...item, startAngle, endAngle };
-  });
+  '🌧️ Rainy Day Comfort': { color: '#9D446E', name: 'Grape' },
+  '✨ Main Character Energy': { color: '#FF8A65', name: 'Orange' },
+  '☕ Coffee & Conversations': { color: '#F06292', name: 'Raspberry' },
+  '🌸 Peaceful Escape': { color: '#FFE082', name: 'Lemon' }
 };
 
 export default function ChronicleBoard() {
-  const [hoveredSlice, setHoveredSlice] = useState(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  
-  const [vibeMetrics, setVibeMetrics] = useState([]);
-  const [recentStory, setRecentStory] = useState(null);
-  const [favoriteDishes, setFavoriteDishes] = useState([]);
+  const { avatar } = useAvatar(); 
+  const [memories, setMemories] = useState([]);
+  const [userReview, setUserReview] = useState(null);
+  const [hoveredVibe, setHoveredVibe] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
-  const [isExporting, setIsExporting] = useState(false);
-
-  const boardRef = useRef(null);
-
-  // Soft cream scrapbook background wallpaper
-  const journalGridStyle = {
-    backgroundColor: '#FAF6EE',
-    backgroundImage: `
-      linear-gradient(#E8E2D5 1px, transparent 1px),
-      linear-gradient(90deg, #E8E2D5 1px, transparent 1px)
-    `,
-    backgroundSize: '24px 24px'
-  };
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "memories"), (snapshot) => {
-      let vibeCounts = { '🌧️ Rainy Day Comfort': 0, '✨ Main Character Energy': 0, '☕ Coffee & Conversations': 0, '🌸 Peaceful Escape': 0 };
-      let totalVibes = 0;
-      let rawMemories = [];
-      let dishCounts = {};
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        rawMemories.push(data);
-
-        if (data.vibe && vibeCounts[data.vibe] !== undefined) {
-          vibeCounts[data.vibe]++;
-          totalVibes++;
-        }
-        if (data.dish) {
-          dishCounts[data.dish] = (dishCounts[data.dish] || 0) + 1;
-        }
-      });
-
-      const sortedMemories = rawMemories.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      const latestReview = sortedMemories.find(m => m.review && m.review.trim() !== "");
-      
-      if (latestReview) {
-        setRecentStory({
-          text: latestReview.review,
-          author: latestReview.name || 'Cozy Wanderer',
-          purpose: latestReview.purpose ? `🥟 ${latestReview.purpose.toUpperCase()}` : '☕ VISITING',
-          photoUrl: latestReview.photoUrl || null
-        });
-      }
-
-      const fallbackTotal = totalVibes === 0 ? 1 : totalVibes;
-      const computedVibes = Object.keys(VIBE_CONFIGS).map(key => ({
-        id: key,
-        ...VIBE_CONFIGS[key],
-        value: totalVibes === 0 ? 25 : Math.round((vibeCounts[key] / fallbackTotal) * 100)
-      }));
-
-      const sortedDishes = Object.entries(dishCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(entry => entry[0]);
-      setFavoriteDishes(sortedDishes.length > 0 ? sortedDishes : ['Matcha Latte', 'Croissant', 'Mochi Waffles']);
-      setVibeMetrics(computedVibes);
+    const globalQuery = query(collection(db, "memories"), orderBy("createdAt", "desc"));
+    const unsubscribeGlobal = onSnapshot(globalQuery, (snapshot) => {
+      const allMemories = snapshot.docs.map(doc => doc.data());
+      setMemories(allMemories);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error reading global ledger metrics:", error);
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
+    const userQuery = query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(1));
+    const unsubscribeUser = onSnapshot(userQuery, (snapshot) => {
+      if (!snapshot.empty) {
+        setUserReview(snapshot.docs[0].data());
+      }
+    });
 
-  const exportAsImage = async () => {
-    if (!boardRef.current) return;
-    setIsExporting(true);
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    return () => {
+      unsubscribeGlobal();
+      unsubscribeUser();
+    };
+  }, [avatar]);
 
-    try {
-      const canvas = await html2canvas(boardRef.current, {
-        useCORS: true, 
-        backgroundColor: '#FAF6EE',
-        scale: 2, 
-        logging: false,
-      });
-      
-      const image = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = 'my-cafe-chronicles.png';
-      link.click();
-    } catch (err) {
-      console.error("Could not capture board snapshot:", err);
-    } finally {
-      setIsExporting(false);
-    }
+  const totalCount = memories.length || 1;
+  
+  const metrics = Object.keys(VIBE_CONFIGS).reduce((acc, key) => {
+    const matchingCount = memories.filter(m => m.vibe === key).length;
+    acc[key] = {
+      count: matchingCount,
+      percentage: Math.round((matchingCount / totalCount) * 100) || 0
+    };
+    return acc;
+  }, {});
+
+  const dominantVibe = Object.keys(metrics).reduce((a, b) => 
+    metrics[a].percentage > metrics[b].percentage ? a : b
+  , '✨ Main Character Energy');
+
+  const getMostCommonReviewForVibe = (vibeName) => {
+    const texts = memories
+      .filter(m => m.vibe === vibeName && m.review && m.review.trim() !== "")
+      .map(m => m.review.trim());
+
+    if (texts.length === 0) return "No written whispers logged for this vibe yet!";
+
+    const frequencyMap = {};
+    let maxCount = 0;
+    let mostCommonText = texts[0];
+
+    texts.forEach(text => {
+      frequencyMap[text] = (frequencyMap[text] || 0) + 1;
+      if (frequencyMap[text] > maxCount) {
+        maxCount = frequencyMap[text];
+        mostCommonText = text;
+      }
+    });
+
+    return mostCommonText;
   };
 
-  const maxVibe = vibeMetrics.length > 0 ? vibeMetrics.reduce((max, current) => current.value > max.value ? current : max, vibeMetrics[0]) : null;
-  const slicesData = makePieSlices(vibeMetrics);
+  const generatePiePaths = () => {
+    let accumulatedAngle = -Math.PI / 2; 
+    const radius = 170; 
+    const center = 190;
+
+    return Object.entries(VIBE_CONFIGS).map(([vibeName, config]) => {
+      const percentage = metrics[vibeName].percentage;
+      if (percentage === 0) return null;
+
+      const angleDelta = (percentage / 100) * (Math.PI * 2);
+      const startAngle = accumulatedAngle;
+      const endAngle = accumulatedAngle + angleDelta;
+      accumulatedAngle = endAngle;
+
+      const x1 = center + radius * Math.cos(startAngle);
+      const y1 = center + radius * Math.sin(startAngle);
+      const x2 = center + radius * Math.cos(endAngle);
+      const y2 = center + radius * Math.sin(endAngle);
+
+      const largeArcFlag = percentage > 50 ? 1 : 0;
+
+      const pathData = `
+        M ${center} ${center}
+        L ${x1} ${y1}
+        A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}
+        Z
+      `;
+
+      const middleAngle = startAngle + (angleDelta / 2);
+      const labelRadius = radius * 0.65; 
+      const textX = center + labelRadius * Math.cos(middleAngle);
+      const textY = center + labelRadius * Math.sin(middleAngle);
+
+      return {
+        vibeName,
+        color: config.color,
+        pathData,
+        textX,
+        textY
+      };
+    }).filter(Boolean);
+  };
+
+  const piePaths = generatePiePaths();
+  const absoluteLatestReview = memories[0] || null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center font-mono text-xs font-bold uppercase text-[#472C20]">
+        ☕ Loading Cute Ledger Canvas...
+      </div>
+    );
+  }
 
   return (
-    <div style={journalGridStyle} className="min-h-screen py-12 px-6 select-none relative">
+    /* MAIN INTERFACE BACKGROUND */
+    <div className="w-full min-h-screen bg-[#EBE3F5] bg-[radial-gradient(circle_at_center,#C5B4E3_0%,#EBE3F5_70%)] text-[#472C20] py-12 px-4 md:px-8 relative overflow-hidden select-none flex flex-col items-center">
       
-      {/* Control Actions Layer */}
-      <div className="max-w-6xl mx-auto flex justify-between items-center mb-8">
-        <BackToCafeButton />
-        <button
-          onClick={exportAsImage}
-          disabled={isExporting}
-          className="bg-[#472C20] text-[#FAF6EE] font-serif font-bold text-xs px-5 py-2.5 rounded-full border-2 border-[#472C20] hover:bg-[#FFFDF9] hover:text-[#472C20] transition-all duration-200 shadow-[4px_4px_0_#A8E6CF] active:translate-y-0.5 disabled:opacity-50"
-        >
-          {isExporting ? '📸 Framing Picture...' : '✨ Save Chronicles Card'}
-        </button>
-      </div>
+      {/* UNINTERRUPTED NOTEBOOK GRID RUNNING FREELY UNDERNEATH ALL ELEMENTS */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#472c2010_1px,transparent_1px),linear-gradient(to_bottom,#472c2010_1px,transparent_1px)] bg-[size:42px_42px] pointer-events-none z-0" />
 
-      {/* Snapshot capture target block */}
-      <div ref={boardRef} style={journalGridStyle} className="max-w-6xl mx-auto p-6 rounded-3xl relative">
-        
-        {/* Playful top tape header decoration */}
-        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-pink-300/60 mix-blend-multiply px-8 py-1 text-[11px] uppercase tracking-widest font-mono text-[#472C20] rotate-[-1deg] border-b border-pink-400/30">
-          📌 Community Board Snapshot
+      {/* HEADER BAR (OUTLINE BORDER REMOVED FOR CLEAN SPLIT LOOK) */}
+      <div className="relative w-full max-w-6xl mb-12 z-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[24px] p-6 shadow-sm">
+        <div className="text-center md:text-left">
+          <div className="inline-flex items-center gap-2 bg-[#EBE3F5] text-[10px] font-mono font-black uppercase tracking-wider px-3 py-1 rounded-xl mb-3">
+            📊 LIVE VIBE ANALYTICS
+          </div>
+          <h1 className="text-3xl font-serif font-black tracking-tight text-[#472C20]">
+            The Shared Ledger
+          </h1>
+          <p className="text-xs font-mono uppercase tracking-wide text-[#472C20]/60 mt-1">
+            Atmosphere: <span className="text-[#9D446E] font-black">{dominantVibe}</span>
+          </p>
         </div>
 
-        <motion.h1 initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-6xl font-cursive text-center mt-6 mb-12 text-[#472C20]">
-          The Chronicle.
-        </motion.h1>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 max-w-xs text-center md:text-right shadow-sm">
+          <span className="text-[10px] font-mono font-bold block text-[#FF8A65]">CURRENT SUMMARY</span>
+          <span className="text-xs font-serif italic font-semibold">
+            {metrics[dominantVibe].percentage}% Patrons share this vibe spaces.
+          </span>
+        </div>
+      </div>
 
-        <div className="flex flex-col gap-10">
-          
-          {/* Today's Story — Styled as a Lined Notebook Page layout variant */}
-          {recentStory && (
-            <ScrapbookCard rotation={-0.5} variant="lined" className="w-full">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-red-300 pb-2 mb-4">
-                <div>
-                  <span className="bg-[#FFB6C9] border border-[#472C20]/40 text-[9px] font-mono font-black uppercase tracking-widest px-2.5 py-0.5 rounded text-[#472C20]">
-                    📝 Live Guestbook Whisper
-                  </span>
-                  <h3 className="font-bold text-lg text-[#472C20] mt-1 font-serif">Today's Entry</h3>
-                </div>
-                <span className="text-[10px] font-mono font-black border border-[#472C20]/30 px-2 py-0.5 bg-amber-50/60 rounded text-[#472C20] self-start sm:self-center mt-2 sm:mt-0">
-                  {recentStory.purpose}
-                </span>
-              </div>
+      {/* LAYOUT GRID: BOX ARRANGEMENT COMPLETELY PRESERVED AND INTEGRATED */}
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10 flex-1">
+        
+        {/* LEFT COLUMN METRICS BLOCK (BORDERS REMOVED TO BLEND WITH UNDERLYING GRID) */}
+        <div className="lg:col-span-5 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex flex-col items-center justify-between min-h-[540px]">
+          <div className="w-full text-center lg:text-left mb-2">
+            <h3 className="text-xs font-mono font-black uppercase tracking-wider text-[#472C20]/60">Atmosphere Share</h3>
+          </div>
 
-              <div className="flex flex-col md:flex-row gap-6 items-center">
-                {recentStory.photoUrl && (
-                  <div className="bg-[#FFFDF9] p-2 border border-neutral-300 shadow-sm rotate-[-2deg] rounded-xs shrink-0 w-44">
-                    <div className="w-full h-36 bg-[#FAF6EE] overflow-hidden flex items-center justify-center">
-                      <img 
-                        src={recentStory.photoUrl} 
-                        alt="Vintage Snapshot" 
-                        className="w-full h-full object-cover sepia-[15%] contrast-[102%]"
+          {/* PIE CHART LAYER */}
+          <div className="relative w-[380px] h-[380px] flex items-center justify-center p-4">
+            <svg viewBox="0 0 380 380" className="w-full h-full overflow-visible drop-shadow-sm">
+              <circle cx="190" cy="190" r="172" fill="none" stroke="#472C20" strokeWidth="2" strokeDasharray="4 4" className="opacity-40" />
+              <g>
+                {piePaths.map((slice) => {
+                  const isHovered = hoveredVibe === slice.vibeName;
+                  return (
+                    <g key={slice.vibeName}>
+                      <motion.path
+                        d={slice.pathData}
+                        fill={slice.color}
+                        stroke="#FAF6EE"
+                        strokeWidth="3"
+                        strokeLinejoin="round"
+                        animate={{ scale: isHovered ? 1.04 : 1 }}
+                        originX="190px"
+                        originY="190px"
+                        transition={{ type: "spring", stiffness: 350, damping: 18 }}
+                        className="cursor-pointer"
+                        onMouseEnter={() => {
+                          setHoveredVibe(slice.vibeName);
+                          setTooltipPos({ x: slice.textX, y: slice.textY });
+                        }}
+                        onMouseLeave={() => setHoveredVibe(null)}
                       />
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex-1">
-                  <p className="font-serif italic text-lg text-[#472C20]/90 leading-loose">
-                    "{recentStory.text}"
-                  </p>
-                  <p className="text-right font-mono text-xs font-bold text-neutral-500 mt-2">
-                    — Written by: {recentStory.author}
-                  </p>
-                </div>
-              </div>
-            </ScrapbookCard>
-          )}
+                      <text
+                        x={slice.textX}
+                        y={slice.textY}
+                        fill="#FFFFFF"
+                        fontSize="16"
+                        fontWeight="900"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="pointer-events-none font-sans select-none tracking-wide drop-shadow-[1px_1px_1px_rgba(71,44,32,0.4)]"
+                      >
+                        {metrics[slice.vibeName].percentage}%
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+            </svg>
 
-          {/* Ledger Board Analytics Sheet */}
-          <ScrapbookCard rotation={0.5} className="w-full flex flex-col items-center justify-center relative">
-            <div className="w-full text-center max-w-xl mx-auto mb-4">
-              <span className="bg-[#A8E6CF] border border-[#472C20]/30 text-[9px] font-mono font-black uppercase tracking-widest px-3 py-1 rounded text-[#472C20]">
-                📊 Live Vibe Analytics
-              </span>
-              <h3 className="font-serif font-black text-2xl text-[#472C20] mt-3">The Shared Ledger</h3>
-              
-              {maxVibe && !loading && (
-                <p className="text-xs font-serif italic text-neutral-600 mt-2">
-                  Dominant Atmosphere: Most patrons are experiencing <span className="font-bold not-italic" style={{ color: maxVibe.color }}>{maxVibe.category} ({maxVibe.value}%)</span>
-                </p>
+            {/* HOVER TOOLTIP CARD */}
+            <AnimatePresence>
+              {hoveredVibe && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: 5 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  style={{ 
+                    position: 'absolute',
+                    top: `${tooltipPos.y}px`, 
+                    left: `${tooltipPos.x}px`,
+                    transform: 'translate(-50%, -105%)'
+                  }}
+                  className="bg-[#FFFEE0] border-2 border-[#472C20]/20 rounded-2xl p-5 shadow-md w-[275px] z-50 text-left pointer-events-none"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: VIBE_CONFIGS[hoveredVibe].color }} />
+                    <span className="font-black text-xs text-[#472C20] tracking-wide uppercase">{hoveredVibe}</span>
+                  </div>
+                  <div className="border-t border-dashed border-[#472C20]/10 pt-2">
+                    <span className="text-[9px] uppercase font-mono font-black tracking-wider text-[#FF8A65] block mb-1">Most Common Reflection</span>
+                    <p className="text-xs text-[#472C20] font-serif italic font-medium leading-relaxed">
+                      "{getMostCommonReviewForVibe(hoveredVibe)}"
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* COLOR LEGEND ROW */}
+          <div className="w-full bg-white/40 backdrop-blur-[2px] py-2.5 px-4 flex flex-wrap justify-center gap-5 items-center mt-2 rounded-xl">
+            {Object.entries(VIBE_CONFIGS).map(([vibeName, config]) => (
+              <div key={vibeName} className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: config.color }} />
+                <span className="text-xs font-serif font-bold text-[#472C20]/80 tracking-wide">{config.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN STACK (CONTAINER WRAPPERS REMOVED AND BLENDED) */}
+        <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
+          
+          {/* USER REVIEW COMPONENT BLOCK */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center border-b border-dashed border-[#472C20]/10 pb-3 mb-4">
+                <h2 className="text-md font-serif font-black tracking-wide text-[#472C20] flex items-center gap-2">
+                  <span>✨</span> Your Stashed Scrapbook Memory
+                </h2>
+                {userReview && (
+                  <span className="text-xs font-mono font-bold bg-[#FAF6EE] text-[#472C20] px-2.5 py-0.5 rounded-xl shadow-xs">
+                    {userReview.rating === 4 ? '🎉 EXCELLENT' : '✨ GOOD'}
+                  </span>
+                )}
+              </div>
+
+              {userReview ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-black text-[#472C20]/80">👤 {userReview.name || 'Cozy Wanderer'}</span>
+                    <span className="text-[#472C20]/20 text-xs">•</span>
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#FF8A65]">{userReview.vibe}</span>
+                  </div>
+                  <div className="bg-[#FAF6EE]/60 p-4 rounded-2xl italic text-xs text-[#472C20] font-medium leading-relaxed font-serif shadow-xs">
+                    "{userReview.review || 'No written commentary was filed into the session logs.'}"
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-[#472C20]/40 italic py-8 text-center">No scrapbook entries stashed away in memory space.</p>
               )}
             </div>
+          </div>
 
-            {loading ? (
-              <div className="h-72 flex items-center justify-center font-mono text-xs opacity-50 animate-pulse text-[#472C20]">Reading logs...</div>
-            ) : (
-              <div 
-                className="relative w-72 h-72 flex items-center justify-center cursor-pointer mb-6"
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-                }}
-                onMouseLeave={() => setHoveredSlice(null)}
-              >
-                <svg viewBox="0 0 200 200" className="w-64 h-64 transform -rotate-90 overflow-visible drop-shadow-sm">
-                  {slicesData.map((slice) => {
-                    const radStart = (slice.startAngle * Math.PI) / 180;
-                    const radEnd = (slice.endAngle * Math.PI) / 180;
-                    
-                    const x1 = 100 + 85 * Math.cos(radStart);
-                    const y1 = 100 + 85 * Math.sin(radStart);
-                    const x2 = 100 + 85 * Math.cos(radEnd);
-                    const y2 = 100 + 85 * Math.sin(radEnd);
-                    
-                    const largeArcFlag = slice.value > 50 ? 1 : 0;
-                    const pathData = `M 100 100 L ${x1} ${y1} A 85 85 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-
-                    const textAngle = slice.startAngle + (slice.endAngle - slice.startAngle) / 2;
-                    const textRad = (textAngle * Math.PI) / 180;
-                    const textX = 100 + 52 * Math.cos(textRad);
-                    const textY = 100 + 52 * Math.sin(textRad);
-
-                    const isSelected = hoveredSlice === slice.id;
-
-                    return (
-                      <g key={slice.id}>
-                        <motion.path
-                          d={pathData}
-                          fill={slice.color}
-                          stroke="#FFFDF9"
-                          strokeWidth="2"
-                          animate={{ 
-                            scale: isSelected ? 1.03 : 1,
-                          }}
-                          onMouseEnter={() => setHoveredSlice(slice.id)}
-                        />
-                        {slice.value > 4 && (
-                          <text x={textX} y={textY} fill="#FFFDF9" fontSize="8" fontWeight="bold" fontFamily="monospace" textAnchor="middle" dominantBaseline="central" transform={`rotate(90, ${textX}, ${textY})`}>
-                            {slice.value}%
-                          </text>
-                        )}
-                      </g>
-                    );
-                  })}
-                </svg>
-
-                {/* Scrapbook Sticky Note Tooltip Popover Overlay */}
-                <AnimatePresence>
-                  {hoveredSlice && (() => {
-                    const target = slicesData.find(s => s.id === hoveredSlice);
-                    return (
-                      <motion.div
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute pointer-events-none z-50 bg-[#FFFFCC] border border-amber-300 text-neutral-800 p-3 shadow-md max-w-[200px] text-left rounded-xs"
-                        style={{ left: `${mousePos.x - 100}px`, top: `${mousePos.y - 120}px` }}
-                      >
-                        <div className="font-bold text-xs flex items-center gap-1 border-b border-dashed border-amber-400/40 pb-1 mb-1">
-                          <span>{target.emoji}</span>
-                          <span>{target.category}</span>
-                        </div>
-                        <p className="text-[10px] font-serif leading-relaxed italic">"{target.summary}"</p>
-                      </motion.div>
-                    );
-                  })()}
-                </AnimatePresence>
+          {/* COMMUNITY PULSE COMPONENT BLOCK */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center border-b border-dashed border-[#472C20]/10 pb-3 mb-4">
+                <h2 className="text-md font-serif font-black tracking-wide text-[#472C20] flex items-center gap-2">
+                  <span>⏳</span> Latest Community Pulse
+                </h2>
+                {absoluteLatestReview && (
+                  <span className="text-[10px] font-mono font-black bg-[#9D446E] text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    NEW LOG
+                  </span>
+                )}
               </div>
-            )}
 
-            {/* Flat Legend Matrix Display layout */}
-            <div className="w-full flex flex-wrap justify-center gap-4 pt-2 border-t border-dashed border-neutral-200">
-              {slicesData.map((slice) => {
-                const isSelected = hoveredSlice === slice.id;
-                return (
-                  <div 
-                    key={slice.id} 
-                    onMouseEnter={() => setHoveredSlice(slice.id)} 
-                    onMouseLeave={() => setHoveredSlice(null)} 
-                    className={`flex items-center gap-2 px-3 py-1 rounded transition-all duration-150 ${isSelected ? 'bg-amber-50 shadow-xs' : ''}`}
-                  >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: slice.color }} />
-                    <span className="font-serif text-xs text-[#472C20]">{slice.emoji} {slice.category}</span>
-                    <span className="font-mono text-[10px] text-neutral-400">({slice.value}%)</span>
+              {absoluteLatestReview ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-black text-[#472C20]/80">👤 {absoluteLatestReview.name || 'Anonymous Stranger'}</span>
+                    <span className="text-[#472C20]/20 text-xs">•</span>
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#9D446E]">{absoluteLatestReview.vibe}</span>
                   </div>
-                );
-              })}
-            </div>
-          </ScrapbookCard>
-
-          {/* Obsessions Layer Sheet */}
-          <ScrapbookCard rotation={-0.3} className="w-full">
-            <h3 className="font-mono text-xs uppercase tracking-wider mb-4 text-[#472C20]">✨ Current Obsessions</h3>
-            <div className="flex gap-3 overflow-x-auto pb-1">
-              {favoriteDishes.map((item) => (
-                <div key={item} className="px-5 py-1.5 border border-neutral-300 rounded-sm bg-white font-serif text-sm text-[#472C20] shadow-xs whitespace-nowrap">
-                  ☕ {item}
+                  <div className="bg-[#FAF6EE]/60 p-4 rounded-2xl italic text-xs text-[#472C20] font-medium leading-relaxed font-serif shadow-xs">
+                    "{absoluteLatestReview.review || 'Left an open canvas vibe.'}"
+                  </div>
                 </div>
-              ))}
+              ) : (
+                <p className="text-xs text-[#472C20]/40 italic py-8 text-center">The global ledger pipeline context contains no active files.</p>
+              )}
             </div>
-          </ScrapbookCard>
-          
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }

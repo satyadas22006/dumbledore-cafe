@@ -6,15 +6,6 @@ import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw }
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 
-// Mock menu items mapping standard features
-const CAFE_MENU = [
-  { id: '1', name: 'Mochi Waffles', type: 'food' },
-  { id: '2', name: 'Lavender Cold Brew', type: 'drink' },
-  { id: '3', name: 'Garlic Butter Dumplings', type: 'food' },
-  { id: '4', name: 'Matcha Affogato', type: 'drink', soldOut: true },
-  { id: '5', name: 'Cozy Chai Pot', type: 'drink' }
-];
-
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
   const [step, setStep] = useState(1);
@@ -74,13 +65,13 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       const timer = setTimeout(async () => {
         setIsSearchingTwin(false);
         const completeMemory = {
-          rating,
-          purpose,
-          items: selectedItems,
-          dish: favoriteDish,
+          rating: rating || 3,
+          purpose: purpose || 'escape',
+          items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
+          dish: favoriteDish || 'Cozy Brew',
           highlights: selectedHighlights,
-          vibe,
-          review, 
+          vibe: vibe || '☕ Coffee & Conversations',
+          review: review || '', 
           name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
           createdAt: Date.now(),
           photo: capturedImage 
@@ -157,22 +148,40 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
   };
 
-  // We make sure this saves everything and routes instantly!
+  // View Receipt action (End of step 9) -> Updated to go straight to chronicles!
   const handleFinalizeWizard = () => {
     const finalMemory = {
-      rating,
-      purpose,
-      items: selectedItems,
-      dish: favoriteDish,
+      rating: rating || 3,
+      purpose: purpose || 'escape',
+      items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
+      dish: favoriteDish || 'Cozy Brew',
       highlights: selectedHighlights,
-      vibe,
-      review, 
+      vibe: vibe || '☕ Coffee & Conversations',
+      review: review || '', 
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
       createdAt: Date.now(),
       photo: capturedImage
     };
     onComplete(finalMemory);
-    onNavigate('thank-you'); 
+    onNavigate('chronicle'); 
+  };
+
+  // Skip & Get Receipt action (From Step 8) -> Updated to go straight to chronicles!
+  const handleSkipToChronicleBoard = () => {
+    const finalMemory = {
+      rating: rating || 3,
+      purpose: purpose || 'escape',
+      items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
+      dish: favoriteDish || 'Cozy Brew',
+      highlights: selectedHighlights,
+      vibe: vibe || '☕ Coffee & Conversations', 
+      review: review || '', 
+      name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
+      createdAt: Date.now(),
+      photo: capturedImage
+    };
+    onComplete(finalMemory);
+    onNavigate('chronicle'); 
   };
 
   const pageVariants = {
@@ -407,7 +416,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   type="text"
                   value={anonymousName}
                   onChange={(e) => setAnonymousName(e.target.value)}
-                  placeholder="Sign with an anonymous handle (or leave blank for custom name)..."
+                  placeholder="Sign with an anonymous handle..."
                   className="w-full bg-white border-2 border-[#472C20] rounded-xl px-3 py-2 text-xs font-bold outline-none"
                 />
                 <button
@@ -461,12 +470,11 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           Add a Scrapbook Photo 📸
                         </button>
                         
-                        {/* THE NEW SKIP BUTTON */}
                         <button
-                          onClick={handleFinalizeWizard}
+                          onClick={handleSkipToChronicleBoard}
                           className="w-full bg-white text-[#472C20] border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider transition-transform active:translate-y-1 active:shadow-none"
                         >
-                          Skip & Get Receipt 🧾
+                          Skip & View Chronicles 📜
                         </button>
                       </div>
 
@@ -484,10 +492,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   <p className="text-xs font-medium opacity-70">Say cheese for our retro camera framework!</p>
                 </div>
 
-                {/* DIGICAM HOUSING CONTAINER */}
                 <div className="w-full max-w-xl mx-auto bg-gradient-to-br from-[#E2DDD3] via-[#D1C9BC] to-[#BCB2A1] border-4 border-[#472C20] rounded-3xl p-4 shadow-[8px_8px_0_#472C20] relative flex flex-col md:flex-row gap-4 items-center">
                   
-                  {/* Decorative Camera viewfinders & lens indicators on top bar */}
                   <div className="absolute top-2 left-6 flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full bg-radial from-[#555] to-black border-2 border-[#A8A093] shadow-inner" />
                     <div className="flex flex-col gap-0.5">
@@ -499,15 +505,11 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                     DIGITAL LENS FX
                   </div>
 
-                  {/* LEFT SIDE: CAMERA LCD DISPLAY SCREEN */}
                   <div className="w-full md:w-[65%] aspect-[4/3] bg-[#EFEFEF] border-4 border-[#5E5345] rounded-xl p-2 relative overflow-hidden shadow-inner flex flex-col justify-between">
-                    
-                    {/* Brand stamp tracking layout */}
                     <div className="text-[10px] font-serif font-black text-center text-[#472C20]/70 tracking-wider mb-1">
                       ✨ Cafécam Classic ✨
                     </div>
 
-                    {/* Viewfinder Stream / Screen Frame Box */}
                     <div className="w-full flex-1 bg-black rounded-md overflow-hidden border-2 border-[#472C20] relative flex items-center justify-center">
                       {cameraStream && !capturedImage && (
                         <video 
@@ -539,7 +541,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                         </div>
                       )}
 
-                      {/* Display Screen Overlay Text */}
                       {(cameraStream || capturedImage) && (
                         <div className="absolute top-1 left-2 text-[9px] text-[#A8E6CF] font-mono tracking-tighter uppercase drop-shadow">
                           ● LIVE REC [AWB]
@@ -554,28 +555,23 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                     )}
                   </div>
 
-                  {/* RIGHT SIDE: DIGICAM CONTROL INTERFACE PANEL */}
                   <div className="w-full md:w-[35%] flex flex-col items-center justify-between py-2 space-y-4">
-                    {/* Mode Slider / Slits */}
                     <div className="w-16 h-3 bg-[#B0A695] border-2 border-[#472C20] rounded-sm flex justify-around p-0.5">
                       <div className="w-2 h-full bg-[#472C20] rounded-xs" />
                       <div className="w-2 h-full bg-transparent" />
                       <div className="w-2 h-full bg-transparent" />
                     </div>
 
-                    {/* Metallic Circular Navigation Wheel D-Pad */}
                     <div className="w-20 h-20 rounded-full bg-gradient-to-b from-[#FAF8F5] via-[#D8CEBF] to-[#B5A893] border-4 border-[#5E5345] shadow-md relative flex items-center justify-center">
                       <div className="absolute top-1 text-[8px] font-bold text-[#5E5345]">▲</div>
                       <div className="absolute bottom-1 text-[8px] font-bold text-[#5E5345]">▼</div>
                       <div className="absolute left-1 text-[8px] font-bold text-[#5E5345]">◀</div>
                       <div className="absolute right-1 text-[8px] font-bold text-[#5E5345]">▶</div>
                       
-                      {/* Center Action Button */}
                       {cameraStream && !capturedImage ? (
                         <button
                           onClick={capturePhoto}
                           className="w-10 h-10 rounded-full bg-[#FF9F29] border-2 border-[#472C20] shadow-inner flex items-center justify-center font-black text-[9px] text-white uppercase active:scale-95 transition-transform"
-                          title="Snap Photo"
                         >
                           SNAP
                         </button>
@@ -583,14 +579,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                         <button
                           onClick={startCamera}
                           className="w-10 h-10 rounded-full bg-[#FFFDF9] border-2 border-[#472C20] shadow-inner flex items-center justify-center font-black text-[9px] text-[#472C20] uppercase active:scale-95 transition-transform"
-                          title={capturedImage ? "Retake Photo" : "Turn Camera On"}
                         >
                           {capturedImage ? <RefreshCw size={12} /> : 'SET'}
                         </button>
                       )}
                     </div>
 
-                    {/* Mic Grille + Secondary Menu Buttons */}
                     <div className="flex flex-col items-center gap-2">
                       <div className="grid grid-cols-3 gap-0.5 opacity-50">
                         {[...Array(6)].map((_, i) => <div key={i} className="w-1 h-1 rounded-full bg-[#472C20]" />)}
@@ -626,7 +620,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                       onClick={handleFinalizeWizard}
                       className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl border-2 border-transparent shadow-[2px_2px_0_#000]"
                     >
-                      View Receipt 🧾
+                      Go to Chronicles 📜
                     </button>
                   </div>
                 </div>

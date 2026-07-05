@@ -6,7 +6,7 @@ import AdminLogin from './pages/AdminLogin';
 
 // --- CONTEXT & PERSISTENCE ---
 import { AvatarProvider } from './context/AvatarContext';
-import { CartProvider } from './context/CartContext'; // Added Cart Context Import
+import { CartProvider } from './context/CartContext'; 
 import GlobalCompanion from './components/GlobalCompanion';
 import VinylPlayer from './components/VinylPlayer';
 
@@ -19,6 +19,7 @@ import ThankYou from './pages/ThankYou';
 import MemoryWall from './pages/MemoryWall';
 import MenuBoard from './pages/MenuBoard';
 import ChronicleBoard from './pages/ChronicleBoard';
+import GameLeaderboardBoard from './pages/GameLeaderboardBoard';// Your new gaming metrics file
 import Directory from './pages/Directory';
 import OwnerPortal from './pages/OwnerPortal';
 import Games from './pages/Games';
@@ -40,13 +41,13 @@ function MainLayoutContent() {
     setMemories(DEFAULT_MEMORIES);
   }, []);
 
-  // This forces the correct theme whenever the browser back/forward buttons are clicked
   useEffect(() => {
     const path = location.pathname;
     if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
     else if (path === '/menu') setTheme(THEMES.forest);
     else if (path === '/chronicle') setTheme(THEMES.sand);
-    else if (path === '/directory') setTheme(THEMES.lavender);
+    else if (path === '/leaderboard') setTheme(THEMES.sand); // Match the sand theme vibe for the leaderboard
+    else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
     else if (path === '/review') setTheme(THEMES.rose);
     else if (path === '/wall') setTheme(THEMES.navy);
   }, [location.pathname]);
@@ -62,15 +63,39 @@ function MainLayoutContent() {
   const handleNavigate = (page, newTheme = THEMES.cream) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTheme(newTheme);
+    
     if (page === 'welcome') navigate('/');
     else if (page === 'avatar-studio') navigate('/avatar-studio');
     else if (page === 'home') navigate('/cafe');
     else if (page === 'hue-hunt') navigate('/games/hue-hunt');
     else if (page === 'icebreakers') navigate('/games/icebreakers');
+    
+    // 🕹️ New case: "cafe-chronicles" explicitly triggers the leaderboard
+    else if (page === 'cafe-chronicles') {
+      navigate('/leaderboard');
+    }
+    
+    // ✨ Standard chronicles flow (after reviews, etc.) stays linked to the original vibe board
+    else if (page === 'chronicles' || page === 'chronicle' || page === 'wall') {
+      navigate('/chronicle', { state: { theme: THEMES.sand } });
+    } 
+    
     else navigate(`/${page}`);
   };
 
   const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
+  const isCafeRoute = location.pathname === '/cafe';
+
+  const layoutBackgroundStyle = isCafeRoute 
+    ? {
+        backgroundColor: '#FDFBF7',
+        backgroundImage: `
+          linear-gradient(transparent 95%, #E8E2D5 95%),
+          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E")
+        `,
+        backgroundSize: '100% 32px, 150px 150px',
+      }
+    : {};
 
   return (
     <motion.div 
@@ -78,34 +103,60 @@ function MainLayoutContent() {
         backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg, 
         color: isOnboarding ? '#472C20' : theme.text 
       }} 
+      style={layoutBackgroundStyle}
       transition={{ duration: 0.5 }} 
-      className="min-h-screen font-sans selection:bg-white/30 relative"
+      className="min-h-screen font-sans selection:bg-white/30 relative overflow-x-hidden select-none flex flex-col items-stretch"
     >
-      <GlobalGrid />
+      {!isCafeRoute && <GlobalGrid />}
 
       {!isOnboarding && <VinylPlayer theme={theme} />}
       
       <GlobalCompanion />
 
-      {/* Main Cafe App Header */}
       {!isOnboarding && (
-        <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-[100]">
-          <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
-            <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:rotate-12 transition-transform">🚪</div>
-            <div>
-              <h1 className="font-serif font-bold text-2xl tracking-tight">Dumble' Door</h1>
-              <p className="font-cursive text-xl opacity-80 -mt-1">Jagda, Rourkela</p>
+        <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
+          <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+            <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
+              <div 
+                style={{ backgroundColor: theme.text, color: theme.bg }} 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent"
+              >
+                🚪
+              </div>
+              <div>
+                <h1 className="font-serif font-black text-xl tracking-tight leading-none" style={{ color: theme.text }}>
+                  Dumble' Door
+                </h1>
+                <p className="font-cursive text-sm opacity-80 mt-0.5" style={{ color: theme.text }}>
+                  Jagda, Rourkela
+                </p>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex gap-2 items-center">
-            {location.pathname !== '/menu' && <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.border }} className="hidden sm:block text-sm font-medium px-5 py-2 rounded-full border hover:opacity-70 transition-opacity">Menu</button>}
-            <button onClick={() => handleNavigate('welcome')} className="text-xs font-black border-2 border-current px-4 py-1.5 rounded-full shadow hover:bg-white/10 transition-colors">Log Out</button>
+            
+            <div className="flex gap-3 items-center">
+              {location.pathname !== '/menu' && (
+                <button 
+                  onClick={() => handleNavigate('menu', THEMES.forest)} 
+                  style={{ borderColor: theme.text, color: theme.text }} 
+                  className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all"
+                >
+                  Menu
+                </button>
+              )}
+              <button 
+                onClick={() => handleNavigate('welcome')} 
+                style={{ borderColor: theme.text, color: theme.text }}
+                className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all"
+              >
+                Log Out
+              </button>
+            </div>
           </div>
         </nav>
       )}
 
-      <main className={isOnboarding ? "" : "pb-32 relative z-10"}>
+      {/* Main Viewport Mount Area */}
+      <main className="flex-1 w-full relative z-10 flex flex-col items-stretch">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
@@ -115,8 +166,12 @@ function MainLayoutContent() {
             <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
             <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
             <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
+            
+            {/* Both routes coexist cleanly now: */}
             <Route path="/chronicle" element={<ChronicleBoard memories={memories} theme={theme} />} />
-            <Route path="/directory" element={<Directory theme={theme} />} />
+            <Route path="/game-leaderboard" element={<GameLeaderboardBoard />} />
+            
+            <Route path="/directory" element={<Directory theme={theme} onNavigate={handleNavigate} />} />
             <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
