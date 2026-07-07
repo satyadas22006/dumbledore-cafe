@@ -45,8 +45,8 @@ function MainLayoutContent() {
     const path = location.pathname;
     if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
     else if (path === '/menu') setTheme(THEMES.forest);
-    else if (path === '/chronicle') setTheme(THEMES.sand);
-    else if (path === '/leaderboard') setTheme(THEMES.sand); // Match the sand theme vibe for the leaderboard
+    if (path === '/chronicle') setTheme({ bg: '#c5bdd4', text: '#472C20', border: 'transparent' });
+    if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
     else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
     else if (path === '/review') setTheme(THEMES.rose);
     else if (path === '/wall') setTheme(THEMES.navy);

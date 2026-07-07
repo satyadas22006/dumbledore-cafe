@@ -49,3 +49,20 @@ html { scroll-behavior: smooth; }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .vinyl-spin { animation: spin 4s linear infinite; }
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  
+  /* Select the specific receipt element */
+  #print-only-receipt, #print-only-receipt * {
+    visibility: visible !important;
+  }
+  
+  #print-only-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

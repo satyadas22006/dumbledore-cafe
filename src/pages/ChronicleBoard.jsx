@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
 import { useAvatar } from '../context/AvatarContext';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import Receipt from './Receipt';
 
 const VIBE_CONFIGS = {
   '🌧️ Rainy Day Comfort': { color: '#9D446E', name: 'Grape' },
@@ -124,7 +125,6 @@ export default function ChronicleBoard() {
   };
 
   const piePaths = generatePiePaths();
-  const absoluteLatestReview = memories[0] || null;
 
   if (loading) {
     return (
@@ -135,13 +135,10 @@ export default function ChronicleBoard() {
   }
 
   return (
-    /* MAIN INTERFACE BACKGROUND */
     <div className="w-full min-h-screen bg-[#EBE3F5] bg-[radial-gradient(circle_at_center,#C5B4E3_0%,#EBE3F5_70%)] text-[#472C20] py-12 px-4 md:px-8 relative overflow-hidden select-none flex flex-col items-center">
       
-      {/* UNINTERRUPTED NOTEBOOK GRID RUNNING FREELY UNDERNEATH ALL ELEMENTS */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#472c2010_1px,transparent_1px),linear-gradient(to_bottom,#472c2010_1px,transparent_1px)] bg-[size:42px_42px] pointer-events-none z-0" />
 
-      {/* HEADER BAR (OUTLINE BORDER REMOVED FOR CLEAN SPLIT LOOK) */}
       <div className="relative w-full max-w-6xl mb-12 z-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[24px] p-6 shadow-sm">
         <div className="text-center md:text-left">
           <div className="inline-flex items-center gap-2 bg-[#EBE3F5] text-[10px] font-mono font-black uppercase tracking-wider px-3 py-1 rounded-xl mb-3">
@@ -163,16 +160,13 @@ export default function ChronicleBoard() {
         </div>
       </div>
 
-      {/* LAYOUT GRID: BOX ARRANGEMENT COMPLETELY PRESERVED AND INTEGRATED */}
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10 flex-1">
         
-        {/* LEFT COLUMN METRICS BLOCK (BORDERS REMOVED TO BLEND WITH UNDERLYING GRID) */}
         <div className="lg:col-span-5 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex flex-col items-center justify-between min-h-[540px]">
           <div className="w-full text-center lg:text-left mb-2">
             <h3 className="text-xs font-mono font-black uppercase tracking-wider text-[#472C20]/60">Atmosphere Share</h3>
           </div>
 
-          {/* PIE CHART LAYER */}
           <div className="relative w-[380px] h-[380px] flex items-center justify-center p-4">
             <svg viewBox="0 0 380 380" className="w-full h-full overflow-visible drop-shadow-sm">
               <circle cx="190" cy="190" r="172" fill="none" stroke="#472C20" strokeWidth="2" strokeDasharray="4 4" className="opacity-40" />
@@ -216,7 +210,6 @@ export default function ChronicleBoard() {
               </g>
             </svg>
 
-            {/* HOVER TOOLTIP CARD */}
             <AnimatePresence>
               {hoveredVibe && (
                 <motion.div 
@@ -246,7 +239,6 @@ export default function ChronicleBoard() {
             </AnimatePresence>
           </div>
 
-          {/* COLOR LEGEND ROW */}
           <div className="w-full bg-white/40 backdrop-blur-[2px] py-2.5 px-4 flex flex-wrap justify-center gap-5 items-center mt-2 rounded-xl">
             {Object.entries(VIBE_CONFIGS).map(([vibeName, config]) => (
               <div key={vibeName} className="flex items-center gap-2">
@@ -257,10 +249,7 @@ export default function ChronicleBoard() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN STACK (CONTAINER WRAPPERS REMOVED AND BLENDED) */}
         <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
-          
-          {/* USER REVIEW COMPONENT BLOCK */}
           <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center border-b border-dashed border-[#472C20]/10 pb-3 mb-4">
@@ -291,41 +280,19 @@ export default function ChronicleBoard() {
             </div>
           </div>
 
-          {/* COMMUNITY PULSE COMPONENT BLOCK */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-between">
-            <div>
-              <div className="flex justify-between items-center border-b border-dashed border-[#472C20]/10 pb-3 mb-4">
-                <h2 className="text-md font-serif font-black tracking-wide text-[#472C20] flex items-center gap-2">
-                  <span>⏳</span> Latest Community Pulse
-                </h2>
-                {absoluteLatestReview && (
-                  <span className="text-[10px] font-mono font-black bg-[#9D446E] text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    NEW LOG
-                  </span>
-                )}
-              </div>
-
-              {absoluteLatestReview ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-black text-[#472C20]/80">👤 {absoluteLatestReview.name || 'Anonymous Stranger'}</span>
-                    <span className="text-[#472C20]/20 text-xs">•</span>
-                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#9D446E]">{absoluteLatestReview.vibe}</span>
-                  </div>
-                  <div className="bg-[#FAF6EE]/60 p-4 rounded-2xl italic text-xs text-[#472C20] font-medium leading-relaxed font-serif shadow-xs">
-                    "{absoluteLatestReview.review || 'Left an open canvas vibe.'}"
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-[#472C20]/40 italic py-8 text-center">The global ledger pipeline context contains no active files.</p>
-              )}
-            </div>
-          </div>
-
+          {/* REPLACEMENT COMPONENT: GET UR RECEIPT */}
+         <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-center items-center gap-4">
+  <button 
+    onClick={() => window.print()}
+    className="px-8 py-4 bg-[#472C20] text-white font-black uppercase tracking-widest rounded-full hover:bg-[#9D446E] transition-all shadow-lg active:scale-95"
+  >
+    Get Ur Receipt
+  </button>
+  
+  <Receipt data={userReview} />
+</div>
         </div>
-
       </div>
-
     </div>
   );
 }

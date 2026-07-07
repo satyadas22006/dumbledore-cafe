@@ -1,94 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
-
-// ── Design tokens ──────────────
-const INK = '#472C20';
-const CREAM = '#FAF6EE';
-const LAVENDER_DEEP = '#C5B4E3';
-
-// ── "Kirby" Style Avatar Component ──────────────
-const KirbyAvatar = ({ size = 50 }) => (
-  <div 
-    className="relative rounded-full shadow-md border-2 border-white/50"
-    style={{ 
-      width: size, 
-      height: size, 
-      background: 'linear-gradient(135deg, #FFC1D9 0%, #FF85B3 100%)' 
-    }}
-  >
-    {/* Simple facial features to evoke the aesthetic */}
-    <div className="absolute top-[35%] left-[25%] w-[15%] h-[20%] bg-[#472C20] rounded-full" />
-    <div className="absolute top-[35%] right-[25%] w-[15%] h-[20%] bg-[#472C20] rounded-full" />
-    <div className="absolute top-[60%] left-[45%] w-[10%] h-[5%] bg-[#472C20] rounded-full" />
-  </div>
-);
 
 export default function GameLeaderboardBoard() {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const topPlayersQuery = query(collection(db, 'gameStats'), orderBy('score', 'desc'), limit(50));
-    const unsubscribe = onSnapshot(topPlayersQuery, (snapshot) => {
+    const q = query(collection(db, 'hue_hunt_matches'), orderBy('finalScore', 'desc'), limit(10));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       setPlayers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className="p-10 text-center font-mono text-white">Loading...</div>;
-
   return (
-    <div 
-      className="w-full min-h-screen p-6 md:p-12 relative" 
-      style={{ 
-        background: LAVENDER_DEEP,
-        backgroundImage: `linear-gradient(to right, ${INK}08 1px, transparent 1px), linear-gradient(to bottom, ${INK}08 1px, transparent 1px)`,
-        backgroundSize: '40px 40px' 
-      }}
-    >
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-5xl font-black text-center mb-16 text-white drop-shadow-md">Leaderboard</h1>
-
-        {/* Podium Area */}
-        <div className="flex items-end justify-center gap-6 mb-16">
-          {[2, 1, 3].map((rank, index) => {
-            const player = players[index];
-            return (
-              <motion.div 
-                key={rank} 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col items-center w-24"
-              >
-                <KirbyAvatar size={rank === 1 ? 80 : 60} />
-                <div 
-                  className="w-full mt-4 rounded-t-2xl flex flex-col items-center justify-center shadow-lg"
-                  style={{ 
-                    height: rank === 1 ? 180 : 120, 
-                    background: rank === 1 ? '#F0B429' : '#C5B4E3' 
-                  }}
-                >
-                  <span className="text-white font-black text-2xl">{rank}</span>
-                  {player && <span className="text-white text-xs font-bold mt-1">{player.score}</span>}
-                </div>
-              </motion.div>
-            );
-          })}
+    <div className="w-full min-h-screen flex items-center justify-center p-6">
+      {/* Outer Creature Shape Container */}
+      <div className="bg-[#A3E4D7] border-[6px] border-[#472C20] rounded-[40px] p-8 w-full max-w-2xl shadow-[15px_15px_0_rgba(71,44,32,0.2)] relative">
+        
+        {/* Decorative Header Ribbon */}
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#F1948A] border-[4px] border-[#472C20] px-12 py-3 rounded-full shadow-lg">
+          <h1 className="text-3xl font-black text-white uppercase tracking-widest">Leaderboard</h1>
         </div>
 
-        {/* List Area */}
-        <div className="bg-white/80 backdrop-blur-md rounded-[40px] p-8 shadow-xl">
-          {players.slice(3).map((player, i) => (
-            <div key={player.id} className="flex items-center gap-6 py-4 border-b border-black/5 last:border-0">
-              <span className="font-mono text-xl font-black opacity-30 w-8">{i + 4}</span>
-              <KirbyAvatar size={40} />
-              <span className="font-bold text-lg flex-1">{player.username}</span>
-              <span className="font-black text-lg">{player.score?.toLocaleString()}</span>
+        {/* Inner Dashed Content Area */}
+        <div className="bg-[#FAF6EE] border-[4px] border-[#472C20] border-dashed rounded-[30px] p-8 mt-8 min-h-[500px]">
+          {loading ? (
+            <p className="text-center font-black py-20 text-[#472C20]">Loading...</p>
+          ) : (
+            <div className="space-y-6">
+              {players.map((p, i) => (
+                <div key={p.id} className="flex items-center gap-6 py-4 border-b-2 border-dashed border-[#472C20]/20">
+                  <span className="font-black text-3xl text-[#472C20]/40 w-12">#{i + 1}</span>
+                  <span className="font-bold text-xl text-[#472C20] flex-1">{p.playerName || "Anonymous"}</span>
+                  <span className="font-black text-xl bg-[#FAD7A0] px-6 py-2 rounded-full border-2 border-[#472C20]">
+                    {p.finalScore?.toLocaleString()}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex gap-4 justify-center mt-8">
+          <button onClick={() => navigate(-1)} className="bg-[#FAD7A0] border-4 border-[#472C20] px-8 py-3 rounded-full font-black text-[#472C20] hover:scale-105 transition-transform">
+            BACK
+          </button>
+          <button onClick={() => navigate('/games')} className="bg-[#85C1E9] border-4 border-[#472C20] px-8 py-3 rounded-full font-black text-[#472C20] hover:scale-105 transition-transform">
+            PLAY AGAIN
+          </button>
         </div>
       </div>
     </div>

@@ -312,13 +312,13 @@ const HueHunt = ({ onNavigate }) => {
               <span className="text-6xl block animate-bounce">🐥🔍</span>
               <h2 className="text-3xl font-serif font-black">Hue Hunt Machine</h2>
               <p className="text-sm font-medium opacity-80 leading-relaxed max-w-sm mx-auto">
-                No storage plan required! The local engine downsamples camera data inside canvas buffers, uses advanced HSV matrix space math to compute spatial contrast vectors, and scores your hunt accuracy instantly!
+                given a target color,your mission is to capture 3 real world photos that match the hue and saturation range of the target. Happy hunting !!
               </p>
               <button 
                 onClick={startGame} 
                 className="bg-[#3C2F2F] text-[#F9F6F0] font-bold px-8 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-transform shadow-md"
               >
-                Boot CV Engine Game
+                LETS GO!!
               </button>
             </motion.div>
           )}
