@@ -48,6 +48,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [anonymousName, setAnonymousName] = useState('');
   
   const [isSearchingTwin, setIsSearchingTwin] = useState(false);
+  const lastSubmissionRef = useRef(0);
 
   const handleNextStep = () => {
     if (step < 7) {
@@ -147,8 +148,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const handleInstagramShare = () => {
     alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
   };
-
-  // View Receipt action (End of step 9) -> Updated to go straight to chronicles!
+  
+  // We make sure this saves everything and routes instantly!
   const handleFinalizeWizard = () => {
     const finalMemory = {
       rating: rating || 3,

@@ -3963,7 +3963,7 @@ const Directory = ({ onNavigate }) => {
     }
   };
 
-  // Randomized anchor zones + randomized image mapping per reload
+  // Randomized anchor zones vertically distributed to peek OUT from the sides of the boxes
   const randomizedSketchConfig = useMemo(() => {
     const images = ['/split_1.png', '/split_2.png', '/split_3.png', '/split_4.png', '/split_5.png', '/split_6.png', '/split_7.png', '/split_8.png', '/split_9.png'];
     
@@ -3973,11 +3973,17 @@ const Directory = ({ onNavigate }) => {
         [images[i], images[j]] = [images[j], images[i]];
     }
 
-    // Adjusted zones to distribute across phone/desktop better
+    // Top-to-bottom edge distribution so they don't hide in the center
     const zones = [
-        { top: '2%', left: '2%' }, { top: '5%', left: '50%' }, { top: '2%', right: '2%' },
-        { top: '40%', left: '1%' }, { top: '50%', right: '1%' }, { bottom: '20%', left: '5%' },
-        { bottom: '2%', left: '40%' }, { bottom: '20%', right: '5%' }, { top: '20%', left: '20%' }
+        { top: '3%', left: '2%' },       // Top Left
+        { top: '5%', right: '2%' },      // Top Right
+        { top: '22%', left: '-4%' },     // Mid-Top Left (peeking)
+        { top: '32%', right: '-4%' },    // Mid-Top Right (peeking)
+        { top: '50%', left: '0%' },      // Mid Left
+        { top: '65%', right: '2%' },     // Low-Mid Right
+        { top: '78%', left: '-2%' },     // Low Left
+        { top: '88%', right: '0%' },     // Bottom Right
+        { top: '12%', left: '45%' }      // Top Center-ish
     ];
 
     return images.map((src, i) => ({
@@ -4000,14 +4006,14 @@ const Directory = ({ onNavigate }) => {
         <FloatingSketch 
           key={i} 
           src={config.src} 
-          className="w-32 h-32 md:w-64 md:h-64" // Bigger sizes
+          className="w-32 h-32 md:w-56 md:h-56" // Bumped up mobile size from 20 to 32 so they are clearly visible
           animateVals={config.anim} 
           style={config.style}
           duration={config.duration}
         />
       ))}
 
-      {/* --- BACKGROUND SKETCHES --- */}
+      {/* --- ARTSY BACKGROUND SKETCHES --- */}
       <SketchBackground src="/image_9d2e2e.jpg" className="top-0 left-0 w-96 h-96" animateVals={{ y: [0, 20, 0], rotate: [-2, 2, -2] }} />
       <SketchBackground src="/image_9d2e66.jpg" className="bottom-0 right-0 w-[30rem] h-[30rem]" animateVals={{ y: [0, -25, 0], rotate: [2, -2, 2] }} />
       <SketchBackground src="/image_9d2ea4.jpg" className="top-10 right-[15%] w-80 h-80" animateVals={{ x: [0, -15, 0], rotate: [-1, 1, -1] }} />
@@ -4029,15 +4035,17 @@ const Directory = ({ onNavigate }) => {
       {/* --- MAIN 2-COLUMN LAYOUT --- */}
       <div className="max-w-5xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-16 relative z-10 items-center md:items-stretch">
         
-        {/* LEFT SIDE */}
+        {/* LEFT SIDE: Polaroid Map */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', bounce: 0.4 }}
-          className="flex-1 w-full max-w-md relative flex flex-col items-center self-center z-10"
+          className="flex-1 w-full max-w-md relative flex flex-col items-center self-center mt-10 md:mt-0 z-10"
         >
+          {/* Actual Polaroid */}
           <div className="bg-white p-4 pb-16 border-[3px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,0.15)] relative transform rotate-2 group w-full">
             <Tape className="-top-4 left-[20%] rotate-[-2deg] bg-[#F4A896]" />
             <Tape className="bottom-16 -left-8 rotate-[-5deg] bg-[#FACC15]" />
             
+            {/* Map Area */}
             <div className="w-full aspect-square bg-[#E8E2D5] border-[3px] border-[#472C20] flex flex-col items-center justify-center relative overflow-hidden group-hover:bg-[#E2D5CA] transition-colors cursor-pointer" onClick={handleDirections}>
               {cafeInfo.mapLink ? (
                 <>
@@ -4051,6 +4059,7 @@ const Directory = ({ onNavigate }) => {
               ) : (
                 <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#472C20_25%,transparent_25%,transparent_75%,#472C20_75%,#472C20)] bg-[length:20px_20px] z-0"></div>
               )}
+              {/* Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="bg-white border-[3px] border-[#472C20] px-4 py-2 flex items-center gap-2 shadow-[4px_4px_0_#472C20] transform scale-110">
                   <MapPin size={18} className="text-[#D97757] animate-bounce" />
@@ -4058,25 +4067,31 @@ const Directory = ({ onNavigate }) => {
                 </div>
               </div>
             </div>
+
+            {/* Camera Icon */}
             <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-[3px] border-[#472C20] rounded-full flex items-center justify-center shadow-[4px_4px_0_#472C20] z-20">
               <Camera size={28} className="text-[#D97757]" />
             </div>
+            
             <p className="font-cursive text-center text-2xl text-[#472C20] mt-8 opacity-80">where the magic happens</p>
           </div>
         </motion.div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex-1 flex flex-col justify-center w-full z-10 mt-0">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-4 text-center md:text-left">
-            <h1 className="text-5xl md:text-7xl font-serif font-black text-[#472C20] leading-[0.9]">
+        {/* RIGHT SIDE: Text & Directory.exe */}
+        <div className="flex-1 flex flex-col justify-center w-full z-10 mt-10 md:mt-0">
+          
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-6 text-center md:text-left">
+            <h1 className="text-6xl md:text-7xl font-serif font-black text-[#472C20] leading-[0.9]">
               Come <span className="font-cursive text-[#A78BFA] font-normal transform -rotate-3 inline-block ml-2 drop-shadow-sm">say hi!</span>
             </h1>
           </motion.div>
 
+          {/* Retro OS Window */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
             className="bg-[#FFFDF9] border-[4px] border-[#472C20] shadow-[12px_12px_0_rgba(71,44,32,1)] relative flex flex-col overflow-visible"
           >
+            {/* Title Bar */}
             <div className="bg-[#472C20] text-white px-4 py-2 flex justify-between items-center border-b-[4px] border-[#472C20]">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2">
                 <Navigation size={14}/> directory.exe
@@ -4087,33 +4102,67 @@ const Directory = ({ onNavigate }) => {
                 <div className="w-3 h-3 border-2 border-white rounded-full bg-[#D97757] flex items-center justify-center"><X size={8} /></div>
               </div>
             </div>
+            
+            {/* Red Tint Tab on Top Right */}
             <div className="absolute -top-3 right-8 w-16 h-6 bg-red-900/80 backdrop-blur-sm shadow-sm rounded-t-md z-[-1]"></div>
-            <div className="p-6 space-y-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-none bg-[#A78BFA] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform -rotate-3"><MapPin size={20} /></div>
+
+            {/* Window Content */}
+            <div className="p-8 space-y-8 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10">
+              
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-none bg-[#A78BFA] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform -rotate-3">
+                  <MapPin size={24} />
+                </div>
                 <div>
-                  <p className="font-mono text-[9px] font-black uppercase tracking-widest text-[#A78BFA] mb-0.5">Location</p>
-                  <p className="font-serif text-lg font-bold text-[#472C20] leading-snug">{cafeInfo.locationText}</p>
+                  <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#A78BFA] mb-1">Location</p>
+                  <p className="font-serif text-xl md:text-2xl font-bold text-[#472C20] leading-snug">
+                    {cafeInfo.locationText}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-none bg-[#D97757] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform rotate-2"><Clock size={20} /></div>
+
+              <div className="flex items-start gap-5">
+                <div className="w-12 h-12 rounded-none bg-[#D97757] border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform rotate-2">
+                  <Clock size={24} />
+                </div>
                 <div>
-                  <p className="font-mono text-[9px] font-black uppercase tracking-widest text-[#D97757] mb-0.5">Hours</p>
-                  <p className="font-serif text-lg font-bold text-[#472C20]">{cafeInfo.startDay} – {cafeInfo.endDay}</p>
-                  <p className="font-mono font-bold text-sm text-[#8D5B4C] mt-0.5 bg-white border-2 border-[#472C20] inline-block px-1.5 shadow-sm">{cafeInfo.hours}</p>
+                  <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D97757] mb-1">Hours</p>
+                  <p className="font-serif text-xl md:text-2xl font-bold text-[#472C20]">
+                    {cafeInfo.startDay} – {cafeInfo.endDay}
+                  </p>
+                  <p className="font-mono font-bold text-lg text-[#8D5B4C] mt-1 bg-white border-2 border-[#472C20] inline-block px-2 shadow-sm">
+                    {cafeInfo.hours}
+                  </p>
                 </div>
               </div>
+
+              {cafeInfo.phone && (
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-none bg-emerald-400 border-[3px] border-[#472C20] shadow-[3px_3px_0_#472C20] flex items-center justify-center flex-shrink-0 text-white transform -rotate-1">
+                    <Phone size={24} />
+                  </div>
+                  <div>
+                    <p className="font-mono text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Ring Us</p>
+                    <p className="font-mono font-bold text-xl text-[#472C20]">
+                      {cafeInfo.phone}
+                    </p>
+                  </div>
+                </div>
+              )}
+
             </div>
           </motion.div>
 
           <motion.button 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
             onClick={handleDirections}
-            className="mt-6 mx-auto md:mx-0 bg-[#A78BFA] text-white font-mono font-bold uppercase tracking-[0.15em] text-sm px-8 py-4 border-[4px] border-[#472C20] shadow-[6px_6px_0_#472C20] hover:translate-y-[2px] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center gap-2 w-fit relative"
+            className="mt-6 mx-auto md:mx-0 bg-[#A78BFA] text-white font-mono font-bold uppercase tracking-[0.15em] text-sm px-10 py-5 border-[4px] border-[#472C20] shadow-[6px_6px_0_#472C20] hover:translate-y-[2px] hover:shadow-[4px_4px_0_#472C20] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center gap-3 w-fit relative overflow-hidden group"
           >
-            <Navigation size={18} /> LAUNCH MAPS
+            <div className="absolute top-0 -left-[100%] w-1/2 h-full bg-white/20 skew-x-12 group-hover:animate-[shine_1s_ease-in-out]"></div>
+            <Navigation size={20} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> 
+            LAUNCH MAPS
           </motion.button>
+
         </div>
       </div>
     </div>
@@ -4135,7 +4184,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 const WashiTape = ({ className, color = "bg-white/60" }) => (
   <div 
-    className={`absolute w-16 h-6 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
+    className={`absolute w-12 h-5 md:w-16 md:h-6 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
     style={{ 
       borderLeft: '2px dashed rgba(71, 44, 32, 0.2)', 
       borderRight: '2px dashed rgba(71, 44, 32, 0.2)' 
@@ -4144,7 +4193,7 @@ const WashiTape = ({ className, color = "bg-white/60" }) => (
 );
 
 const Paperclip = ({ className }) => (
-  <div className={`absolute w-4 h-12 border-[2.5px] border-[#472C20]/70 rounded-full z-30 shadow-[1px_1px_0_rgba(71,44,32,0.3)] bg-gradient-to-b from-gray-100 to-gray-300 ${className}`}>
+  <div className={`absolute w-3 h-10 md:w-4 md:h-12 border-[2.5px] border-[#472C20]/70 rounded-full z-30 shadow-[1px_1px_0_rgba(71,44,32,0.3)] bg-gradient-to-b from-gray-100 to-gray-300 ${className}`}>
     <div className="absolute top-1 right-[2px] bottom-3 w-1.5 border-r-[2.5px] border-t-[2.5px] border-b-[2.5px] border-[#472C20]/70 rounded-r-full"></div>
   </div>
 );
@@ -4157,7 +4206,7 @@ const ScrapbookCard = ({ children, colSpan, bgClass, rotate = 0, onClick, delay 
     whileHover={{ scale: 1.02, rotate: rotate === 0 ? 1 : 0, zIndex: 30 }}
     whileTap={{ scale: 0.98, boxShadow: "2px 2px 0px #472C20", transform: "translate(4px, 4px)" }}
     onClick={onClick}
-    className={`relative cursor-pointer border-[3px] border-[#472C20] rounded-[24px] p-6 shadow-[8px_8px_0_#472C20] flex flex-col group transition-all duration-300 ${colSpan} ${bgClass} ${extraClasses}`}
+    className={`relative cursor-pointer border-[3px] border-[#472C20] rounded-[24px] p-5 md:p-6 shadow-[8px_8px_0_#472C20] flex flex-col group transition-all duration-300 ${colSpan} ${bgClass} ${extraClasses}`}
   >
     {children}
   </motion.div>
@@ -4166,7 +4215,7 @@ const ScrapbookCard = ({ children, colSpan, bgClass, rotate = 0, onClick, delay 
 const Home = ({ onNavigate }) => {
   const [liveMenu, setLiveMenu] = useState([]);
   
-  // --- NEW: Global Cafe Settings State matched with Portal ---
+  // --- Global Cafe Settings State matched with Portal ---
   const [cafeInfo, setCafeInfo] = useState({
     name: "Dumble' Door",
     location: "Jagda, Rourkela",
@@ -4190,7 +4239,7 @@ const Home = ({ onNavigate }) => {
       }
     });
 
-    // 2. NEW: Fetch live Cafe Info
+    // 2. Fetch live Cafe Info
     const unsubInfo = onSnapshot(doc(db, "settings", "cafeInfo"), (docSnap) => {
       if (docSnap.exists()) {
         setCafeInfo(prev => ({ ...prev, ...docSnap.data() }));
@@ -4199,7 +4248,7 @@ const Home = ({ onNavigate }) => {
 
     return () => {
       unsubMenu();
-      unsubInfo(); // cleanup listener
+      unsubInfo();
     };
   }, []);
 
@@ -4213,20 +4262,20 @@ const Home = ({ onNavigate }) => {
   };
 
   return (
-    <div style={notebookBackgroundStyle} className="min-h-screen py-16 px-6 relative overflow-hidden select-none">
+    // Replaced overflow-hidden with overflow-clip so elements don't abruptly cut off on resize
+    <div style={notebookBackgroundStyle} className="min-h-screen py-8 md:py-16 px-4 md:px-6 relative overflow-clip select-none">
       
       {/* Torn Top Edge Detail */}
       <div className="absolute top-0 left-0 right-0 h-3 bg-[#E8E2D5] opacity-40 z-0" style={{ backgroundImage: 'radial-gradient(circle at 6px 100%, transparent 5px, currentColor 6px)', backgroundSize: '12px 100%', backgroundRepeat: 'repeat-x' }}></div>
 
       {/* --- LIVE SCRAPBOOK BACKGROUND ENGINE --- */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
         
         {/* --- TOP ELEMENTS --- */}
-        {/* Floating Store Hours (Using Live Database Data!) */}
-        <motion.div animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[8%] left-[6%] bg-[#FFFDF9] border border-[#472C20]/20 p-4 shadow-sm opacity-70 flex flex-col items-center rotate-[-6deg]">
-          <WashiTape className="-top-3 left-4 rotate-[10deg] bg-[#D97757]/40" />
+        {/* Floating Store Hours */}
+        <motion.div animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[6%] left-[2%] md:left-[6%] bg-[#FFFDF9] border border-[#472C20]/20 p-2 md:p-4 shadow-sm opacity-70 flex flex-col items-center rotate-[-6deg] z-0 scale-75 md:scale-100 origin-top-left">
+          <WashiTape className="-top-3 left-2 md:left-4 rotate-[10deg] bg-[#D97757]/40" />
           <Clock size={16} className="text-[#472C20]/50 mb-1" />
-          {/* UPDATED: Dynamic Days pulling from startDay and endDay */}
           <span className="font-mono text-[10px] font-bold text-[#472C20] uppercase tracking-widest">
             {cafeInfo.startDay && cafeInfo.endDay 
               ? `${cafeInfo.startDay.substring(0,3)}-${cafeInfo.endDay.substring(0,3)}` 
@@ -4235,45 +4284,45 @@ const Home = ({ onNavigate }) => {
           <span className="font-serif font-black text-xl text-[#D97757] uppercase">{cafeInfo.hours}</span>
         </motion.div>
 
-        {/* Hanging Tea Bag Tag (Top Center-Right) */}
-        <motion.div animate={{ rotate: [-4, 4, -4] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-0 right-[25%] flex flex-col items-center origin-top opacity-70 hidden md:flex">
-          <div className="w-[1.5px] h-12 bg-[#472C20]/30"></div>
+        {/* Hanging Tea Bag Tag (Now visible and scaled on mobile!) */}
+        <motion.div animate={{ rotate: [-4, 4, -4] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-0 right-[5%] md:right-[25%] flex flex-col items-center origin-top opacity-70 z-0 scale-75 md:scale-100">
+          <div className="w-[1.5px] h-8 md:h-12 bg-[#472C20]/30"></div>
           <div className="bg-[#FEF6E4] border border-[#472C20]/15 px-3 py-1.5 shadow-sm rounded-b-md relative flex flex-col items-center">
             <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#472C20]/40 rounded-full"></div>
             <span className="font-cursive text-xs text-[#472C20] opacity-80 mt-1">tea time</span>
           </div>
         </motion.div>
 
-        {/* Vintage Seal/Stamp (Top Right) */}
-        <motion.div animate={{ y: [0, 8, 0], rotate: [12, 16, 12] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[8%] w-16 h-16 bg-[#FDF8E1] rounded-full border-[3px] border-[#D97757]/60 shadow-sm flex items-center justify-center border-dashed opacity-70 hidden md:flex">
+        {/* Vintage Seal/Stamp */}
+        <motion.div animate={{ y: [0, 8, 0], rotate: [12, 16, 12] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[12%] right-[2%] md:top-[10%] md:right-[8%] w-16 h-16 bg-[#FDF8E1] rounded-full border-[3px] border-[#D97757]/60 shadow-sm flex items-center justify-center border-dashed opacity-70 z-0 scale-75 md:scale-100">
            <span className="font-serif font-black text-[#D97757]/80 text-[10px] uppercase tracking-widest transform -rotate-12">Enjoy!</span>
         </motion.div>
 
 
         {/* --- LEFT SIDE CUTE ELEMENTS --- */}
-        <motion.div animate={{ y: [0, -15, 0], rotate: [-10, 10, -10] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[35%] left-[4%] text-4xl opacity-40 hidden md:block drop-shadow-sm">
+        <motion.div animate={{ y: [0, -15, 0], rotate: [-10, 10, -10] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[25%] md:top-[35%] left-[2%] md:left-[4%] text-4xl opacity-40 drop-shadow-sm z-0 scale-75 md:scale-100">
           ⭐
         </motion.div>
         
-        <motion.div animate={{ y: [0, 15, 0], rotate: [0, 5, 0] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute top-[60%] left-[3%] bg-[#E6DFD5] p-3 shadow-md border border-[#472C20]/10 rotate-[-12deg] hidden md:block opacity-60">
+        <motion.div animate={{ y: [0, 15, 0], rotate: [0, 5, 0] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute top-[55%] md:top-[60%] left-[1%] md:left-[3%] bg-[#E6DFD5] p-3 shadow-md border border-[#472C20]/10 rotate-[-12deg] opacity-60 z-0 scale-75 md:scale-100 origin-left">
            <WashiTape className="-top-3 left-2 rotate-[15deg] bg-white/40" />
            <p className="font-cursive text-2xl text-[#472C20]/70">yum!</p>
         </motion.div>
 
         {/* --- BOTTOM ELEMENTS --- */}
-        <motion.div animate={{ scale: [1, 1.1, 1], rotate: [0, 15, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute bottom-[10%] left-[6%] text-3xl opacity-40 drop-shadow-sm hidden md:block">
+        <motion.div animate={{ scale: [1, 1.1, 1], rotate: [0, 15, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute bottom-[5%] md:bottom-[10%] left-[3%] md:left-[6%] text-3xl opacity-40 drop-shadow-sm z-0 scale-75 md:scale-100">
           ✨
         </motion.div>
 
-        {/* Scattered Coffee Beans (Bottom Right) */}
-        <div className="absolute bottom-[8%] right-[8%] opacity-50 flex gap-2 rotate-[15deg] hidden md:flex drop-shadow-sm">
+        {/* Scattered Coffee Beans */}
+        <div className="absolute bottom-[5%] md:bottom-[8%] right-[4%] md:right-[8%] opacity-50 flex gap-2 rotate-[15deg] drop-shadow-sm scale-75 md:scale-100 z-0">
           <div className="w-3 h-4 bg-[#8D5B4C] rounded-full border border-[#472C20]/30 relative"><div className="absolute inset-y-0.5 left-1/2 w-[1px] bg-[#472C20]/40 rotate-12"></div></div>
           <div className="w-3 h-4 bg-[#8D5B4C] rounded-full border border-[#472C20]/30 relative rotate-[45deg] mt-2"><div className="absolute inset-y-0.5 left-1/2 w-[1px] bg-[#472C20]/40 -rotate-12"></div></div>
           <div className="w-3 h-4 bg-[#8D5B4C] rounded-full border border-[#472C20]/30 relative rotate-[-25deg] -mt-1"><div className="absolute inset-y-0.5 left-1/2 w-[1px] bg-[#472C20]/40 rotate-6"></div></div>
         </div>
 
-        {/* Floating Polaroid (Middle Right Decoration) */}
-        <motion.div animate={{ y: [10, -10, 10], rotate: [3, -3, 3] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute top-[55%] right-[3%] bg-white p-2 pb-5 border border-[#472C20]/20 shadow-md opacity-50 rotate-[8deg] hidden lg:block">
+        {/* Floating Polaroid */}
+        <motion.div animate={{ y: [10, -10, 10], rotate: [3, -3, 3] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute top-[45%] md:top-[55%] right-[1%] md:right-[3%] bg-white p-2 pb-5 border border-[#472C20]/20 shadow-md opacity-50 rotate-[8deg] scale-75 md:scale-100 origin-right z-0">
           <WashiTape className="-top-3 right-4 rotate-[-15deg] bg-[#B4C5E4]/60" />
           <div className="w-24 h-24 bg-[#E8E2D5] flex items-center justify-center border border-[#472C20]/10 overflow-hidden relative">
             <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#472C20_25%,transparent_25%,transparent_75%,#472C20_75%,#472C20)] bg-[length:10px_10px]"></div>
@@ -4282,43 +4331,43 @@ const Home = ({ onNavigate }) => {
           <p className="font-cursive text-center text-sm text-[#472C20] mt-1.5">cozy days</p>
         </motion.div>
 
-        {/* Live Menu Items as Sticky Notes */}
+        {/* Live Menu Items as Sticky Notes (Moved to z-0 so they float BEHIND cards on mobile) */}
         {liveMenu.map((item, i) => {
           const positions = [
-            { top: '26%', left: '82%', rot: 12, bg: '#FDF8E1' },
-            { top: '82%', left: '15%', rot: -8, bg: '#EAF0E4' },
-            { top: '15%', left: '45%', rot: -4, bg: '#FDEAEB' },
+            { top: '26%', left: '78%', rot: 12, bg: '#FDF8E1' },
+            { top: '82%', left: '10%', rot: -8, bg: '#EAF0E4' },
+            { top: '15%', left: '38%', rot: -4, bg: '#FDEAEB' },
             { top: '75%', left: '68%', rot: 15, bg: '#E8F0F4' },
-            { top: '40%', left: '10%', rot: 6, bg: '#FDF8E1' },
-            { top: '45%', left: '85%', rot: -12, bg: '#EAF0E4' },
+            { top: '40%', left: '4%', rot: 6, bg: '#FDF8E1' },
+            { top: '45%', left: '80%', rot: -12, bg: '#EAF0E4' },
           ];
           const pos = positions[i % positions.length];
           
           return (
-            <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 0.65, y: [0, -15, 0], rotate: [pos.rot, pos.rot + 5, pos.rot] }} transition={{ duration: 7 + (i * 2), repeat: Infinity, ease: "easeInOut", delay: i }} className="absolute px-4 py-3 shadow-sm border border-[#472C20]/10 hidden sm:block" style={{ top: pos.top, left: pos.left, backgroundColor: pos.bg }}>
-              <WashiTape className="-top-2 left-1/2 -translate-x-1/2 rotate-1 bg-white/30 w-10" />
-              <p className="font-cursive text-lg text-[#472C20] leading-none mt-1">{item.n}</p>
-              <p className="font-mono text-[10px] font-bold text-[#472C20]/60 mt-1">₹{item.p}</p>
+            <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 0.65, y: [0, -15, 0], rotate: [pos.rot, pos.rot + 5, pos.rot] }} transition={{ duration: 7 + (i * 2), repeat: Infinity, ease: "easeInOut", delay: i }} className="absolute px-3 py-2 md:px-4 md:py-3 shadow-sm border border-[#472C20]/10 scale-75 md:scale-100 origin-center z-0" style={{ top: pos.top, left: pos.left, backgroundColor: pos.bg }}>
+              <WashiTape className="-top-2 left-1/2 -translate-x-1/2 rotate-1 bg-white/30 w-8 md:w-10" />
+              <p className="font-cursive text-base md:text-lg text-[#472C20] leading-none mt-1">{item.n}</p>
+              <p className="font-mono text-[8px] md:text-[10px] font-bold text-[#472C20]/60 mt-1">₹{item.p}</p>
             </motion.div>
           );
         })}
       </div>
 
-      <div className="max-w-5xl mx-auto relative z-10 mt-6">
+      <div className="max-w-5xl mx-auto relative z-10 mt-2 md:mt-6">
         
         {/* --- HEADER --- */}
-        <div className="text-center mb-16 relative">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 bg-[#E2C7C0] border-2 border-[#472C20] px-4 py-1.5 rounded-full shadow-[3px_3px_0_#472C20] mb-6 transform -rotate-2">
+        <div className="text-center mb-8 md:mb-16 relative">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 bg-[#E2C7C0] border-2 border-[#472C20] px-3 md:px-4 py-1.5 rounded-full shadow-[3px_3px_0_#472C20] mb-4 md:mb-6 transform -rotate-2">
             <span className="w-2 h-2 bg-[#472C20] rounded-full animate-pulse"></span>
-            <span className="font-mono font-bold tracking-widest uppercase text-[10px] text-[#472C20]">Gather & Play</span>
+            <span className="font-mono font-bold tracking-widest uppercase text-[8px] md:text-[10px] text-[#472C20]">Gather & Play</span>
           </motion.div>
           
           <div className="relative inline-block">
             {/* Live Cafe Name from DB! */}
-            <h1 className="text-6xl md:text-[8rem] font-serif font-black text-[#472C20] tracking-tighter relative z-10 leading-none">
+            <h1 className="text-5xl md:text-[8rem] font-serif font-black text-[#472C20] tracking-tighter relative z-10 leading-none">
               {cafeInfo.name}
             </h1>
-            <span className="font-cursive text-5xl md:text-7xl text-[#D97757] absolute -bottom-8 -right-8 transform -rotate-6 z-0 opacity-80">
+            <span className="font-cursive text-4xl md:text-7xl text-[#D97757] absolute -bottom-6 md:-bottom-8 -right-4 md:-right-8 transform -rotate-6 z-0 opacity-80">
               Café
             </span>
           </div>
@@ -4332,28 +4381,28 @@ const Home = ({ onNavigate }) => {
             <WashiTape className="-top-2 -left-4 rotate-[-12deg] bg-[#B4C5E4]/80" />
             
             {/* Collage Element: Cute, Small Floating Polaroid tucked on bottom border */}
-            <div className="absolute -bottom-5 right-6 w-20 h-24 bg-[#FDFBF7] border border-[#472C20]/15 shadow-[2px_4px_10px_rgba(71,44,32,0.15)] rotate-[12deg] p-1.5 flex flex-col pointer-events-none group-hover:rotate-[18deg] group-hover:scale-110 transition-all duration-500 z-40">
+            <div className="absolute -bottom-4 md:-bottom-5 right-4 md:right-6 w-16 h-20 md:w-20 md:h-24 bg-[#FDFBF7] border border-[#472C20]/15 shadow-[2px_4px_10px_rgba(71,44,32,0.15)] rotate-[12deg] p-1.5 flex flex-col pointer-events-none group-hover:rotate-[18deg] group-hover:scale-110 transition-all duration-500 z-40">
               <div className="flex-1 bg-[#DBC8C4]/60 relative overflow-hidden border border-[#472C20]/5">
-                <Camera size={20} className="absolute inset-0 m-auto text-[#472C20]/40" strokeWidth={1.5} />
+                <Camera size={16} className="absolute inset-0 m-auto text-[#472C20]/40 md:w-5 md:h-5" strokeWidth={1.5} />
               </div>
-              <div className="h-6 flex items-center justify-center">
-                <span className="font-cursive text-[#472C20]/80 text-[10px] transform -rotate-2">memories</span>
+              <div className="h-5 md:h-6 flex items-center justify-center">
+                <span className="font-cursive text-[#472C20]/80 text-[8px] md:text-[10px] transform -rotate-2">memories</span>
               </div>
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-center p-2 md:p-4">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8D5B4C] mb-3 border-b border-[#8D5B4C]/20 pb-1 w-fit">Guestbook Entry</span>
-              <h2 className="text-4xl md:text-5xl font-serif font-black text-[#472C20] leading-[1.1] mb-6 relative z-10">
+              <span className="font-mono text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#8D5B4C] mb-3 border-b border-[#8D5B4C]/20 pb-1 w-fit">Guestbook Entry</span>
+              <h2 className="text-3xl md:text-5xl font-serif font-black text-[#472C20] leading-[1.1] mb-6 relative z-10">
                 Leave a piece of <br/>
-                <span className="font-cursive text-5xl text-[#D97757] font-normal transform -rotate-2 inline-block mt-1 relative">
+                <span className="font-cursive text-4xl md:text-5xl text-[#D97757] font-normal transform -rotate-2 inline-block mt-1 relative">
                   your heart
                   {/* Squiggly underline SVG */}
-                  <svg className="absolute -bottom-3 left-0 w-full h-3 text-[#D97757]/60" viewBox="0 0 100 20" preserveAspectRatio="none">
+                  <svg className="absolute -bottom-2 md:-bottom-3 left-0 w-full h-2 md:h-3 text-[#D97757]/60" viewBox="0 0 100 20" preserveAspectRatio="none">
                     <path d="M0 10 Q 25 20, 50 10 T 100 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                   </svg>
                 </span>
               </h2>
-              <button className="w-fit bg-[#472C20] text-[#FDFBF7] font-mono font-bold uppercase tracking-widest text-[11px] px-6 py-3 rounded-full shadow-[4px_4px_0_rgba(217,119,87,0.6)] group-hover:translate-y-[2px] group-hover:shadow-[2px_2px_0_rgba(217,119,87,0.6)] transition-all flex items-center gap-2">
+              <button className="w-fit bg-[#472C20] text-[#FDFBF7] font-mono font-bold uppercase tracking-widest text-[10px] md:text-[11px] px-5 py-2.5 md:px-6 md:py-3 rounded-full shadow-[4px_4px_0_rgba(217,119,87,0.6)] group-hover:translate-y-[2px] group-hover:shadow-[2px_2px_0_rgba(217,119,87,0.6)] transition-all flex items-center gap-2">
                 Share Memory <ArrowRight size={14} />
               </button>
             </div>
@@ -4364,45 +4413,45 @@ const Home = ({ onNavigate }) => {
             <WashiTape className="-top-3 right-10 rotate-[5deg] bg-white/40" />
             
             {/* Collage Element: Coffee Stain Rings */}
-            <div className="absolute -top-12 -right-8 w-48 h-48 border-[6px] border-[#8D5B4C]/20 rounded-full opacity-50 pointer-events-none" style={{ borderRadius: '45% 55% 40% 60%' }}></div>
-            <div className="absolute -top-6 -right-6 w-36 h-36 border-[3px] border-[#8D5B4C]/15 rounded-full opacity-40 pointer-events-none" style={{ borderRadius: '55% 45% 60% 40%' }}></div>
+            <div className="absolute -top-8 -right-6 md:-top-12 md:-right-8 w-36 h-36 md:w-48 md:h-48 border-[6px] border-[#8D5B4C]/20 rounded-full opacity-50 pointer-events-none" style={{ borderRadius: '45% 55% 40% 60%' }}></div>
+            <div className="absolute -top-4 -right-4 md:-top-6 md:-right-6 w-24 h-24 md:w-36 md:h-36 border-[3px] border-[#8D5B4C]/15 rounded-full opacity-40 pointer-events-none" style={{ borderRadius: '55% 45% 60% 40%' }}></div>
 
             <div className="flex flex-col h-full justify-between relative z-10">
               <div className="flex justify-between items-start">
-                <div className="w-12 h-12 rounded-full border-2 border-[#472C20] flex items-center justify-center bg-white/50 backdrop-blur-sm">
-                  <Coffee size={20} className="text-[#472C20]" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-[#472C20] flex items-center justify-center bg-white/50 backdrop-blur-sm">
+                  <Coffee size={18} className="text-[#472C20] md:w-5 md:h-5" />
                 </div>
-                <div className="bg-[#FDFBF7] border-2 border-[#472C20] font-mono font-bold text-[9px] uppercase tracking-widest px-2 py-1 shadow-[2px_2px_0_#472C20] transform rotate-3">
+                <div className="bg-[#FDFBF7] border-2 border-[#472C20] font-mono font-bold text-[8px] md:text-[9px] uppercase tracking-widest px-2 py-1 shadow-[2px_2px_0_#472C20] transform rotate-3">
                   Live Data
                 </div>
               </div>
               
-              <div className="mt-12">
-                <h3 className="text-5xl font-serif font-black text-[#472C20] leading-none mb-2">Menu</h3>
-                <p className="font-cursive text-3xl text-[#8D5B4C]">Freshly baked cravings</p>
+              <div className="mt-8 md:mt-12">
+                <h3 className="text-4xl md:text-5xl font-serif font-black text-[#472C20] leading-none mb-1 md:mb-2">Menu</h3>
+                <p className="font-cursive text-2xl md:text-3xl text-[#8D5B4C]">Freshly baked cravings</p>
               </div>
             </div>
           </ScrapbookCard>
 
           {/* 3. WALL/CHRONICLE CARD */}
           <ScrapbookCard colSpan="md:col-span-4" bgClass="bg-[#C1D7D0]" rotate={-2} delay={0.3} onClick={() => onNavigate('wall', THEMES.navy)} extraClasses="overflow-hidden">
-            <Paperclip className="-top-4 left-1/2 -translate-x-1/2 rotate-[10deg]" />
+            <Paperclip className="-top-3 md:-top-4 left-1/2 -translate-x-1/2 rotate-[10deg]" />
             
             {/* Fake newspaper text background */}
-            <div className="absolute inset-0 p-4 opacity-10 pointer-events-none text-[6px] text-justify leading-tight font-serif break-words overflow-hidden text-[#472C20]">
+            <div className="absolute inset-0 p-3 md:p-4 opacity-10 pointer-events-none text-[5px] md:text-[6px] text-justify leading-tight font-serif break-words overflow-hidden text-[#472C20]">
               {[...Array(20)].map((_, i) => "The cozy cafe on the corner was filled with laughter and the smell of fresh coffee. The memory wall was full of joy. ").join('')}
             </div>
 
             <div className="flex flex-col h-full justify-between relative z-10">
-              <div className="flex justify-between items-start mb-8">
-                <BookOpen size={24} className="text-[#472C20]" />
-                <div className="w-8 h-8 rounded-full border border-[#472C20]/20 flex items-center justify-center opacity-50 bg-[#FDFBF7]/40 backdrop-blur-sm">
-                  <span className="font-serif italic text-xs">No.1</span>
+              <div className="flex justify-between items-start mb-6 md:mb-8">
+                <BookOpen size={20} className="text-[#472C20] md:w-6 md:h-6" />
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#472C20]/20 flex items-center justify-center opacity-50 bg-[#FDFBF7]/40 backdrop-blur-sm">
+                  <span className="font-serif italic text-[10px] md:text-xs">No.1</span>
                 </div>
               </div>
               <div>
-                <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#472C20]/60 mb-1 border-b border-[#472C20]/20 pb-1">Community Ledger</p>
-                <h3 className="text-3xl font-serif font-black text-[#472C20] leading-tight">Café<br/>Chronicle</h3>
+                <p className="font-mono text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-[#472C20]/60 mb-1 border-b border-[#472C20]/20 pb-1">Community Ledger</p>
+                <h3 className="text-2xl md:text-3xl font-serif font-black text-[#472C20] leading-tight">Café<br/>Chronicle</h3>
               </div>
             </div>
           </ScrapbookCard>
@@ -4410,68 +4459,67 @@ const Home = ({ onNavigate }) => {
           {/* 4. ARCADE CARD */}
           <ScrapbookCard colSpan="md:col-span-4" bgClass="bg-[#FDFBF7]" rotate={1.5} delay={0.4} onClick={() => onNavigate('games', THEMES.cream)} extraClasses="overflow-hidden">
             {/* Collage Element: Red Gingham Header */}
-            <div className="absolute top-0 left-0 right-0 h-10 opacity-80" style={{
+            <div className="absolute top-0 left-0 right-0 h-8 md:h-10 opacity-80" style={{
               backgroundImage: 'repeating-linear-gradient(45deg, #D97757 25%, transparent 25%, transparent 75%, #D97757 75%, #D97757), repeating-linear-gradient(-45deg, #D97757 25%, transparent 25%, transparent 75%, #D97757 75%, #D97757)',
-              backgroundSize: '16px 16px'
+              backgroundSize: '12px 12px md:16px 16px'
             }}></div>
-            <div className="absolute top-10 left-0 right-0 border-b-[3px] border-[#472C20]"></div>
+            <div className="absolute top-8 md:top-10 left-0 right-0 border-b-[3px] border-[#472C20]"></div>
 
             {/* Collage Element: Partial Vinyl Record sticking out from the side */}
-            <div className="absolute top-1/2 -right-16 transform -translate-y-1/2 w-32 h-32 rounded-full bg-[#111] border-[4px] border-gray-800 shadow-inner flex items-center justify-center group-hover:rotate-12 transition-transform duration-700 pointer-events-none z-0">
-              <div className="w-12 h-12 rounded-full bg-[#D97757] border-2 border-[#111] flex items-center justify-center">
-                <div className="w-3 h-3 rounded-full bg-white border border-[#111]"></div>
+            <div className="absolute top-1/2 -right-12 md:-right-16 transform -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#111] border-[4px] border-gray-800 shadow-inner flex items-center justify-center group-hover:rotate-12 transition-transform duration-700 pointer-events-none z-0">
+              <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#D97757] border-2 border-[#111] flex items-center justify-center">
+                <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white border border-[#111]"></div>
               </div>
-              <div className="absolute inset-2 rounded-full border border-gray-700/50"></div>
-              <div className="absolute inset-5 rounded-full border border-gray-700/50"></div>
-              <div className="absolute inset-8 rounded-full border border-gray-700/50"></div>
+              <div className="absolute inset-1.5 md:inset-2 rounded-full border border-gray-700/50"></div>
+              <div className="absolute inset-4 md:inset-5 rounded-full border border-gray-700/50"></div>
+              <div className="absolute inset-6 md:inset-8 rounded-full border border-gray-700/50"></div>
             </div>
 
-            <WashiTape className="top-6 left-2 rotate-[-8deg] bg-white/80 shadow-md" />
+            <WashiTape className="top-4 md:top-6 left-2 rotate-[-8deg] bg-white/80 shadow-md" />
             
-            <div className="flex flex-col h-full items-start justify-end relative z-10 pt-16 w-3/4">
-              <div className="w-14 h-14 bg-[#FDFBF7] rounded-full border-2 border-[#472C20] flex items-center justify-center shadow-[4px_4px_0_#472C20] mb-4 group-hover:-translate-y-1 transition-transform">
-                <Gamepad2 size={24} className="text-[#D97757]" />
+            <div className="flex flex-col h-full items-start justify-end relative z-10 pt-12 md:pt-16 w-3/4">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FDFBF7] rounded-full border-2 border-[#472C20] flex items-center justify-center shadow-[4px_4px_0_#472C20] mb-3 md:mb-4 group-hover:-translate-y-1 transition-transform">
+                <Gamepad2 size={20} className="text-[#D97757] md:w-6 md:h-6" />
               </div>
-              <h3 className="text-2xl font-serif font-black text-[#472C20] mb-1">Arcade</h3>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#472C20]/60">Kill some time</p>
+              <h3 className="text-xl md:text-2xl font-serif font-black text-[#472C20] mb-1">Arcade</h3>
+              <p className="font-mono text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-[#472C20]/60">Kill some time</p>
             </div>
           </ScrapbookCard>
 
           {/* 5. VISIT US CARD */}
           <ScrapbookCard colSpan="md:col-span-4" bgClass="bg-[#B4C5E4]" rotate={-1} delay={0.5} onClick={() => onNavigate('directory', THEMES.lavender)} extraClasses="overflow-hidden">
             {/* Collage Element: Airmail Border */}
-            <div className="absolute top-0 left-0 right-0 h-2 opacity-80" style={{
-              backgroundImage: 'repeating-linear-gradient(45deg, #D97757 0, #D97757 10px, transparent 10px, transparent 20px, #1E3A8A 20px, #1E3A8A 30px, transparent 30px, transparent 40px)'
+            <div className="absolute top-0 left-0 right-0 h-1.5 md:h-2 opacity-80" style={{
+              backgroundImage: 'repeating-linear-gradient(45deg, #D97757 0, #D97757 8px, transparent 8px, transparent 16px, #1E3A8A 16px, #1E3A8A 24px, transparent 24px, transparent 32px)'
             }}></div>
 
             {/* Collage Element: Perforated Stamp */}
-            <div className="absolute top-6 right-4 w-14 h-16 bg-[#FDFBF7] flex flex-col items-center justify-center transform rotate-[6deg] drop-shadow-md z-10"
+            <div className="absolute top-4 right-3 md:top-6 md:right-4 w-12 h-14 md:w-14 md:h-16 bg-[#FDFBF7] flex flex-col items-center justify-center transform rotate-[6deg] drop-shadow-md z-10"
               style={{
-                maskImage: 'radial-gradient(circle at 0px 5px, transparent 2px, black 3px), radial-gradient(circle at 100% 5px, transparent 2px, black 3px)',
-                maskSize: '100% 10px',
+                maskImage: 'radial-gradient(circle at 0px 4px, transparent 2px, black 2.5px), radial-gradient(circle at 100% 4px, transparent 2px, black 2.5px)',
+                maskSize: '100% 8px',
                 maskRepeat: 'repeat-y'
               }}
             >
-              <div className="w-10 h-10 bg-[#E2C7C0]/40 border border-[#472C20]/20 flex flex-col items-center justify-center text-[#472C20]/50 relative overflow-hidden">
-                <span className="text-[8px] font-mono">POST</span>
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-[#E2C7C0]/40 border border-[#472C20]/20 flex flex-col items-center justify-center text-[#472C20]/50 relative overflow-hidden">
+                <span className="text-[6px] md:text-[8px] font-mono">POST</span>
                 {/* Fake postmark cancellation circle */}
-                <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full border border-black/30"></div>
+                <div className="absolute -top-3 -left-3 md:-top-4 md:-left-4 w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/30"></div>
               </div>
             </div>
 
             {/* Postcard lines */}
-            <div className="absolute bottom-6 right-6 w-24 space-y-2 opacity-30 pointer-events-none">
-              <div className="h-[2px] bg-[#472C20]"></div>
-              <div className="h-[2px] bg-[#472C20]"></div>
-              <div className="h-[2px] bg-[#472C20]"></div>
+            <div className="absolute bottom-5 right-5 w-20 md:bottom-6 md:right-6 md:w-24 space-y-1.5 md:space-y-2 opacity-30 pointer-events-none">
+              <div className="h-[1.5px] md:h-[2px] bg-[#472C20]"></div>
+              <div className="h-[1.5px] md:h-[2px] bg-[#472C20]"></div>
+              <div className="h-[1.5px] md:h-[2px] bg-[#472C20]"></div>
             </div>
 
-            <div className="flex flex-col h-full justify-between relative z-10 pt-4">
-              <MapPin size={24} className="text-[#472C20]" />
-              <div className="mt-12 w-2/3">
-                <h3 className="text-2xl font-serif font-black text-[#472C20] mb-1">Directory</h3>
-                {/* UPDATED: Live Cafe Location Text from DB! */}
-                <p className="font-mono text-[10px] font-bold opacity-70 uppercase tracking-widest text-[#472C20]">
+            <div className="flex flex-col h-full justify-between relative z-10 pt-2 md:pt-4">
+              <MapPin size={20} className="text-[#472C20] md:w-6 md:h-6" />
+              <div className="mt-8 md:mt-12 w-3/4 md:w-2/3">
+                <h3 className="text-xl md:text-2xl font-serif font-black text-[#472C20] mb-0.5 md:mb-1">Directory</h3>
+                <p className="font-mono text-[8px] md:text-[10px] font-bold opacity-70 uppercase tracking-widest text-[#472C20]">
                   {cafeInfo.locationText || cafeInfo.location}
                 </p>
               </div>
