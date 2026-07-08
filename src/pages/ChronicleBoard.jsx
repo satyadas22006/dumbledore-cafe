@@ -1,96 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
 import { useAvatar } from '../context/AvatarContext';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
-import Receipt from './Receipt';
+import { Activity } from 'lucide-react';
+import BackToCafeButton from '../components/BackToCafeButton';
 
+// --- BRIGHT & HAPPY FOOD CONFIGURATIONS ---
 const VIBE_CONFIGS = {
-  '🌧️ Rainy Day Comfort': { color: '#9D446E', name: 'Grape' },
-  '✨ Main Character Energy': { color: '#FF8A65', name: 'Orange' },
-  '☕ Coffee & Conversations': { color: '#F06292', name: 'Raspberry' },
-  '🌸 Peaceful Escape': { color: '#FFE082', name: 'Lemon' }
+  '🌧️ Rainy Day Comfort': { color: '#B28DFF', texture: 'dots', label: 'Rainy Day Comfort' },
+  '✨ Main Character Energy': { color: '#FFB7B2', texture: 'lines', label: 'Main Character' },
+  '☕ Coffee & Conversations': { color: '#FFDAC1', texture: 'sprinkles', label: 'Coffee & Chats' },
+  '🌸 Peaceful Escape': { color: '#FDFD96', texture: 'crumbs', label: 'Peaceful Escape' }
 };
 
-export default function ChronicleBoard() {
-  const { avatar } = useAvatar(); 
-  const [memories, setMemories] = useState([]);
-  const [userReview, setUserReview] = useState(null);
-  const [hoveredVibe, setHoveredVibe] = useState(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  const [loading, setLoading] = useState(true);
+const PURPOSE_CONFIGS = {
+  'food': { color: '#FFCB77', texture: 'dots', label: 'Food Mission 🥟' },
+  'catch': { color: '#FF9CEE', texture: 'lines', label: 'Catching Up ❤️' },
+  'escape': { color: '#A0E8AF', texture: 'sprinkles', label: 'Reality Escape 🌧️' },
+  'family': { color: '#85E3FF', texture: 'crumbs', label: 'Family Time 👨‍👩‍👧' }
+};
 
-  useEffect(() => {
-    const globalQuery = query(collection(db, "memories"), orderBy("createdAt", "desc"));
-    const unsubscribeGlobal = onSnapshot(globalQuery, (snapshot) => {
-      const allMemories = snapshot.docs.map(doc => doc.data());
-      setMemories(allMemories);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error reading global ledger metrics:", error);
-      setLoading(false);
-    });
+const BRIGHT_PALETTE = [
+  { color: '#85E3FF', texture: 'dots' },   
+  { color: '#B5EAD7', texture: 'lines' },     
+  { color: '#FF9AA2', texture: 'sprinkles' },  
+  { color: '#E2F0CB', texture: 'crumbs' },  
+  { color: '#C7CEEA', texture: 'dots' },    
+  { color: '#FDE4CE', texture: 'lines' }    
+];
 
-    const userQuery = query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(1));
-    const unsubscribeUser = onSnapshot(userQuery, (snapshot) => {
-      if (!snapshot.empty) {
-        setUserReview(snapshot.docs[0].data());
-      }
-    });
+// --- SCRAPBOOK DECORATIONS ---
+const WashiTape = ({ className, color = "bg-white/60" }) => (
+  <div 
+    className={`absolute w-12 h-5 md:w-16 md:h-6 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
+    style={{ borderLeft: '2px dashed rgba(122, 92, 88, 0.2)', borderRight: '2px dashed rgba(122, 92, 88, 0.2)' }} 
+  />
+);
 
-    return () => {
-      unsubscribeGlobal();
-      unsubscribeUser();
-    };
-  }, [avatar]);
+const FloatingDoodle = ({ char, className, delay = 0 }) => (
+  <motion.div 
+    animate={{ y: [0, -15, 0], rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
+    transition={{ duration: 6 + delay, repeat: Infinity, ease: "easeInOut" }}
+    className={`absolute text-4xl opacity-20 select-none pointer-events-none font-cursive drop-shadow-md ${className}`}
+  >
+    {char}
+  </motion.div>
+);
 
-  const totalCount = memories.length || 1;
-  
-  const metrics = Object.keys(VIBE_CONFIGS).reduce((acc, key) => {
-    const matchingCount = memories.filter(m => m.vibe === key).length;
-    acc[key] = {
-      count: matchingCount,
-      percentage: Math.round((matchingCount / totalCount) * 100) || 0
-    };
-    return acc;
-  }, {});
+const TextureOverlay = ({ type, color }) => {
+  if (type === 'dots') return <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill={color} opacity="0.3" /></pattern>;
+  if (type === 'lines') return <pattern id="lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke={color} strokeWidth="2" opacity="0.2" /></pattern>;
+  if (type === 'sprinkles') return <pattern id="sprinkles" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(15)" /><rect x="7" y="6" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(-30)" /></pattern>;
+  return <pattern id="crumbs" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M2,2 Q3,1 4,3 T6,2" fill="none" stroke={color} strokeWidth="1.5" opacity="0.3" /></pattern>;
+};
 
-  const dominantVibe = Object.keys(metrics).reduce((a, b) => 
-    metrics[a].percentage > metrics[b].percentage ? a : b
-  , '✨ Main Character Energy');
+// --- CLEAN VECTOR PIE CHART ---
+const ArtsyPieChart = ({ data, title, hoveredId, setHoveredVibe }) => {
+  let accumulatedAngle = -Math.PI / 2;
+  const radius = 100;
+  const center = 140; 
 
-  const getMostCommonReviewForVibe = (vibeName) => {
-    const texts = memories
-      .filter(m => m.vibe === vibeName && m.review && m.review.trim() !== "")
-      .map(m => m.review.trim());
-
-    if (texts.length === 0) return "No written whispers logged for this vibe yet!";
-
-    const frequencyMap = {};
-    let maxCount = 0;
-    let mostCommonText = texts[0];
-
-    texts.forEach(text => {
-      frequencyMap[text] = (frequencyMap[text] || 0) + 1;
-      if (frequencyMap[text] > maxCount) {
-        maxCount = frequencyMap[text];
-        mostCommonText = text;
-      }
-    });
-
-    return mostCommonText;
-  };
-
-  const generatePiePaths = () => {
-    let accumulatedAngle = -Math.PI / 2; 
-    const radius = 170; 
-    const center = 190;
-
-    return Object.entries(VIBE_CONFIGS).map(([vibeName, config]) => {
-      const percentage = metrics[vibeName].percentage;
-      if (percentage === 0) return null;
-
-      const angleDelta = (percentage / 100) * (Math.PI * 2);
+  const slices = useMemo(() => {
+    return data.map((item) => {
+      if (item.percentage === 0) return null;
+      const angleDelta = (item.percentage / 100) * (Math.PI * 2);
+      
       const startAngle = accumulatedAngle;
       const endAngle = accumulatedAngle + angleDelta;
       accumulatedAngle = endAngle;
@@ -99,199 +74,419 @@ export default function ChronicleBoard() {
       const y1 = center + radius * Math.sin(startAngle);
       const x2 = center + radius * Math.cos(endAngle);
       const y2 = center + radius * Math.sin(endAngle);
+      const largeArcFlag = item.percentage > 50 ? 1 : 0;
 
-      const largeArcFlag = percentage > 50 ? 1 : 0;
-
-      const pathData = `
-        M ${center} ${center}
-        L ${x1} ${y1}
-        A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}
-        Z
-      `;
-
+      const pathData = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+      
       const middleAngle = startAngle + (angleDelta / 2);
-      const labelRadius = radius * 0.65; 
-      const textX = center + labelRadius * Math.cos(middleAngle);
-      const textY = center + labelRadius * Math.sin(middleAngle);
+      const textX = center + (radius * 0.65) * Math.cos(middleAngle);
+      const textY = center + (radius * 0.65) * Math.sin(middleAngle);
 
-      return {
-        vibeName,
-        color: config.color,
-        pathData,
-        textX,
-        textY
-      };
+      return { ...item, pathData, textX, textY };
     }).filter(Boolean);
+  }, [data]);
+
+  return (
+    <div className="bg-[#FFFDF9] border-[4px] border-[#7A5C58] rounded-[30px] p-6 shadow-[6px_6px_0_#7A5C58] flex flex-col items-center relative group w-full transition-transform hover:-translate-y-1">
+      <WashiTape className="-top-3 left-6 rotate-[-3deg] bg-amber-200/50" />
+      <h4 className="font-serif font-black text-xl text-[#7A5C58] mb-4 tracking-tight border-b-2 border-dashed border-[#7A5C58]/10 pb-2 w-full text-center">{title}</h4>
+      
+      <div className="relative w-full aspect-square max-w-[240px]">
+        <svg viewBox="0 0 280 280" className="w-full h-full overflow-visible">
+          <defs>
+            <TextureOverlay type="dots" color="#7A5C58" />
+            <TextureOverlay type="lines" color="#7A5C58" />
+            <TextureOverlay type="sprinkles" color="#7A5C58" />
+            <TextureOverlay type="crumbs" color="#7A5C58" />
+          </defs>
+          <circle cx={center} cy={center} r={radius + 8} fill="none" stroke="#7A5C58" strokeWidth="2" strokeDasharray="5 5" className="opacity-30" />
+          
+          {slices.map((slice) => {
+            const isSelected = hoveredId === slice.id;
+            return (
+              <g key={slice.id} className="cursor-pointer">
+                <motion.path
+                  d={slice.pathData}
+                  fill={slice.color}
+                  stroke="#FFFDF9"
+                  strokeWidth="3"
+                  strokeLinejoin="round"
+                  animate={{ scale: isSelected ? 1.05 : 1, rotate: isSelected ? [0, 2, -2, 0] : 0 }}
+                  originX={`${center}px`}
+                  originY={`${center}px`}
+                  onMouseEnter={() => setHoveredVibe(slice.id)}
+                  onMouseLeave={() => setHoveredVibe(null)}
+                />
+                {slice.texture && (
+                  <path 
+                    d={slice.pathData} 
+                    fill={`url(#${slice.texture})`} 
+                    className="pointer-events-none mix-blend-multiply"
+                    style={{ transformOrigin: `${center}px ${center}px` }}
+                  />
+                )}
+                {slice.percentage > 5 && (
+                  <text
+                    x={slice.textX}
+                    y={slice.textY}
+                    fill="#7A5C58"
+                    fontSize="13"
+                    fontWeight="900"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="font-mono tracking-wide pointer-events-none select-none bg-white drop-shadow-md"
+                  >
+                    {slice.percentage}%
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="w-full mt-4 flex flex-wrap justify-center gap-2.5 text-[10px] font-mono font-bold">
+        {data.map((item) => (
+          <div key={item.id} className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${hoveredId === item.id ? 'bg-[#7A5C58]/5 border-[#7A5C58]' : 'border-transparent'}`}>
+            <div className="w-2.5 h-2.5 rounded-full border border-[#7A5C58]/20 shadow-xs" style={{ backgroundColor: item.color }} />
+            <span className="text-[#7A5C58]/80 truncate max-w-[100px]">{item.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- THE MAIN PAGE COMPONENT ---
+// Accepts reviewData from App.jsx so it updates INSTANTLY
+export default function ChronicleBoard({ reviewData }) {
+  const { avatar } = useAvatar(); 
+  const [memories, setMemories] = useState([]);
+  const [dbUserReview, setDbUserReview] = useState(null);
+  const [hoveredVibe, setHoveredVibe] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Animated Modal Overlay Controls (Dimmed background)
+  const [showReceiptPopup, setShowReceiptPopup] = useState(true);
+  const [isCrumbling, setIsCrumbling] = useState(false);
+  const checkNumber = useMemo(() => Math.floor(Math.random() * 900000) + 100000, []);
+
+  useEffect(() => {
+    const unsubGlobal = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
+      const allMemories = snapshot.docs.map(doc => doc.data());
+      setMemories(allMemories);
+      setLoading(false);
+    });
+
+    const unsubUser = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(1)), (snapshot) => {
+      if (!snapshot.empty) setDbUserReview(snapshot.docs[0].data());
+    });
+
+    return () => {
+      unsubGlobal();
+      unsubUser();
+    };
+  }, [avatar]);
+
+  // THE MAGIC FIX: If reviewData is passed from App.jsx, use it instantly. Otherwise, use the DB fetch.
+  const activeReview = reviewData || dbUserReview;
+  const totalCount = memories.length || 1;
+
+  // --- TOP 5 + OTHERS PROCESSING LOGIC ---
+  const processChartData = (fieldName, predefinedConfigMap, fallbackPalette) => {
+    if (memories.length === 0) {
+      return [{ id: 'empty', label: 'Awaiting Guests', color: '#E8E2D5', texture: 'dots', percentage: 100 }];
+    }
+
+    const counts = memories.reduce((acc, m) => {
+      const key = m[fieldName] || 'Unknown';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const top5 = sorted.slice(0, 5);
+    const others = sorted.slice(5);
+
+    let result = top5.map(([name, count], idx) => {
+      const conf = predefinedConfigMap ? predefinedConfigMap[name] : null;
+      return {
+        name, count,
+        color: conf ? conf.color : fallbackPalette[idx % fallbackPalette.length].color,
+        texture: conf ? conf.texture : fallbackPalette[idx % fallbackPalette.length].texture,
+        label: conf && conf.label ? conf.label : (name.length > 14 ? name.substring(0,11) + '...' : name)
+      };
+    });
+
+    if (others.length > 0) {
+      const othersCount = others.reduce((sum, item) => sum + item[1], 0);
+      result.push({ name: 'Others', count: othersCount, color: '#C7CEEA', texture: 'lines', label: 'Others (Mixed)' });
+    }
+
+    const total = result.reduce((sum, item) => sum + item.count, 0) || 1;
+    return result.map(item => ({
+      ...item, id: item.name,
+      percentage: Math.round((item.count / total) * 100)
+    }));
   };
 
-  const piePaths = generatePiePaths();
+  const vibeChartData = useMemo(() => processChartData('vibe', VIBE_CONFIGS, BRIGHT_PALETTE), [memories]);
+  const dishChartData = useMemo(() => processChartData('dish', null, BRIGHT_PALETTE), [memories]);
+  const purposeChartData = useMemo(() => processChartData('purpose', PURPOSE_CONFIGS, BRIGHT_PALETTE), [memories]);
+
+  // Compute ACTUAL Satisfaction Index Over Time
+  const satisfactionTrendPoints = useMemo(() => {
+    if (memories.length === 0) return [1,2,3,4,5].map(i => ({ week: `Pt ${i}`, index: 100 }));
+
+    const sorted = [...memories].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const numChunks = 5;
+    const chunkSize = Math.max(1, Math.ceil(sorted.length / numChunks));
+    const points = [];
+
+    for (let i = 0; i < numChunks; i++) {
+      const chunk = sorted.slice(i * chunkSize, (i + 1) * chunkSize);
+      if (chunk.length === 0) {
+        points.push({ week: `Pt ${i + 1}`, index: points.length > 0 ? points[points.length - 1].index : 100 });
+        continue;
+      }
+      const sumRatings = chunk.reduce((sum, m) => sum + (m.rating || 4), 0);
+      const maxPossible = chunk.length * 4; 
+      const avgSatisfaction = Math.round((sumRatings / maxPossible) * 100);
+      points.push({ week: `Pt ${i + 1}`, index: avgSatisfaction });
+    }
+    return points;
+  }, [memories]);
+
+  const dominantVibe = useMemo(() => {
+    if (vibeChartData.length === 0 || vibeChartData[0].id === 'empty') return 'Main Character Energy';
+    return vibeChartData.reduce((prev, current) => (prev.percentage > current.percentage) ? prev : current).label;
+  }, [vibeChartData]);
+
+  const handleCrumbleAnimation = () => {
+    setIsCrumbling(true);
+    setTimeout(() => setShowReceiptPopup(false), 950); 
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center font-mono text-xs font-bold uppercase text-[#472C20]">
-        ☕ Loading Cute Ledger Canvas...
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFF0F5] font-mono text-xs font-black uppercase text-[#7A5C58]">
+        <Activity size={32} className="animate-spin mb-3 text-[#FF9AA2]" /> Calculating Live Data...
       </div>
     );
   }
 
+  const areaPath = `M 25 150 
+    L 25 ${150 - (satisfactionTrendPoints[0].index * 1.3)} 
+    L 137.5 ${150 - (satisfactionTrendPoints[1].index * 1.3)} 
+    L 250 ${150 - (satisfactionTrendPoints[2].index * 1.3)} 
+    L 362.5 ${150 - (satisfactionTrendPoints[3].index * 1.3)} 
+    L 475 ${150 - (satisfactionTrendPoints[4].index * 1.3)}
+    L 475 150 Z`;
+
   return (
-    <div className="w-full min-h-screen bg-[#EBE3F5] bg-[radial-gradient(circle_at_center,#C5B4E3_0%,#EBE3F5_70%)] text-[#472C20] py-12 px-4 md:px-8 relative overflow-hidden select-none flex flex-col items-center">
+    <div className="w-full min-h-screen bg-[#FFF0F5] text-[#7A5C58] py-10 px-4 md:px-8 relative overflow-hidden flex flex-col items-center font-sans">
       
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#472c2010_1px,transparent_1px),linear-gradient(to_bottom,#472c2010_1px,transparent_1px)] bg-[size:42px_42px] pointer-events-none z-0" />
+      {/* HAPPY BACKGROUND GRAPHICS ART CONSOLE */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#7a5c580c_1px,transparent_1px),linear-gradient(to_bottom,#7a5c580c_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none z-0" />
+      <FloatingDoodle char="🍪" className="top-[10%] left-[8%]" delay={0.5} />
+      <FloatingDoodle char="🌸" className="top-[35%] right-[5%]" delay={1.2} />
+      <FloatingDoodle char="🍰" className="bottom-[18%] left-[4%]" delay={2.1} />
+      <FloatingDoodle char="✨" className="top-24 right-1/4 animate-pulse" />
+      <FloatingDoodle char="🥐" className="bottom-[8%] right-[15%]" delay={1.8} />
 
-      <div className="relative w-full max-w-6xl mb-12 z-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[24px] p-6 shadow-sm">
-        <div className="text-center md:text-left">
-          <div className="inline-flex items-center gap-2 bg-[#EBE3F5] text-[10px] font-mono font-black uppercase tracking-wider px-3 py-1 rounded-xl mb-3">
-            📊 LIVE VIBE ANALYTICS
-          </div>
-          <h1 className="text-3xl font-serif font-black tracking-tight text-[#472C20]">
-            The Shared Ledger
-          </h1>
-          <p className="text-xs font-mono uppercase tracking-wide text-[#472C20]/60 mt-1">
-            Atmosphere: <span className="text-[#9D446E] font-black">{dominantVibe}</span>
-          </p>
-        </div>
+      {/* --- RECEIPT MODAL DRAWER OVERLAY --- */}
+      <AnimatePresence>
+        {showReceiptPopup && activeReview && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#472C20]/70 backdrop-blur-md z-[9999] flex items-center justify-center p-4"
+          >
+            <motion.div
+              animate={isCrumbling ? {
+                scale: [1, 0.7, 0.3, 0],
+                rotate: [0, 45, 180, 360],
+                x: [0, -50, 150, window.innerWidth > 768 ? 400 : 100],
+                y: [0, -80, 200, 500],
+                borderRadius: ["0px", "40px", "100px", "100px"],
+                filter: ["blur(0px)", "blur(1px)", "blur(4px)", "blur(10px)"]
+              } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.9, ease: "easeInOut" }}
+              className="relative shadow-2xl max-w-sm w-full aspect-[3/4] flex items-center justify-center"
+            >
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 max-w-xs text-center md:text-right shadow-sm">
-          <span className="text-[10px] font-mono font-bold block text-[#FF8A65]">CURRENT SUMMARY</span>
-          <span className="text-xs font-serif italic font-semibold">
-            {metrics[dominantVibe].percentage}% Patrons share this vibe spaces.
-          </span>
-        </div>
+              {/* The Exact Lined Paper Receipt from the screenshot */}
+              <div className="w-[80%] bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans overflow-hidden border-[4px] border-[#472C20] rounded-lg shadow-2xl z-20 h-full">
+                
+                <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
+                  <div className="text-right font-mono text-xl text-[#df3131] tracking-widest opacity-80" style={{ transform: 'scaleY(1.2)' }}>{checkNumber}</div>
+                  <h2 className="font-cursive text-5xl text-center font-bold tracking-wider text-[#2B3A67] my-3 transform rotate-[-2deg]">Thank You!</h2>
+                  <p className="text-[8px] text-center font-mono font-black tracking-widest uppercase text-[#2B3A67] mb-2">Your patronage is appreciated</p>
+                </div>
+                
+                {/* Lined Paper Section matching image_2d5d56.jpg EXACTLY */}
+                <div 
+                  className="w-full flex-1 flex flex-col bg-[#EFE0CB]"
+                  style={{
+                    backgroundImage: 'linear-gradient(180deg, #2B3A67 2px, transparent 2px)',
+                    backgroundSize: '100% 46px',
+                    backgroundPosition: '0 44px' // Aligns lines to text
+                  }}
+                >
+                  <div className="pt-2 flex-1">
+                    {/* INSTANTLY Maps over activeReview instead of waiting for DB */}
+                    {activeReview.items && activeReview.items.map((item, idx) => (
+                      <div key={idx} className="h-[46px] flex justify-center items-end pb-2 px-6">
+                        <span className="font-cursive text-3xl text-[#df3131] font-bold tracking-wider truncate">● {item}</span>
+                      </div>
+                    ))}
+                    <div className="h-[46px] flex justify-center items-end pb-2 px-6">
+                      <span className="font-cursive text-4xl text-[#df3131] font-bold transform -rotate-12">:)</span>
+                    </div>
+                  </div>
+
+                  <div className="h-[46px] flex justify-between items-end pb-2 px-6 border-t-[3px] border-dashed border-[#2B3A67] mt-auto w-full bg-[#EFE0CB]">
+                    <span className="font-mono text-[10px] font-black uppercase text-[#2B3A67]">Signature</span>
+                    <span className="font-cursive text-2xl text-[#df3131] font-bold transform -rotate-3">- {activeReview.name || 'guest'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={handleCrumbleAnimation}
+                className="absolute -bottom-16 left-1/2 -translate-x-1/2 bg-[#FF9AA2] text-white font-mono font-black text-xs uppercase tracking-widest px-8 py-3.5 border-[3px] border-[#7A5C58] shadow-[4px_4px_0_#7A5C58] rounded-full hover:translate-y-0.5 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap z-40"
+              >
+                Crumble & Close 🗑️
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="w-full max-w-[1300px] z-10 flex justify-between items-center mb-8 relative">
+        <BackToCafeButton />
       </div>
 
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative z-10 flex-1">
+      {/* --- DASHBOARD LOG LAYOUT GRID --- */}
+      <div className="max-w-[1300px] w-full z-10 space-y-10 mt-4">
         
-        <div className="lg:col-span-5 bg-[#FAF6EE]/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex flex-col items-center justify-between min-h-[540px]">
-          <div className="w-full text-center lg:text-left mb-2">
-            <h3 className="text-xs font-mono font-black uppercase tracking-wider text-[#472C20]/60">Atmosphere Share</h3>
+        {/* Title Ledger Section */}
+        <div className="bg-[#FFFDF9] border-[4px] border-[#7A5C58] rounded-[35px] p-8 shadow-[8px_8px_0_#7A5C58] flex flex-col md:flex-row items-center justify-between gap-6 relative">
+          <WashiTape className="-top-3 left-16 rotate-[2deg] bg-amber-200/40" />
+          <div className="text-center md:text-left space-y-2 w-full md:w-auto">
+            <span className="bg-[#FFDAC1] border-[2px] border-[#7A5C58] text-[10px] font-mono font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-[#7A5C58] inline-block shadow-[2px_2px_0_#7A5C58]">Community Ledger Metrics</span>
+            <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tighter text-[#7A5C58] pt-2">The Experience Files</h1>
           </div>
+          
+          <div className="bg-white border-[3px] border-[#7A5C58] rounded-2xl p-5 w-full md:max-w-sm text-center md:text-right shadow-[4px_4px_0_#7A5C58] transform rotate-1">
+            <span className="text-[11px] font-mono font-black block text-[#FF9AA2] uppercase tracking-wider mb-2">Atmosphere Pulse</span>
+            <span className="text-lg font-serif italic font-black text-[#7A5C58]">
+              {vibeChartData.find(v => v.label === dominantVibe)?.percentage || 0}% Patrons share the "{dominantVibe}" vibe space.
+            </span>
+          </div>
+        </div>
 
-          <div className="relative w-[380px] h-[380px] flex items-center justify-center p-4">
-            <svg viewBox="0 0 380 380" className="w-full h-full overflow-visible drop-shadow-sm">
-              <circle cx="190" cy="190" r="172" fill="none" stroke="#472C20" strokeWidth="2" strokeDasharray="4 4" className="opacity-40" />
-              <g>
-                {piePaths.map((slice) => {
-                  const isHovered = hoveredVibe === slice.vibeName;
+        {/* TOP ROW: THE 3 INTERACTIVE CLEAN PIE CHARTS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <ArtsyPieChart data={vibeChartData} title="🌟 Patrons Mood Vibe" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+          <ArtsyPieChart data={dishChartData} title="🍰 Most Chosen Items" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+          <ArtsyPieChart data={purposeChartData} title="🥧 Why They Visit Us" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+        </div>
+
+        {/* BOTTOM ROW: SATISFACTION TREND GRAPH & STASHED SNAPSHOTS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-16">
+          
+          {/* Satisfaction Index Vector Area Chart */}
+          <div className="lg:col-span-7 bg-[#FFFDF9] border-[4px] border-[#7A5C58] rounded-[35px] p-8 shadow-[8px_8px_0_#7A5C58] flex flex-col justify-between relative min-h-[380px]">
+            <div className="absolute top-2 right-12 w-3 h-10 border-2 border-[#7A5C58] rounded-full shadow-sm bg-gray-200 rotate-[15deg]"></div>
+            <div>
+              <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#FF9AA2] mb-2 block border-b-2 border-dashed border-[#FF9AA2]/30 pb-1 w-fit">Data-Driven Trend Analysis</span>
+              <h3 className="font-serif font-black text-4xl text-[#7A5C58] tracking-tight">Guest Satisfaction Trend</h3>
+            </div>
+
+            <div className="w-full h-56 relative mt-6 border-b-4 border-l-4 border-[#7A5C58] px-2 flex items-end justify-center rounded-bl-lg">
+              <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible max-w-full">
+                <defs>
+                  <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FFB7B2" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#FFB7B2" stopOpacity="0.05" />
+                  </linearGradient>
+                </defs>
+                
+                <line x1="0" y1="37.5" x2="500" y2="37.5" stroke="#7A5C58" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                <line x1="0" y1="75" x2="500" y2="75" stroke="#7A5C58" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                <line x1="0" y1="112.5" x2="500" y2="112.5" stroke="#7A5C58" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                
+                <path d={areaPath} fill="url(#areaGradient)" />
+                
+                <path
+                  d={`M 25 ${150 - (satisfactionTrendPoints[0].index * 1.3)} 
+                      L 137.5 ${150 - (satisfactionTrendPoints[1].index * 1.3)} 
+                      L 250 ${150 - (satisfactionTrendPoints[2].index * 1.3)} 
+                      L 362.5 ${150 - (satisfactionTrendPoints[3].index * 1.3)} 
+                      L 475 ${150 - (satisfactionTrendPoints[4].index * 1.3)}`}
+                  fill="none" stroke="#FF9AA2" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
+                />
+
+                {satisfactionTrendPoints.map((pt, idx) => {
+                  const xCoord = 25 + idx * 112.5;
+                  const yCoord = 150 - (pt.index * 1.3);
                   return (
-                    <g key={slice.vibeName}>
-                      <motion.path
-                        d={slice.pathData}
-                        fill={slice.color}
-                        stroke="#FAF6EE"
-                        strokeWidth="3"
-                        strokeLinejoin="round"
-                        animate={{ scale: isHovered ? 1.04 : 1 }}
-                        originX="190px"
-                        originY="190px"
-                        transition={{ type: "spring", stiffness: 350, damping: 18 }}
-                        className="cursor-pointer"
-                        onMouseEnter={() => {
-                          setHoveredVibe(slice.vibeName);
-                          setTooltipPos({ x: slice.textX, y: slice.textY });
-                        }}
-                        onMouseLeave={() => setHoveredVibe(null)}
-                      />
-                      <text
-                        x={slice.textX}
-                        y={slice.textY}
-                        fill="#FFFFFF"
-                        fontSize="16"
-                        fontWeight="900"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="pointer-events-none font-sans select-none tracking-wide drop-shadow-[1px_1px_1px_rgba(71,44,32,0.4)]"
-                      >
-                        {metrics[slice.vibeName].percentage}%
-                      </text>
+                    <g key={idx} className="cursor-pointer group">
+                      <circle cx={xCoord} cy={yCoord} r="8" fill="#FFFDF9" stroke="#7A5C58" strokeWidth="4" />
+                      <circle cx={xCoord} cy={yCoord} r="4" fill="#FF9AA2" />
+                      <g className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <rect x={xCoord - 20} y={yCoord - 35} width="40" height="20" rx="4" fill="#7A5C58" />
+                        <text x={xCoord} y={yCoord - 24} fill="#FFF" fontSize="12" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                          {pt.index}%
+                        </text>
+                      </g>
                     </g>
                   );
                 })}
-              </g>
-            </svg>
-
-            <AnimatePresence>
-              {hoveredVibe && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95, y: 5 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  style={{ 
-                    position: 'absolute',
-                    top: `${tooltipPos.y}px`, 
-                    left: `${tooltipPos.x}px`,
-                    transform: 'translate(-50%, -105%)'
-                  }}
-                  className="bg-[#FFFEE0] border-2 border-[#472C20]/20 rounded-2xl p-5 shadow-md w-[275px] z-50 text-left pointer-events-none"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: VIBE_CONFIGS[hoveredVibe].color }} />
-                    <span className="font-black text-xs text-[#472C20] tracking-wide uppercase">{hoveredVibe}</span>
-                  </div>
-                  <div className="border-t border-dashed border-[#472C20]/10 pt-2">
-                    <span className="text-[9px] uppercase font-mono font-black tracking-wider text-[#FF8A65] block mb-1">Most Common Reflection</span>
-                    <p className="text-xs text-[#472C20] font-serif italic font-medium leading-relaxed">
-                      "{getMostCommonReviewForVibe(hoveredVibe)}"
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="w-full bg-white/40 backdrop-blur-[2px] py-2.5 px-4 flex flex-wrap justify-center gap-5 items-center mt-2 rounded-xl">
-            {Object.entries(VIBE_CONFIGS).map(([vibeName, config]) => (
-              <div key={vibeName} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: config.color }} />
-                <span className="text-xs font-serif font-bold text-[#472C20]/80 tracking-wide">{config.name}</span>
+              </svg>
+              
+              <div className="absolute inset-x-0 bottom-[-32px] flex justify-between px-2 font-serif text-[14px] font-black text-[#7A5C58]">
+                {satisfactionTrendPoints.map((pt, idx) => <span key={idx}>{pt.week}</span>)}
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
-          <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-between">
-            <div>
-              <div className="flex justify-between items-center border-b border-dashed border-[#472C20]/10 pb-3 mb-4">
-                <h2 className="text-md font-serif font-black tracking-wide text-[#472C20] flex items-center gap-2">
-                  <span>✨</span> Your Stashed Scrapbook Memory
-                </h2>
-                {userReview && (
-                  <span className="text-xs font-mono font-bold bg-[#FAF6EE] text-[#472C20] px-2.5 py-0.5 rounded-xl shadow-xs">
-                    {userReview.rating === 4 ? '🎉 EXCELLENT' : '✨ GOOD'}
-                  </span>
-                )}
-              </div>
-
-              {userReview ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-black text-[#472C20]/80">👤 {userReview.name || 'Cozy Wanderer'}</span>
-                    <span className="text-[#472C20]/20 text-xs">•</span>
-                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#FF8A65]">{userReview.vibe}</span>
-                  </div>
-                  <div className="bg-[#FAF6EE]/60 p-4 rounded-2xl italic text-xs text-[#472C20] font-medium leading-relaxed font-serif shadow-xs">
-                    "{userReview.review || 'No written commentary was filed into the session logs.'}"
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-[#472C20]/40 italic py-8 text-center">No scrapbook entries stashed away in memory space.</p>
-              )}
             </div>
           </div>
 
-          {/* REPLACEMENT COMPONENT: GET UR RECEIPT */}
-         <div className="bg-white/90 backdrop-blur-sm rounded-[28px] p-6 shadow-sm flex-1 flex flex-col justify-center items-center gap-4">
-  <button 
-    onClick={() => window.print()}
-    className="px-8 py-4 bg-[#472C20] text-white font-black uppercase tracking-widest rounded-full hover:bg-[#9D446E] transition-all shadow-lg active:scale-95"
-  >
-    Get Ur Receipt
-  </button>
-  
-  <Receipt data={userReview} />
-</div>
+          {/* Stashed Scrapbook commentary */}
+          <div className="lg:col-span-5 bg-[#FFFDF9] border-[4px] border-[#7A5C58] rounded-[35px] p-8 shadow-[8px_8px_0_#7A5C58] flex flex-col justify-between overflow-hidden relative">
+            <WashiTape className="-top-3 right-8 rotate-[-5deg] bg-blue-200/50" />
+            <div>
+              <div className="flex justify-between items-center border-b-2 border-dashed border-[#7A5C58]/20 pb-4 mb-6">
+                <h4 className="font-serif font-black text-2xl text-[#7A5C58] flex items-center gap-2">
+                  <span>🍓</span> Stashed Reflection Whisper
+                </h4>
+              </div>
+
+              <div className="space-y-4 relative">
+                {activeReview ? (
+                  <>
+                    <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold">
+                      <span className="bg-white border-[2px] border-[#7A5C58] px-3 py-1 rounded-full shadow-[2px_2px_0_#7A5C58]">👤 {activeReview.name || 'Cozy Patron'}</span>
+                      <span className="bg-white border-[2px] border-[#7A5C58] px-3 py-1 rounded-full shadow-[2px_2px_0_#7A5C58] text-[#9D446E]">{activeReview.vibe || '☕ Coffee & Conversations'}</span>
+                    </div>
+                    <div className="bg-[#FFF0F5]/50 p-6 border-[3px] border-[#7A5C58] shadow-[inset_2px_4px_10px_rgba(122,92,88,0.1)] rounded-2xl italic font-serif text-lg text-[#7A5C58] leading-relaxed min-h-[140px] flex items-center">
+                      "{activeReview.review || 'No text reflection was stashed into the ledger fields for this round.'}"
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-[#7A5C58]/50 font-serif italic py-10 text-center">No scrapbook entries stashed away in memory space.</p>
+                )}
+              </div>
+            </div>
+
+            <p className="font-mono text-[10px] font-bold opacity-40 uppercase tracking-widest text-center mt-8">
+              • authentic guest diary logs •
+            </p>
+          </div>
+
         </div>
+
       </div>
     </div>
   );

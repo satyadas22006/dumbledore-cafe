@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
@@ -18,6 +19,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [cameraError, setCameraError] = useState('');
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  const lastSubmissionRef = useRef(0);
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -48,7 +51,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [anonymousName, setAnonymousName] = useState('');
   
   const [isSearchingTwin, setIsSearchingTwin] = useState(false);
-  const lastSubmissionRef = useRef(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNextStep = () => {
     if (step < 7) {
@@ -63,26 +66,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 
   useEffect(() => {
     if (step === 8 && isSearchingTwin) {
-      const timer = setTimeout(async () => {
+      const timer = setTimeout(() => {
         setIsSearchingTwin(false);
-        const completeMemory = {
-          rating: rating || 3,
-          purpose: purpose || 'escape',
-          items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
-          dish: favoriteDish || 'Cozy Brew',
-          highlights: selectedHighlights,
-          vibe: vibe || '☕ Coffee & Conversations',
-          review: review || '', 
-          name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-          createdAt: Date.now(),
-          photo: capturedImage 
-        };
-
-        try {
-          await addDoc(collection(db, "memories"), completeMemory);
-        } catch (error) {
-          console.error("Failed to save memory to Firebase:", error);
-        }
       }, 3500);
       return () => clearTimeout(timer);
     }
@@ -149,40 +134,68 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     alert("📸 Snapshot stashed to your clipboard! Opening Instagram Stories layout framework...");
   };
   
-  // We make sure this saves everything and routes instantly!
-  const handleFinalizeWizard = () => {
-    const finalMemory = {
+  const saveToDatabase = async () => {
+    const now = Date.now();
+    if (now - lastSubmissionRef.current < 10000) {
+      return null; // Rate limited
+    }
+    lastSubmissionRef.current = now;
+
+    let photoURL = null;
+    
+    if (capturedImage) {
+      try {
+        const storageRef = ref(storage, `memories/${Date.now()}_${anonymousName || 'guest'}.png`);
+        await uploadString(storageRef, capturedImage, 'data_url');
+        photoURL = await getDownloadURL(storageRef);
+      } catch (err) {
+        console.error("Storage upload failed:", err);
+      }
+    }
+
+    const memoryDoc = {
       rating: rating || 3,
       purpose: purpose || 'escape',
       items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
       dish: favoriteDish || 'Cozy Brew',
       highlights: selectedHighlights,
       vibe: vibe || '☕ Coffee & Conversations',
-      review: review || '', 
+      review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
       createdAt: Date.now(),
-      photo: capturedImage
+      photoURL: photoURL 
     };
-    onComplete(finalMemory);
-    onNavigate('chronicle'); 
+
+    try {
+      await addDoc(collection(db, "memories"), memoryDoc);
+      return memoryDoc;
+    } catch (err) {
+      console.error("Database save failed:", err);
+      return null;
+    }
   };
 
-  // Skip & Get Receipt action (From Step 8) -> Updated to go straight to chronicles!
-  const handleSkipToChronicleBoard = () => {
-    const finalMemory = {
+  // --- THE FIX: This single function successfully handles all skips and finishes ---
+  const executeFinalization = async () => {
+    setIsSubmitting(true);
+    const savedResult = await saveToDatabase();
+    
+    const finalMemory = savedResult || {
       rating: rating || 3,
       purpose: purpose || 'escape',
       items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
       dish: favoriteDish || 'Cozy Brew',
       highlights: selectedHighlights,
-      vibe: vibe || '☕ Coffee & Conversations', 
-      review: review || '', 
+      vibe: vibe || '☕ Coffee & Conversations',
+      review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
       createdAt: Date.now(),
-      photo: capturedImage
+      photoURL: capturedImage || null
     };
+
     onComplete(finalMemory);
-    onNavigate('chronicle'); 
+    onNavigate('chronicle');
+    setIsSubmitting(false); 
   };
 
   const pageVariants = {
@@ -471,11 +484,13 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           Add a Scrapbook Photo 📸
                         </button>
                         
+                        {/* THE FIX: This button now correctly calls executeFinalization */}
                         <button
-                          onClick={handleSkipToChronicleBoard}
-                          className="w-full bg-white text-[#472C20] border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider transition-transform active:translate-y-1 active:shadow-none"
+                          onClick={executeFinalization}
+                          disabled={isSubmitting}
+                          className="w-full bg-white text-[#472C20] border-4 border-[#472C20] rounded-2xl font-black py-3 shadow-[4px_4px_0_#472C20] uppercase text-sm tracking-wider transition-transform active:translate-y-1 active:shadow-none disabled:opacity-50"
                         >
-                          Skip & View Chronicles 📜
+                          {isSubmitting ? 'Syncing...' : 'Skip & View Dashboard 📊'}
                         </button>
                       </div>
 
@@ -617,11 +632,14 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                       </svg>
                       Share Scrapbook to Stories
                     </button>
+
+                    {/* THE FIX: Also ensured this button correctly calls executeFinalization */}
                     <button
-                      onClick={handleFinalizeWizard}
-                      className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl border-2 border-transparent shadow-[2px_2px_0_#000]"
+                      onClick={executeFinalization}
+                      disabled={isSubmitting}
+                      className="bg-[#472C20] text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl border-2 border-transparent shadow-[2px_2px_0_#000] disabled:opacity-50"
                     >
-                      Go to Chronicles 📜
+                      {isSubmitting ? 'Syncing...' : 'View Receipt & Dashboard 🧾'}
                     </button>
                   </div>
                 </div>
