@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Gamepad2, Coffee, BookOpen, ArrowRight, Camera, Clock } from 'lucide-react';
+import { MapPin, Gamepad2, Coffee, BookOpen, ArrowRight, Camera, Clock, Heart } from 'lucide-react';
 import { THEMES } from '../constants/data';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -232,8 +232,8 @@ const Home = ({ onNavigate }) => {
             </div>
           </ScrapbookCard>
 
-          {/* 3. WALL/CHRONICLE CARD MAPS TO GAME LEADERBOARD POPUPS */}
-          <ScrapbookCard colSpan="md:col-span-4" bgClass="bg-[#C1D7D0]" rotate={-2} delay={0.3} onClick={() => onNavigate('game-leaderboard', THEMES.navy)} extraClasses="overflow-hidden">
+          {/* 3. CAFÉ CHRONICLE CARD → now opens the Memory Wall */}
+          <ScrapbookCard colSpan="md:col-span-4" bgClass="bg-[#C1D7D0]" rotate={-2} delay={0.3} onClick={() => onNavigate('memory-wall', THEMES.navy)} extraClasses="overflow-hidden">
             <Paperclip className="-top-3 md:-top-4 left-1/2 -translate-x-1/2 rotate-[10deg]" />
             
             <div className="absolute inset-0 p-3 md:p-4 opacity-10 pointer-events-none text-[5px] md:text-[6px] text-justify leading-tight font-serif break-words overflow-hidden text-[#472C20]">
@@ -244,12 +244,12 @@ const Home = ({ onNavigate }) => {
               <div className="flex justify-between items-start mb-6 md:mb-8">
                 <BookOpen size={20} className="text-[#472C20] md:w-6 md:h-6" />
                 <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#472C20]/20 flex items-center justify-center opacity-50 bg-[#FDFBF7]/40 backdrop-blur-sm">
-                  <span className="font-serif italic text-[10px] md:text-xs">No.1</span>
+                  <Heart size={12} className="text-[#472C20]" />
                 </div>
               </div>
               <div>
                 <p className="font-mono text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-[#472C20]/60 mb-1 border-b border-[#472C20]/20 pb-1">Community Ledger</p>
-                <h3 className="text-2xl md:text-3xl font-serif font-black text-[#472C20] leading-tight">Café<br/>Chronicle</h3>
+                <h3 className="text-2xl md:text-3xl font-serif font-black leading-tight">Café<br/>Chronicle</h3>
               </div>
             </div>
           </ScrapbookCard>

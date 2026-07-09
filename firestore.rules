@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email in
+          get(/databases/$(database)/documents/settings/adminAccess).data.emails;
+    }
+
+    // Public menu / cafe info: readable by everyone, writable only by admins
+    match /settings/fullMenu {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/cafeInfo {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admin allowlist: never publicly readable, never client-writable
+    match /settings/adminAccess {
+      allow read: if isSignedIn();
+      allow write: if false; // manage via Firebase console only
+    }
+
+    // Guestbook memories — photo is now an inline base64 string, so we
+    // cap its size here since there's no Storage layer doing that for us.
+    match /memories/{memoryId} {
+      allow read: if true;
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.name.size() < 60 &&
+                       request.resource.data.review is string &&
+                       request.resource.data.review.size() < 1000 &&
+                       request.resource.data.items is list &&
+                       request.resource.data.items.size() < 20 &&
+                       request.resource.data.createdAt is number &&
+                       (!('photo' in request.resource.data) ||
+                        request.resource.data.photo == null ||
+                        (request.resource.data.photo is string &&
+                         request.resource.data.photo.size() < 700000)); // ~700KB base64 ceiling
+      allow update, delete: if isAdmin();
+    }
+
+    // Hue Hunt leaderboard: validated create only, no client edit/delete
+    match /hue_hunt_matches/{matchId} {
+      allow read: if true;
+      allow create: if request.resource.data.finalScore is number &&
+                       request.resource.data.finalScore >= 0 &&
+                       request.resource.data.finalScore <= 100 &&
+                       request.resource.data.playerName is string &&
+                       request.resource.data.playerName.size() < 40 &&
+                       request.resource.data.photoLedgerBase64 is list &&
+                       request.resource.data.photoLedgerBase64.size() <= 3;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

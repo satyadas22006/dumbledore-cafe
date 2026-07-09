@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, RotateCcw, Timer, Sparkles, HelpCircle } from 'lucide-react';
 import BackToCafeButton from '../components/BackToCafeButton';
+import ArcadeBackground from '../components/ArcadeBackground';
 
 // FIREBASE O2 SECURE COUPLING
 import { db } from '../firebase';
@@ -301,7 +302,9 @@ const HueHunt = ({ onNavigate }) => {
 
   return (
     <div className="max-w-xl mx-auto px-6 pt-12 select-none">
+      <ArcadeBackground variant="huehunt" />
       <BackToCafeButton className="mb-6" />
+    
 
       <div className="bg-[#F9F6F0] text-[#3C2F2F] border-4 border-[#3C2F2F] rounded-[2.5rem] shadow-[6px_6px_0px_0px_#3C2F2F] p-6 relative">
         <AnimatePresence mode="wait">

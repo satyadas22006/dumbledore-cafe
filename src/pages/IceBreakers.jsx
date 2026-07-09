@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Sparkles, AlertTriangle, MessageSquare, Zap } from 'lucide-react';
+import ArcadeBackground from '../components/ArcadeBackground';
 
 // Pure chatpata drama prompts
 const SPICY_PROMPTS = [
@@ -87,8 +88,9 @@ const Icebreakers = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF9E8] font-sans text-[#472C20] relative overflow-hidden px-6 pt-12 pb-24 select-none">
-      
+    <div className="min-h-screen font-sans text-[#472C20] relative overflow-hidden px-6 pt-12 pb-24 select-none">
+      <ArcadeBackground variant="icebreakers" />
+
       {/* Decorative Sanrio/Cozy Floating Cafe Doodles */}
       <FloatingDoodle char="✨" className="top-12 left-10 rotate-12 animate-pulse" />
       <FloatingDoodle char="⭐" className="top-24 right-16 -rotate-12" />

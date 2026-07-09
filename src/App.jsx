@@ -46,17 +46,17 @@ function MainLayoutContent() {
     if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
     else if (path === '/menu') setTheme(THEMES.forest);
     else if (path === '/chronicle') setTheme({ bg: '#FFF0F5', text: '#7A5C58', border: 'transparent' });
+    else if (path === '/wall') setTheme(THEMES.navy);
     else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
     else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
     else if (path === '/review') setTheme(THEMES.rose);
-    else if (path === '/wall') setTheme(THEMES.navy);
   }, [location.pathname]);
 
   const handleSaveMemory = async (newMemory) => {
     const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
     if (match) setTwin(match);
     const memoryToSave = { ...newMemory, createdAt: Date.now() };
-    setReviewData(memoryToSave); // Saves exactly what you just chose
+    setReviewData(memoryToSave);
   };
 
   const handleNavigate = (page, newTheme = THEMES.cream) => {
@@ -68,8 +68,8 @@ function MainLayoutContent() {
     else if (page === 'home') navigate('/cafe');
     else if (page === 'hue-hunt') navigate('/games/hue-hunt');
     else if (page === 'icebreakers') navigate('/games/icebreakers');
-    else if (page === 'cafe-chronicles') navigate('/leaderboard');
-    else if (page === 'chronicles' || page === 'chronicle' || page === 'wall') {
+    else if (page === 'memory-wall' || page === 'wall') navigate('/wall');
+    else if (page === 'chronicles' || page === 'chronicle') {
       navigate('/chronicle', { state: { theme: THEMES.sand } });
     } 
     else navigate(`/${page}`);
@@ -91,12 +91,19 @@ function MainLayoutContent() {
 
   return (
     <motion.div 
-      animate={{ 
-        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg, 
-        color: isOnboarding ? '#472C20' : theme.text 
-      }} 
-      style={layoutBackgroundStyle}
-      transition={{ duration: 0.5 }} 
+      style={{
+        // NOTE: background/color used to be driven by framer-motion's
+        // `animate` prop, which interpolates asynchronously. On a fresh
+        // client-side nav the very first paint could land before that
+        // interpolation kicked in, briefly showing the old (often
+        // cream/white) color instead of the new theme. Setting it
+        // directly via `style` makes it correct on every single render,
+        // with a plain CSS transition standing in for the fade.
+        ...layoutBackgroundStyle,
+        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg,
+        color: isOnboarding ? '#472C20' : theme.text,
+        transition: 'background-color 0.5s ease, color 0.5s ease'
+      }}
       className="min-h-screen font-sans selection:bg-white/30 relative overflow-x-hidden select-none flex flex-col items-stretch"
     >
       {!isCafeRoute && <GlobalGrid />}
@@ -140,10 +147,7 @@ function MainLayoutContent() {
             <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
             <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
             <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
-            
-            {/* THE FIX: Passed reviewData directly into the ChronicleBoard */}
             <Route path="/chronicle" element={<ChronicleBoard reviewData={reviewData} />} />
-            
             <Route path="/game-leaderboard" element={<GameLeaderboardBoard />} />
             <Route path="/directory" element={<Directory theme={theme} onNavigate={handleNavigate} />} />
             <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />

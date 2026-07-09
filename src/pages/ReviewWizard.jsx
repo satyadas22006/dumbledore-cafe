@@ -3,9 +3,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
-import { db, storage } from '../firebase';
+import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
+
+// Strips anything that isn't safe, caps length — used anywhere user text
+// feeds into things like display or future filenames.
+const sanitizeText = (str, maxLen) => (str || '').trim().slice(0, maxLen);
+
+// Resizes + compresses a captured photo before it goes into Firestore.
+// No Storage bucket needed — this keeps each doc comfortably under
+// Firestore's 1MiB document limit (and under our own rules cap).
+const compressImageToBase64 = (dataUrl, maxDimension = 480, quality = 0.6) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > height && width > maxDimension) {
+        height = Math.round((height * maxDimension) / width);
+        width = maxDimension;
+      } else if (height > maxDimension) {
+        width = Math.round((width * maxDimension) / height);
+        height = maxDimension;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+};
 
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
@@ -137,33 +167,33 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const saveToDatabase = async () => {
     const now = Date.now();
     if (now - lastSubmissionRef.current < 10000) {
-      return null; // Rate limited
+      // Client-side throttle only — the real backstop is Firestore
+      // Security Rules (see firestore.rules), since this can be bypassed
+      // by anyone calling the SDK directly.
+      return null;
     }
     lastSubmissionRef.current = now;
 
-    let photoURL = null;
-    
+    let compressedPhoto = null;
     if (capturedImage) {
       try {
-        const storageRef = ref(storage, `memories/${Date.now()}_${anonymousName || 'guest'}.png`);
-        await uploadString(storageRef, capturedImage, 'data_url');
-        photoURL = await getDownloadURL(storageRef);
+        compressedPhoto = await compressImageToBase64(capturedImage);
       } catch (err) {
-        console.error("Storage upload failed:", err);
+        console.error("Photo compression failed:", err);
       }
     }
 
     const memoryDoc = {
       rating: rating || 3,
       purpose: purpose || 'escape',
-      items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
+      items: (selectedItems.length > 0 ? selectedItems : ['Cozy Brew']).slice(0, 20),
       dish: favoriteDish || 'Cozy Brew',
       highlights: selectedHighlights,
       vibe: vibe || '☕ Coffee & Conversations',
-      review: review || '',
-      name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
+      review: sanitizeText(review, 1000),
+      name: sanitizeText(anonymousName, 60) || 'Anonymous',
       createdAt: Date.now(),
-      photoURL: photoURL 
+      photo: compressedPhoto // inline base64, replaces the old Storage photoURL
     };
 
     try {
@@ -175,7 +205,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     }
   };
 
-  // --- THE FIX: This single function successfully handles all skips and finishes ---
   const executeFinalization = async () => {
     setIsSubmitting(true);
     const savedResult = await saveToDatabase();
@@ -187,10 +216,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       dish: favoriteDish || 'Cozy Brew',
       highlights: selectedHighlights,
       vibe: vibe || '☕ Coffee & Conversations',
-      review: review || '',
-      name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
+      review: sanitizeText(review, 1000),
+      name: sanitizeText(anonymousName, 60) || 'Anonymous',
       createdAt: Date.now(),
-      photoURL: capturedImage || null
+      photo: capturedImage || null
     };
 
     onComplete(finalMemory);
@@ -210,7 +239,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       <div className="absolute top-4 right-6 text-6xl opacity-20">⭐</div>
       <div className="absolute bottom-6 left-8 text-5xl opacity-15">⭐</div>
 
-      {/* --- PROGRESS BAR --- */}
       {step <= totalSteps && (
         <div className="mb-8 flex flex-col items-center bg-white/60 border-2 border-[#472C20] rounded-2xl px-6 py-3 shadow-[4px_4px_0_#472C20]">
           <div className="flex items-center gap-3">
@@ -229,7 +257,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         </div>
       )}
 
-      {/* --- MAIN SCRAPBOOK CONTAINER --- */}
       <div className="w-full max-w-2xl min-h-[460px] bg-[#FFFDF9] border-[5px] border-[#472C20] rounded-[32px] shadow-[12px_12px_0_#472C20] p-8 flex flex-col justify-between relative">
         
         {step <= totalSteps && (
@@ -250,7 +277,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         <AnimatePresence mode="wait">
           <motion.div key={step} variants={pageVariants} initial="initial" animate="animate" exit="exit" className="flex-1 flex flex-col justify-center">
             
-            {/* --- STEP 1: RATING --- */}
             {step === 1 && (
               <div className="text-center space-y-6">
                 <h2 className="text-3xl font-serif font-black">How's your heart leaving the café today?</h2>
@@ -275,7 +301,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 2: PURPOSE --- */}
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center mb-4">Why were you visiting us?</h2>
@@ -300,7 +325,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 3: DYNAMIC MENU --- */}
             {step === 3 && menuData && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">What did you gather at the table?</h2>
@@ -340,7 +364,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 4: MAIN CHARACTER --- */}
             {step === 4 && (
               <div className="text-center space-y-4">
                 <h2 className="text-2xl font-serif font-black">Which one was the Main Character of your meal?</h2>
@@ -359,7 +382,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 5: STICKERS --- */}
             {step === 5 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Collect your review stickers</h2>
@@ -390,7 +412,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 6: MOOD VIBE --- */}
             {step === 6 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Capture today's exact mood vibe</h2>
@@ -413,7 +434,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 7: GUESTBOOK --- */}
             {step === 7 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-serif font-black text-center">Leave a little memory whisper...</h2>
@@ -422,6 +442,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   <textarea
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
+                    maxLength={1000}
                     placeholder="What will you remember about today? Type inside our shared guestbook..."
                     className="w-full h-24 bg-transparent resize-none border-none focus:ring-0 text-sm font-medium outline-none"
                   />
@@ -430,6 +451,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                   type="text"
                   value={anonymousName}
                   onChange={(e) => setAnonymousName(e.target.value)}
+                  maxLength={60}
                   placeholder="Sign with an anonymous handle..."
                   className="w-full bg-white border-2 border-[#472C20] rounded-xl px-3 py-2 text-xs font-bold outline-none"
                 />
@@ -442,7 +464,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 8: TWIN REVEAL --- */}
             {step === 8 && (
               <div className="text-center py-6 flex flex-col items-center justify-center">
                 <AnimatePresence mode="wait">
@@ -484,7 +505,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           Add a Scrapbook Photo 📸
                         </button>
                         
-                        {/* THE FIX: This button now correctly calls executeFinalization */}
                         <button
                           onClick={executeFinalization}
                           disabled={isSubmitting}
@@ -500,7 +520,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
               </div>
             )}
 
-            {/* --- STEP 9: RETRO DIGICAM CHASSIS UI --- */}
             {step === 9 && (
               <div className="space-y-6 text-center">
                 <div>
@@ -614,7 +633,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 
                 </div>
 
-                {/* --- FOOTER OPTIONS --- */}
                 <div className="border-t-2 border-dashed border-[#472C20]/20 pt-4 space-y-4">
                   <div className="bg-[#A8E6CF]/30 border-2 border-[#472C20] rounded-xl p-3 text-xs font-bold">
                     ☕ Thanks for spending time with us. Your memory layout is ready for the collection ledger!
@@ -633,7 +651,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                       Share Scrapbook to Stories
                     </button>
 
-                    {/* THE FIX: Also ensured this button correctly calls executeFinalization */}
                     <button
                       onClick={executeFinalization}
                       disabled={isSubmitting}

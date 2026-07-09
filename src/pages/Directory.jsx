@@ -88,13 +88,25 @@ const Directory = ({ onNavigate, theme }) => {
     return () => unsubInfo();
   }, []);
 
-  const handleDirections = () => {
-    if (cafeInfo.mapLink) {
-      window.open(cafeInfo.mapLink, '_blank');
-    } else {
-      alert("Oops! The cafe hasn't set their Google Maps location yet.");
-    }
-  };
+  const ALLOWED_MAP_HOSTS = ['google.com', 'maps.app.goo.gl', 'goo.gl', 'maps.google.com'];
+
+const isSafeMapLink = (url) => {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' &&
+      ALLOWED_MAP_HOSTS.some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
+  } catch {
+    return false;
+  }
+};
+
+const handleDirections = () => {
+  if (cafeInfo.mapLink && isSafeMapLink(cafeInfo.mapLink)) {
+    window.open(cafeInfo.mapLink, '_blank', 'noopener,noreferrer');
+  } else {
+    alert("Oops! The cafe hasn't set a valid Google Maps location yet.");
+  }
+};
 
   const randomizedSketchConfig = useMemo(() => {
     const images = ['/split_1.png', '/split_2.png', '/split_3.png', '/split_4.png', '/split_5.png', '/split_6.png', '/split_7.png', '/split_8.png', '/split_9.png'];

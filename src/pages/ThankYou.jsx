@@ -93,8 +93,8 @@ export default function ThankYou({ reviewData, onNavigate }) {
   const handleShare = async (platform) => {
     const memoryText = data.text || data.review || "Such a cozy spot!";
     const shareText = `Just got my guest check from Dumble' Door Cafe! ✨\n\n"${memoryText}"\n\nMy Vibe: ${data.vibe}\n📍 Jagda, Rourkela`;
-    if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-    else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+   if (platform === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener,noreferrer');
+else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener,noreferrer');
     else if (platform === 'ig') {
       alert("Screenshot your Guest Check and tag us on your IG Story! ✨📸");
     }

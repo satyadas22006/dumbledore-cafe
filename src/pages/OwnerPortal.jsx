@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, collection, onSnapshot, deleteDoc, setDoc } from 'firebase/firestore';
-import { getAuth, signOut } from 'firebase/auth';
+//import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -36,19 +37,17 @@ const OwnerPortal = () => {
   const [isSavingInfo, setIsSavingInfo] = useState(false);
 
   useEffect(() => {
-    // --- SECURITY CHECK ---
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      const lastSignIn = new Date(user.metadata.lastSignInTime).getTime();
-      const now = Date.now();
-      if (now - lastSignIn > 24 * 60 * 60 * 1000) {
-        alert("Session expired for security reasons. Please log in again.");
-        signOut(auth);
-        navigate('/admin-login');
-        return; 
-      }
+  const auth = getAuth();
+  const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    const lastSignIn = new Date(user.metadata.lastSignInTime).getTime();
+    if (Date.now() - lastSignIn > 24 * 60 * 60 * 1000) {
+      alert("Session expired for security reasons. Please log in again.");
+      signOut(auth);
+      navigate('/admin-login');
     }
+  });
+  return () => unsubscribeAuth();
 
     const fetchInitialData = async () => {
       const docSnap = await getDoc(doc(db, "settings", "fullMenu"));
