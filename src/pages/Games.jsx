@@ -1,104 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Trophy, Heart } from 'lucide-react';
+import { Sparkles, Trophy, ChevronRight } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 import BackToCafeButton from '../components/BackToCafeButton';
+import ArcadeBackground from '../components/ArcadeBackground';
 
 /* ---------------------------------------------------------------------
-   CafePup — Original decorative corner illustration.
-   (Kept for the top-right peeking position)
+   Game picker card — subtle dot texture, gradient icon bubble, no
+   oversized mascot illustrations.
 --------------------------------------------------------------------- */
-const CafePup = ({ className = '', style = {} }) => (
-  <svg viewBox="0 0 120 130" className={className} style={style}>
-    <ellipse cx="60" cy="102" rx="28" ry="24" fill="#FBE3B5" />
-    <ellipse cx="30" cy="40" rx="15" ry="21" fill="#E7B98C" transform="rotate(-25 30 40)" />
-    <ellipse cx="90" cy="40" rx="15" ry="21" fill="#E7B98C" transform="rotate(25 90 40)" />
-    <circle cx="60" cy="56" r="34" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="3" />
-    <path d="M28 42 Q60 12 92 42 Q60 30 28 42 Z" fill="#F2A6A6" />
-    <circle cx="60" cy="15" r="6" fill="#F6C9C9" />
-    <circle cx="39" cy="63" r="6" fill="#F9C4C4" opacity="0.65" />
-    <circle cx="81" cy="63" r="6" fill="#F9C4C4" opacity="0.65" />
-    <circle cx="46" cy="56" r="3.2" fill="#6B5B4E" />
-    <circle cx="74" cy="56" r="3.2" fill="#6B5B4E" />
-    <ellipse cx="60" cy="65" rx="3.5" ry="3" fill="#B98A5E" />
-    <path d="M60 68 Q60 73 55 73 M60 68 Q60 73 65 73" stroke="#6B5B4E" strokeWidth="2" fill="none" strokeLinecap="round" />
-    <ellipse cx="78" cy="98" rx="8" ry="7" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="2" />
-    <ellipse cx="42" cy="98" rx="8" ry="7" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="2" />
-  </svg>
-);
-
-/* ---------------------------------------------------------------------
-   PompompurinPup — Hand-drawn SVG mimicking your uploaded image:
-   Yellow pudding dog holding a fresh bouquet of pink tulips!
---------------------------------------------------------------------- */
-const PompompurinPup = ({ className = '', style = {} }) => (
-  <svg viewBox="0 0 140 140" className={className} style={style}>
-    <ellipse cx="70" cy="125" rx="45" ry="8" fill="#D2B06A" opacity="0.3" />
-    <ellipse cx="70" cy="95" rx="36" ry="28" fill="#FFF8BD" />
-    <circle cx="45" cy="115" r="14" fill="#FFF8BD" />
-    <circle cx="95" cy="115" r="14" fill="#FFF8BD" />
-    <g transform="rotate(-15 35 65)">
-      <ellipse cx="35" cy="65" rx="14" ry="22" fill="#FFF8BD" />
-    </g>
-    <path d="M18 55 Q12 50 16 44 Q22 46 24 52 Q28 46 32 50 Q28 58 18 55 Z" fill="#C2D1F0" /> 
-    <g transform="rotate(15 105 65)">
-      <ellipse cx="105" cy="65" rx="14" ry="22" fill="#FFF8BD" />
-    </g>
-    <path d="M122 55 Q128 50 124 44 Q118 46 116 52 Q112 46 108 50 Q112 58 122 55 Z" fill="#C2D1F0" />
-    <circle cx="70" cy="70" r="38" fill="#FFF8BD" />
-    <path d="M46 44 Q70 20 94 44 Q70 38 46 44 Z" fill="#704F37" />
-    <ellipse cx="70" cy="30" rx="4" ry="6" fill="#704F37" />
-    <circle cx="48" cy="78" r="7" fill="#FFA3A3" opacity="0.5" />
-    <circle cx="92" cy="78" r="7" fill="#FFA3A3" opacity="0.5" />
-    <circle cx="58" cy="70" r="3.5" fill="#3D2616" />
-    <circle cx="82" cy="70" r="3.5" fill="#3D2616" />
-    <ellipse cx="70" cy="75" rx="3.5" ry="2.5" fill="#3D2616" />
-    <path d="M70 77.5 Q66 81 63 79 M70 77.5 Q74 81 77 79" stroke="#3D2616" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <ellipse cx="42" cy="96" rx="10" ry="14" fill="#FFF8BD" transform="rotate(-30 42 96)" />
-    <path d="M64 92 Q68 115 56 126" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M72 90 Q72 112 68 124" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M84 92 Q74 114 78 125" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M60 115 Q46 100 62 95 Q68 108 60 115 Z" fill="#6EA650" />
-    <path d="M75 118 Q92 106 82 96 Q76 108 75 118 Z" fill="#6EA650" />
-    <g transform="translate(50, 80)">
-      <ellipse cx="10" cy="12" rx="9" ry="12" fill="#F491A5" />
-      <path d="M4 6 Q10 18 16 6" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <g transform="translate(68, 76)">
-      <ellipse cx="10" cy="12" rx="10" ry="13" fill="#F7A1B5" />
-      <path d="M3 6 Q10 20 17 6" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <g transform="translate(80, 88)">
-      <ellipse cx="10" cy="11" rx="9" ry="12" fill="#F491A5" />
-      <path d="M4 5 Q10 17 16 5" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <ellipse cx="94" cy="98" rx="10" ry="13" fill="#FFF8BD" transform="rotate(45 94 98)" />
-  </svg>
-);
-
-const GameCard = ({ emoji, title, subtitle, accent, onClick }) => (
-  <motion.div
-    whileHover={{ y: -6, scale: 1.02, rotate: -1 }}
+const GameCard = ({ emoji, title, subtitle, iconBg, blobColor, onClick }) => (
+  <motion.button
+    whileHover={{ y: -4, scale: 1.015 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="relative bg-white/95 border-[3px] border-white rounded-[2rem] p-6 cursor-pointer shadow-[0_6px_20px_rgb(0,0,0,0.07)] flex items-center gap-5 overflow-hidden w-full"
+    className="w-full text-left relative bg-white/95 border-2 border-[#472C20]/10 rounded-[1.75rem] p-5 flex items-center gap-4 shadow-[0_4px_16px_rgba(71,44,32,0.08)] hover:shadow-[0_10px_26px_rgba(71,44,32,0.16)] hover:border-[#472C20]/20 transition-all overflow-hidden group"
   >
     <div
-      className="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-60"
-      style={{ backgroundColor: accent }}
+      className="absolute inset-0 opacity-[0.05] pointer-events-none"
+      style={{ backgroundImage: 'radial-gradient(#472C20 1px, transparent 1px)', backgroundSize: '14px 14px' }}
     />
     <div
-      className="relative shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-inner"
-      style={{ backgroundColor: accent }}
+      className="absolute -right-7 -bottom-7 w-24 h-24 rounded-full opacity-25 group-hover:scale-110 transition-transform"
+      style={{ backgroundColor: blobColor }}
+    />
+
+    <div
+      className="relative shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-black/5"
+      style={{ background: iconBg }}
     >
       {emoji}
     </div>
-    <div className="relative text-left">
-      <h2 className="text-xl font-serif font-black text-[#6B5B4E]">{title}</h2>
-      <p className="text-xs font-bold text-[#8a7a6a] tracking-wide mt-0.5">{subtitle}</p>
+    <div className="relative flex-1 min-w-0">
+      <h3 className="text-lg font-serif font-black text-[#472C20] leading-tight">{title}</h3>
+      <p className="text-[11px] font-bold text-[#472C20]/50 uppercase tracking-wide mt-0.5">{subtitle}</p>
     </div>
-    <Sparkles size={22} className="absolute right-4 bottom-4 text-[#f2c9a0]" />
+    <ChevronRight
+      size={20}
+      className="relative shrink-0 text-[#472C20]/30 group-hover:text-[#472C20]/70 group-hover:translate-x-1 transition-all"
+    />
+  </motion.button>
+);
+
+/* ---------------------------------------------------------------------
+   Rank badge — gold / silver / bronze medals for the top 3, a plain
+   numbered pill for everyone else.
+--------------------------------------------------------------------- */
+const RankBadge = ({ rank }) => {
+  const medals = {
+    1: { bg: 'linear-gradient(135deg,#F8D888,#E8A83C)', ring: '#C98A1F', icon: '🥇' },
+    2: { bg: 'linear-gradient(135deg,#EDF1F5,#C3CCD6)', ring: '#98A2AD', icon: '🥈' },
+    3: { bg: 'linear-gradient(135deg,#E8BB94,#CC8955)', ring: '#A96B3E', icon: '🥉' }
+  };
+  const m = medals[rank];
+
+  if (m) {
+    return (
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center text-base shadow-md shrink-0"
+        style={{ background: m.bg, border: `2px solid ${m.ring}` }}
+      >
+        {m.icon}
+      </div>
+    );
+  }
+  return (
+    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 bg-[#6F9587] border-2 border-[#587A6E]">
+      {rank}
+    </div>
+  );
+};
+
+const LeaderboardRow = ({ player, rank }) => (
+  <motion.div
+    initial={{ opacity: 0, x: 8 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay: rank * 0.03 }}
+    className={`flex items-center gap-3 rounded-2xl px-3.5 py-2.5 border transition-colors ${
+      rank === 1
+        ? 'bg-white border-[#E8A83C]/50 shadow-[0_3px_14px_rgba(232,168,60,0.28)]'
+        : 'bg-white/75 border-white/60'
+    }`}
+  >
+    <RankBadge rank={rank} />
+    <span className="flex-1 min-w-0 font-bold text-sm text-[#2F5449] truncate">
+      {player.playerName || 'Anonymous'}
+    </span>
+    <span className="font-mono font-black text-xs px-2.5 py-1 rounded-full bg-[#E9F3EE] text-[#2F5449] whitespace-nowrap">
+      {player.finalScore ?? 0} <span className="opacity-50 font-bold">pts</span>
+    </span>
   </motion.div>
 );
 
@@ -134,112 +125,87 @@ const Games = ({ onNavigate }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="min-h-screen p-6 md:p-12 flex flex-col items-center relative overflow-x-hidden"
-      style={{
-        backgroundColor: '#FCE8A8',
-        backgroundImage:
-          'linear-gradient(90deg, rgba(255,255,255,0.55) 2px, transparent 2px), linear-gradient(rgba(255,255,255,0.55) 2px, transparent 2px)',
-        backgroundSize: '54px 54px',
-      }}
     >
-      <BackToCafeButton className="mb-8 z-20 relative" />
+      <ArcadeBackground variant="hub" />
 
-      <Heart
-        size={44}
-        strokeWidth={2}
-        className="hidden md:block absolute bottom-8 right-8 text-[#e8d18a] opacity-70 z-10"
-      />
+      <BackToCafeButton className="mb-8 z-20 relative" />
 
       <div className="w-full max-w-6xl relative z-10">
         {/* Header */}
         <div className="text-center mb-10 space-y-3">
-          <div className="inline-flex items-center gap-2 bg-pink-100/80 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-pink-900 border border-pink-200">
-            <Sparkles size={18} /> dumble play corner <Sparkles size={18} />
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-[#472C20] border-2 border-[#472C20]/15 shadow-sm">
+            <Sparkles size={14} className="text-[#E8825A]" /> dumble play corner <Sparkles size={14} className="text-[#6FAE9E]" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif font-black text-[#6B5B4E]">The Cozy Arcade</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-black text-[#472C20]">The Cozy Arcade</h1>
         </div>
 
-        {/* Updated grid ratio to give the elements slightly more room */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-stretch">
-          
-          {/* RECTANGLE 1: LEFT — Enlarged games panel */}
-          <div className="relative bg-[#F3C775] rounded-[2.75rem] p-10 md:p-14 border-[4px] border-white shadow-[0_12px_40px_rgb(0,0,0,0.1)] flex flex-col justify-center">
-            
-            {/* Peeking pup, repositioned nicely on the expanded layout */}
-            <CafePup className="absolute -top-11 -right-4 w-24 h-24 drop-shadow-md" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 items-stretch">
 
-            <div className="flex items-center gap-2 mb-6 font-black text-white/90 uppercase tracking-widest text-sm">
+          {/* LEFT — warm coral/terracotta games panel */}
+          <div
+            className="relative rounded-[2.75rem] p-8 md:p-10 border-[4px] border-white shadow-[0_14px_40px_rgba(232,130,90,0.22)] flex flex-col justify-center overflow-hidden"
+            style={{ background: 'linear-gradient(150deg, #F2A473 0%, #E8825A 100%)' }}
+          >
+            <div
+              className="absolute inset-0 opacity-[0.08] pointer-events-none"
+              style={{ backgroundImage: 'radial-gradient(#fff 1.5px, transparent 1.5px)', backgroundSize: '22px 22px' }}
+            />
+            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10" />
+            <div className="absolute -bottom-14 -left-10 w-40 h-40 rounded-full bg-white/10" />
+
+            <div className="relative flex items-center gap-2 mb-6 font-black text-white uppercase tracking-widest text-sm drop-shadow-sm">
               <Sparkles size={18} /> pick a game
             </div>
 
-            {/* Increased card gap */}
-            <div className="flex flex-col gap-6 w-full">
+            <div className="relative flex flex-col gap-5 w-full">
               <GameCard
                 emoji="📸"
                 title="Hue Hunt"
                 subtitle="spot the colors around you"
-                accent="#FBEAB0"
+                iconBg="linear-gradient(150deg,#FFE9C7,#F6C86B)"
+                blobColor="#F6C86B"
                 onClick={() => onNavigate('hue-hunt')}
               />
               <GameCard
                 emoji="💬"
                 title="Talk Box"
                 subtitle="cozy icebreaker questions"
-                accent="#D9ECEF"
+                iconBg="linear-gradient(150deg,#DCEFEA,#9FCFC0)"
+                blobColor="#9FCFC0"
                 onClick={() => onNavigate('icebreakers')}
               />
             </div>
-
-            {/* Pompompurin puppy sitting comfortably */}
-            <PompompurinPup
-              className="hidden md:block absolute -bottom-12 -left-8 w-32 h-32 drop-shadow-md"
-            />
           </div>
 
-          {/* RECTANGLE 2: RIGHT — Enlarged leaderboard panel */}
-          <div className="rounded-[2.75rem] border-[4px] border-white shadow-[0_12px_40px_rgb(0,0,0,0.1)] overflow-hidden flex flex-col min-h-[500px]">
-            <div className="bg-white/90 py-5 flex items-center justify-center gap-2 font-black text-[#6B5B4E] uppercase tracking-widest text-base border-b-2 border-dashed border-[#6B5B4E]/10">
-              <Trophy size={22} className="text-amber-500" /> Top Hunters
+          {/* RIGHT — cool sage/teal leaderboard panel */}
+          <div
+            className="rounded-[2.75rem] border-[4px] border-white shadow-[0_14px_40px_rgba(111,149,135,0.22)] overflow-hidden flex flex-col min-h-[500px]"
+            style={{ background: 'linear-gradient(160deg, #EAF4EF 0%, #D8EAE2 100%)' }}
+          >
+            <div className="bg-white/85 backdrop-blur-sm py-5 flex items-center justify-center gap-2 font-black text-[#2F5449] uppercase tracking-widest text-base border-b-2 border-dashed border-[#2F5449]/10">
+              <Trophy size={20} className="text-[#E8A83C]" /> Top Hunters
             </div>
-            
-            {/* Increased inner padding here (p-8) for a bigger, breathing layout */}
-            <div
-              className="flex-1 p-8 flex flex-col justify-start"
-              style={{
-                backgroundColor: '#EAF2DE',
-                backgroundImage:
-                  'linear-gradient(90deg, rgba(255,255,255,0.7) 8px, transparent 8px), linear-gradient(rgba(255,255,255,0.7) 8px, transparent 8px)',
-                backgroundSize: '24px 24px',
-              }}
-            >
+
+            <div className="flex-1 p-6 md:p-7 flex flex-col justify-start">
               {loading ? (
-                <p className="text-center text-sm opacity-50 mt-6">Loading scores...</p>
+                <p className="text-center text-sm opacity-50 mt-6 text-[#2F5449]">Loading scores...</p>
               ) : players.length > 0 ? (
-                <div className="space-y-3 w-full">
+                <div className="space-y-2.5 w-full">
                   {players.map((player, i) => (
-                    <div
-                      key={player.id}
-                      className="flex justify-between items-center bg-white/80 rounded-2xl px-4 py-3 font-bold text-[#6B5B4E] text-sm shadow-sm border border-white/40"
-                    >
-                      <span className="flex items-center gap-3">
-                        <span
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-black ${
-                            i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-slate-300' : i === 2 ? 'bg-orange-300' : 'bg-[#c9b89a]'
-                          }`}
-                        >
-                          {i + 1}
-                        </span>
-                        {player.playerName || 'Anonymous'}
-                      </span>
-                      <span className="font-extrabold text-[#5D8C43]">{player.finalScore ?? 0} pts</span>
-                    </div>
+                    <LeaderboardRow key={player.id} player={player} rank={i + 1} />
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-sm opacity-50 font-serif mt-6">No hunters yet...</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 py-10">
+                  <span className="text-4xl opacity-60">🏆</span>
+                  <p className="text-sm font-serif italic opacity-50 text-[#2F5449]">
+                    No hunters yet... be the first!
+                  </p>
+                </div>
               )}
             </div>
           </div>
-          
+
         </div>
       </div>
     </motion.div>

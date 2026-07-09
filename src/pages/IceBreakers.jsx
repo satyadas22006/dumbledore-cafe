@@ -155,7 +155,7 @@ const Icebreakers = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen font-sans text-[#472C20] relative overflow-hidden select-none bg-[#FFFBEA] flex flex-col">
+   <div className="min-h-screen font-sans text-[#472C20] relative overflow-hidden select-none bg-[#FBF3E4] flex flex-col">
 
       {/* ============ TOP: rainbow plaid banner ============ */}
       <div
@@ -342,7 +342,7 @@ const Icebreakers = ({ onNavigate }) => {
         <div
           className="w-full h-16 md:h-20 relative overflow-visible"
           style={{
-            backgroundColor: '#F5A947',
+            backgroundColor: '#E8825A',
             backgroundImage: `
               linear-gradient(90deg, rgba(255,255,255,0.35) 50%, transparent 50%),
               linear-gradient(rgba(255,255,255,0.35) 50%, transparent 50%)

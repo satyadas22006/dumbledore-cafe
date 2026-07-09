@@ -408,7 +408,7 @@ const HueHunt = ({ onNavigate }) => {
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center"
-      style={{ backgroundColor: '#F9D9DE' }}
+      style={{ backgroundColor: '#E4F1EC' }}
     >
       {/* Decorative critter header strip */}
       <CritterRow />
@@ -420,7 +420,7 @@ const HueHunt = ({ onNavigate }) => {
           backgroundImage: `
             linear-gradient(90deg, rgba(255,255,255,0.75) 12px, transparent 12px),
             linear-gradient(rgba(255,255,255,0.75) 12px, transparent 12px),
-            linear-gradient(#DCE8CB, #DCE8CB)
+            linear-gradient(#D9ECE4, #D9ECE4)
           `,
           backgroundSize: '32px 32px, 32px 32px, 100% 100%',
         }}
