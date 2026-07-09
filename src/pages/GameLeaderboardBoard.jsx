@@ -1,61 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { db } from '../firebase';
+import { motion } from 'framer-motion';
+import { Sparkles, Smile, Trophy } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { db } from '../firebase'; 
+import BackToCafeButton from '../components/BackToCafeButton';
 
-export default function GameLeaderboardBoard() {
+const Games = ({ onNavigate }) => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const q = query(collection(db, 'hue_hunt_matches'), orderBy('finalScore', 'desc'), limit(10));
+    // 1. Correct query based on your DB schema
+    const q = query(
+      collection(db, 'hue_hunt_matches'), 
+      orderBy('finalScore', 'desc'), 
+      limit(10)
+    );
+    
+    // 2. Using onSnapshot for real-time updates
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setPlayers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
+    }, (error) => {
+      console.error("Firestore Error: ", error);
+      setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center p-6">
-      {/* Outer Creature Shape Container */}
-      <div className="bg-[#A3E4D7] border-[6px] border-[#472C20] rounded-[40px] p-8 w-full max-w-2xl shadow-[15px_15px_0_rgba(71,44,32,0.2)] relative">
-        
-        {/* Decorative Header Ribbon */}
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#F1948A] border-[4px] border-[#472C20] px-12 py-3 rounded-full shadow-lg">
-          <h1 className="text-3xl font-black text-white uppercase tracking-widest">Leaderboard</h1>
-        </div>
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="min-h-screen p-6 md:p-12 flex flex-col items-center relative overflow-x-hidden"
+      style={{
+        backgroundColor: "#FFFBE6",
+        backgroundImage: "linear-gradient(90deg, #F8E1E1 1px, transparent 1px), linear-gradient(#F8E1E1 1px, transparent 1px)",
+        backgroundSize: "40px 40px"
+      }}
+    >
+      <BackToCafeButton className="mb-8 z-20 relative" />
 
-        {/* Inner Dashed Content Area */}
-        <div className="bg-[#FAF6EE] border-[4px] border-[#472C20] border-dashed rounded-[30px] p-8 mt-8 min-h-[500px]">
+      <div className="w-full max-w-3xl bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-16 border-[3px] border-white shadow-[0_8px_30px_rgb(0,0,0,0.05)] relative z-10">
+        
+        {/* Leaderboard Section */}
+        <div className="mb-10 bg-white/50 p-6 rounded-3xl border border-white/50 shadow-inner">
+          <div className="flex items-center justify-center gap-2 mb-4 font-black text-[#6B5B4E] uppercase tracking-widest text-sm">
+            <Trophy size={16} className="text-amber-500" /> Top Hunters
+          </div>
+          
           {loading ? (
-            <p className="text-center font-black py-20 text-[#472C20]">Loading...</p>
-          ) : (
-            <div className="space-y-6">
-              {players.map((p, i) => (
-                <div key={p.id} className="flex items-center gap-6 py-4 border-b-2 border-dashed border-[#472C20]/20">
-                  <span className="font-black text-3xl text-[#472C20]/40 w-12">#{i + 1}</span>
-                  <span className="font-bold text-xl text-[#472C20] flex-1">{p.playerName || "Anonymous"}</span>
-                  <span className="font-black text-xl bg-[#FAD7A0] px-6 py-2 rounded-full border-2 border-[#472C20]">
-                    {p.finalScore?.toLocaleString()}
-                  </span>
+            <p className="text-center text-sm opacity-50">Loading scores...</p>
+          ) : players.length > 0 ? (
+            <div className="space-y-2">
+              {players.map((player, i) => (
+                <div key={player.id} className="flex justify-between font-bold text-[#6B5B4E] border-b border-white/50 pb-1">
+                  {/* Using the correct DB fields: playerName and finalScore */}
+                  <span>{i + 1}. {player.playerName || "Anonymous"}</span>
+                  <span>{player.finalScore ?? 0} pts</span>
                 </div>
               ))}
             </div>
+          ) : (
+            <p className="text-center text-sm opacity-50 font-serif">No hunters yet...</p>
           )}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex gap-4 justify-center mt-8">
-          <button onClick={() => navigate(-1)} className="bg-[#FAD7A0] border-4 border-[#472C20] px-8 py-3 rounded-full font-black text-[#472C20] hover:scale-105 transition-transform">
-            BACK
-          </button>
-          <button onClick={() => navigate('/games')} className="bg-[#85C1E9] border-4 border-[#472C20] px-8 py-3 rounded-full font-black text-[#472C20] hover:scale-105 transition-transform">
-            PLAY AGAIN
-          </button>
+        {/* Content Header & Games Grid remain the same... */}
+        <div className="text-center mb-12 space-y-3">
+          <div className="inline-flex items-center gap-2 bg-pink-100/80 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-pink-900 border border-pink-200">
+            <Sparkles size={14} /> dumble play corner <Smile size={14} />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-serif font-black text-[#6B5B4E]">The Cozy Arcade</h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-xl mx-auto">
+          <motion.div whileHover={{ y: -5, scale: 1.02 }} onClick={() => onNavigate('hue-hunt')} className="bg-white/90 border border-white rounded-[2rem] p-6 cursor-pointer shadow-lg flex flex-col items-center text-center hover:bg-green-50 transition-colors">
+            <div className="text-5xl mb-4">📸</div>
+            <h2 className="text-xl font-serif font-bold text-[#6B5B4E]">Hue Hunt</h2>
+          </motion.div>
+          <motion.div whileHover={{ y: -5, scale: 1.02 }} onClick={() => onNavigate('icebreakers')} className="bg-white/90 border border-white rounded-[2rem] p-6 cursor-pointer shadow-lg flex flex-col items-center text-center hover:bg-blue-50 transition-colors">
+            <div className="text-5xl mb-4">💬</div>
+            <h2 className="text-xl font-serif font-bold text-[#6B5B4E]">Talk Box</h2>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
-}
+};
+
+export default Games;
