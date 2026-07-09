@@ -28,7 +28,7 @@ import Directory from './pages/Directory';
 import OwnerPortal from './pages/OwnerPortal';
 import Games from './pages/Games';
 import HueHunt from './pages/HueHunt';
-import Icebreakers from './pages/Icebreakers';
+import Icebreakers from './pages/IceBreakers';
 import GlobalGrid from './components/GlobalGrid';
 import { THEMES, DEFAULT_MEMORIES } from './constants/data';
 
