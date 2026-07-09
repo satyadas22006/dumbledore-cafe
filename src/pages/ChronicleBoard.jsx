@@ -49,6 +49,12 @@ const FloatingDoodle = ({ char, className, delay = 0 }) => (
   </motion.div>
 );
 
+const StampSticker = ({ className, text = "VERIFIED" }) => (
+  <div className={`absolute border-[2px] border-[#5A2E25] text-[#5A2E25] font-mono font-bold text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm shadow-[2px_2px_0_#5A2E25] bg-[#FDE4CE] z-20 ${className}`}>
+    {text}
+  </div>
+);
+
 const TextureOverlay = ({ type, color }) => {
   if (type === 'dots') return <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill={color} opacity="0.3" /></pattern>;
   if (type === 'lines') return <pattern id="lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke={color} strokeWidth="2" opacity="0.2" /></pattern>;
@@ -62,14 +68,24 @@ const Paperclip = ({ className }) => (
   </div>
 );
 
-// New delicate background texture injected into every white card
+// Delicate background textures injected into the white cards to stop them looking bland
 const CardTexture = () => (
   <div 
     className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
     style={{ 
       backgroundImage: 'radial-gradient(#5A2E25 1.5px, transparent 1.5px)', 
       backgroundSize: '16px 16px', 
-      opacity: 0.05 
+      opacity: 0.04 
+    }} 
+  />
+);
+
+const GraphPaperTexture = () => (
+  <div 
+    className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
+    style={{ 
+      backgroundImage: 'linear-gradient(rgba(90,46,37,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(90,46,37,0.06) 1px, transparent 1px)', 
+      backgroundSize: '20px 20px' 
     }} 
   />
 );
@@ -106,10 +122,12 @@ const ArtsyPieChart = ({ data, title, hoveredId, setHoveredVibe }) => {
   }, [data]);
 
   return (
-    <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[30px] p-6 shadow-[6px_6px_0_#5A2E25] flex flex-col items-center relative group w-full transition-transform hover:-translate-y-1 overflow-hidden">
+    <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[30px] p-6 shadow-[8px_8px_0_#5A2E25] flex flex-col items-center relative group w-full transition-all hover:-translate-y-2 overflow-hidden">
       <CardTexture />
+      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#D95D39] opacity-5 rounded-full pointer-events-none"></div>
+      
       <WashiTape className="-top-3 left-6 rotate-[-3deg] bg-amber-200/50" />
-      <h4 className="font-serif font-black text-xl text-[#5A2E25] mb-4 tracking-tight border-b-2 border-dashed border-[#5A2E25]/10 pb-2 w-full text-center relative z-10">{title}</h4>
+      <h4 className="font-serif font-black text-xl text-[#5A2E25] mb-4 tracking-tight border-b-2 border-dashed border-[#5A2E25]/15 pb-2 w-full text-center relative z-10">{title}</h4>
       
       <div className="relative w-full aspect-square max-w-[240px] z-10">
         <svg viewBox="0 0 280 280" className="w-full h-full overflow-visible">
@@ -167,9 +185,9 @@ const ArtsyPieChart = ({ data, title, hoveredId, setHoveredVibe }) => {
 
       <div className="w-full mt-4 flex flex-wrap justify-center gap-2.5 text-[10px] font-mono font-bold relative z-10">
         {data.map((item) => (
-          <div key={item.id} className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${hoveredId === item.id ? 'bg-[#7A5C58]/5 border-[#7A5C58]' : 'border-transparent bg-white/40'}`}>
-            <div className="w-2.5 h-2.5 rounded-full border border-[#7A5C58]/20 shadow-xs" style={{ backgroundColor: item.color }} />
-            <span className="text-[#5A2E25]/80 truncate max-w-[100px]">{item.label}</span>
+          <div key={item.id} className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${hoveredId === item.id ? 'bg-[#5A2E25]/10 border-[#5A2E25]' : 'border-[#5A2E25]/10 bg-white/60'}`}>
+            <div className="w-2.5 h-2.5 rounded-full border border-[#5A2E25]/20 shadow-xs" style={{ backgroundColor: item.color }} />
+            <span className="text-[#5A2E25] truncate max-w-[100px]">{item.label}</span>
           </div>
         ))}
       </div>
@@ -341,10 +359,10 @@ export default function ChronicleBoard({ reviewData }) {
   const areaPath = `M 25 150 L 25 ${150 - (pt0 * 1.3)} L 137.5 ${150 - (pt1 * 1.3)} L 250 ${150 - (pt2 * 1.3)} L 362.5 ${150 - (pt3 * 1.3)} L 475 ${150 - (pt4 * 1.3)} L 475 150 Z`;
 
   return (
-    <div className="w-full min-h-screen bg-[#130B09] text-[#FDE4CE] py-10 px-4 md:px-8 relative overflow-hidden flex flex-col items-center font-sans">
+    <div className="w-full min-h-screen bg-[#150A08] text-[#FDE4CE] py-10 px-4 md:px-8 relative overflow-hidden flex flex-col items-center font-sans">
       
       {/* RICH RED/ORANGE/BLACK BACKGROUND ENGINE */}
-      <div className="absolute inset-0 bg-[#130B09] z-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 bg-[#150A08] z-0 pointer-events-none overflow-hidden">
         {/* Soft, warm blurred orbs floating slowly in the background */}
         <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15], rotate: [0, 45, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#8C271E] rounded-full blur-[140px]" />
         <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, -30, 0] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute bottom-[-10%] right-[-20%] w-[70vw] h-[70vw] bg-[#D95D39] rounded-full blur-[160px]" />
@@ -361,7 +379,7 @@ export default function ChronicleBoard({ reviewData }) {
 
       <AnimatePresence>
         {showReceiptPopup && activeReview && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-[#130B09]/85 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-[#150A08]/85 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
             <motion.div
               animate={isCrumbling ? {
                 scale: [1, 0.7, 0.3, 0], rotate: [0, 45, 180, 360],
@@ -372,7 +390,7 @@ export default function ChronicleBoard({ reviewData }) {
             >
               
               {/* Receipt Wrapper (this is the part that gets captured for download) */}
-              <div ref={receiptRef} className="w-[80%] mx-auto bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#472C20] rounded-lg">
+              <div ref={receiptRef} className="w-[80%] mx-auto bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#5A2E25] rounded-lg">
                 <div className="absolute inset-0 pointer-events-none z-[100] opacity-[0.25] mix-blend-multiply" style={{ backgroundImage: paperNoise }}></div>
                 
                 <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
@@ -423,16 +441,24 @@ export default function ChronicleBoard({ reviewData }) {
       <div className="max-w-[1300px] w-full z-10 space-y-10 mt-4">
         
         {/* Title Ledger Section */}
-        <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
           <CardTexture />
-          <WashiTape className="-top-3 left-16 rotate-[2deg] bg-amber-200/40" />
-          <div className="text-center md:text-left space-y-2 w-full md:w-auto relative z-10">
+          <GraphPaperTexture />
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-[#D95D39] rounded-full opacity-10 blur-2xl pointer-events-none"></div>
+          
+          <WashiTape className="-top-3 left-16 rotate-[2deg] bg-amber-200/50" />
+          <StampSticker className="top-4 right-1/2 md:right-1/4 rotate-12" />
+
+          <div className="text-center md:text-left space-y-2 w-full md:w-auto relative z-10 bg-white/60 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none backdrop-blur-sm md:backdrop-blur-none border-2 border-[#5A2E25]/10 md:border-none shadow-sm md:shadow-none">
             <span className="bg-[#FFDAC1] border-[2px] border-[#5A2E25] text-[10px] font-mono font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-[#5A2E25] inline-block shadow-[2px_2px_0_#5A2E25]">Community Ledger Metrics</span>
             <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tighter text-[#5A2E25] pt-2">The Experience</h1>
           </div>
-          <div className="bg-white border-[3px] border-[#5A2E25] rounded-2xl p-5 w-full md:max-w-sm text-center md:text-right shadow-[4px_4px_0_#5A2E25] transform rotate-1 relative z-10">
+          
+          <div className="bg-[#FAF7F2] border-[3px] border-[#5A2E25] rounded-2xl p-5 w-full md:max-w-sm text-center md:text-right shadow-[4px_4px_0_#5A2E25] transform rotate-1 relative z-10">
             <span className="text-[11px] font-mono font-black block text-[#D95D39] uppercase tracking-wider mb-2">Atmosphere Pulse</span>
-            <span className="text-lg font-serif italic font-black text-[#5A2E25]">{vibeChartData.find(v => v.label === dominantVibe)?.percentage || 0}% Patrons share the "{dominantVibe}" vibe space.</span>
+            <span className="text-lg font-serif italic font-black text-[#5A2E25]">
+              {vibeChartData.find(v => v.label === dominantVibe)?.percentage || 0}% Patrons share the "{dominantVibe}" vibe space.
+            </span>
           </div>
         </div>
 
@@ -445,15 +471,23 @@ export default function ChronicleBoard({ reviewData }) {
 
         {/* BOTTOM ROW: SATISFACTION TREND GRAPH & STASHED SNAPSHOTS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-16">
-          <div className="lg:col-span-7 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between relative min-h-[380px] overflow-hidden">
+          
+          {/* Satisfaction Index Vector Area Chart */}
+          <div className="lg:col-span-7 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between relative min-h-[380px] overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
             <CardTexture />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_top_right,#D95D39_0%,transparent_70%)] opacity-10 pointer-events-none"></div>
+            
             <Paperclip className="-top-4 right-12 rotate-[15deg]" />
-            <div className="relative z-10">
-              <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D95D39] mb-2 block border-b-2 border-dashed border-[#D95D39]/30 pb-1 w-fit">Data-Driven Trend Analysis</span>
-              <h3 className="font-serif font-black text-4xl text-[#5A2E25] tracking-tight">Guest Satisfaction Trend</h3>
+            <WashiTape className="bottom-4 -left-4 rotate-[-15deg] bg-blue-200/40" />
+
+            <div className="relative z-10 bg-white/60 p-3 rounded-xl border border-[#5A2E25]/10 w-fit backdrop-blur-sm shadow-sm">
+              <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D95D39] mb-1 block">Data-Driven Trend Analysis</span>
+              <h3 className="font-serif font-black text-3xl md:text-4xl text-[#5A2E25] tracking-tight">Guest Satisfaction Trend</h3>
             </div>
-            <div className="w-full h-56 relative mt-6 border-b-4 border-l-4 border-[#5A2E25] px-2 flex items-end justify-center rounded-bl-lg z-10">
-              <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible max-w-full bg-white/40">
+
+            <div className="w-full h-56 relative mt-6 border-b-4 border-l-4 border-[#5A2E25] px-2 flex items-end justify-center rounded-bl-lg z-10 bg-white/40 shadow-inner">
+              <GraphPaperTexture />
+              <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible max-w-full">
                 <defs><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FFB7B2" stopOpacity="0.6" /><stop offset="100%" stopColor="#FFB7B2" stopOpacity="0.05" /></linearGradient></defs>
                 <line x1="0" y1="37.5" x2="500" y2="37.5" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
                 <line x1="0" y1="75" x2="500" y2="75" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
@@ -478,28 +512,47 @@ export default function ChronicleBoard({ reviewData }) {
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between overflow-hidden relative">
+          {/* Stashed Scrapbook commentary */}
+          <div className="lg:col-span-5 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between overflow-hidden relative group hover:-translate-y-1 transition-transform duration-300">
             <CardTexture />
             <WashiTape className="-top-3 right-8 rotate-[-5deg] bg-blue-200/50" />
+            <div className="absolute -top-6 -left-6 w-24 h-24 border-[3px] border-[#5A2E25]/10 rounded-full pointer-events-none"></div>
+
             <div className="relative z-10">
               <div className="flex justify-between items-center border-b-2 border-dashed border-[#5A2E25]/20 pb-4 mb-6">
-                <h4 className="font-serif font-black text-2xl text-[#5A2E25] flex items-center gap-2"><span>☕</span> Stashed Reflection Whisper</h4>
+                <h4 className="font-serif font-black text-2xl text-[#5A2E25] flex items-center gap-2">
+                  <span>🍓</span> Stashed Reflection Whisper
+                </h4>
               </div>
-              <div className="space-y-4 relative">
+
+              <div className="space-y-4 relative mt-2">
                 {pastReview ? (
                   <>
-                    <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold">
-                      <span className="bg-white border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#5A2E25]">👤 {pastReview.name || 'Cozy Patron'}</span>
-                      <span className="bg-white border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#D95D39]">{pastReview.vibe || '☕ Coffee & Conversations'}</span>
+                    <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold px-2">
+                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#5A2E25]">👤 {pastReview.name || 'Cozy Patron'}</span>
+                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#D95D39]">{pastReview.vibe || '☕ Coffee & Conversations'}</span>
                     </div>
-                    <div className="bg-white/60 p-6 border-[3px] border-[#5A2E25] shadow-[inset_2px_4px_10px_rgba(90,46,37,0.05)] rounded-2xl italic font-serif text-lg text-[#5A2E25] leading-relaxed min-h-[140px] flex items-center">
-                      "{pastReview.review}"
+
+                    <div className="relative mt-4">
+                      {/* Drop shadow back layer to make it look like a pinned note */}
+                      <div className="absolute -inset-1 bg-black/5 transform rotate-2 rounded-2xl"></div>
+                      
+                      <div className="bg-[#FFF8E7] p-6 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-2xl italic font-serif text-lg text-[#5A2E25] leading-relaxed min-h-[140px] flex items-center relative z-10 transform -rotate-1">
+                        <WashiTape className="-top-3 left-1/2 -translate-x-1/2 rotate-[2deg] bg-rose-200/60 w-16" />
+                        <span className="absolute bottom-2 right-3 text-3xl opacity-20">✍️</span>
+                        "{pastReview.review}"
+                      </div>
                     </div>
                   </>
-                ) : <p className="text-sm text-[#5A2E25]/50 font-serif italic py-10 text-center">No past text reflections stashed away in the archive yet.</p>}
+                ) : (
+                  <p className="text-sm text-[#5A2E25]/50 font-serif italic py-10 text-center">No past text reflections stashed away in the archive yet.</p>
+                )}
               </div>
             </div>
-            <p className="font-mono text-[10px] font-bold opacity-40 uppercase tracking-widest text-center mt-8 relative z-10">• authentic guest diary logs •</p>
+
+            <p className="font-mono text-[10px] font-bold opacity-40 uppercase tracking-widest text-center mt-8 relative z-10">
+              • authentic guest diary logs •
+            </p>
           </div>
         </div>
 
