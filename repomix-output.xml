@@ -546,153 +546,6 @@ If you are developing a production application, we recommend using TypeScript wi
 <svg xmlns="http://www.w3.org/2000/svg" width="77" height="47" fill="none" aria-labelledby="vite-logo-title" viewBox="0 0 77 47"><title id="vite-logo-title">Vite</title><style>.parenthesis{fill:#000}@media (prefers-color-scheme:dark){.parenthesis{fill:#fff}}</style><path fill="#9135ff" d="M40.151 45.71c-.663.844-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.493c-.92 0-1.457-1.04-.92-1.788l7.479-10.471c1.07-1.498 0-3.578-1.842-3.578H15.443c-.92 0-1.456-1.04-.92-1.788l9.696-13.576c.213-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.472c-1.07 1.497 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.087.89 1.83L40.153 45.712z"/><mask id="a" width="48" height="47" x="14" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M40.047 45.71c-.663.843-2.02.374-2.02-.699V34.708a2.26 2.26 0 0 0-2.262-2.262H24.389c-.92 0-1.457-1.04-.92-1.788l7.479-10.472c1.07-1.497 0-3.578-1.842-3.578H15.34c-.92 0-1.456-1.04-.92-1.788l9.696-13.575c.213-.297.556-.474.92-.474H53.93c.92 0 1.456 1.04.92 1.788L47.37 13.03c-1.07 1.498 0 3.578 1.842 3.578h11.376c.944 0 1.474 1.088.89 1.831L40.049 45.712z"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#eee6ff" rx="5.508" ry="14.704" transform="rotate(269.814 20.96 11.29)scale(-1 1)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#eee6ff" rx="10.399" ry="29.851" transform="rotate(89.814 -16.902 -8.275)scale(1 -1)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#8900ff" rx="5.508" ry="30.487" transform="rotate(89.814 -19.197 -7.127)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.928 4.177)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#8900ff" rx="5.508" ry="30.599" transform="rotate(89.814 -25.738 5.52)scale(1 -1)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#eee6ff" rx="14.072" ry="22.078" transform="rotate(93.35 31.245 55.578)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#8900ff" rx="3.47" ry="21.501" transform="rotate(89.009 35.419 55.202)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx="14.592" cy="9.743" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(39.51 14.592 9.743)"/></g><g filter="url(#k)"><ellipse cx="61.728" cy="-5.321" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 61.728 -5.32)"/></g><g filter="url(#l)"><ellipse cx="55.618" cy="7.104" fill="#00c2ff" rx="5.971" ry="9.665" transform="rotate(37.892 55.618 7.104)"/></g><g filter="url(#m)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#n)"><ellipse cx="12.326" cy="39.103" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 12.326 39.103)"/></g><g filter="url(#o)"><ellipse cx="49.857" cy="30.678" fill="#8900ff" rx="4.407" ry="29.108" transform="rotate(37.892 49.857 30.678)"/></g><g filter="url(#p)"><ellipse cx="52.623" cy="33.171" fill="#00c2ff" rx="5.971" ry="15.297" transform="rotate(37.892 52.623 33.17)"/></g></g><path d="M6.919 0c-9.198 13.166-9.252 33.575 0 46.789h6.215c-9.25-13.214-9.196-33.623 0-46.789zm62.424 0h-6.215c9.198 13.166 9.252 33.575 0 46.789h6.215c9.25-13.214 9.196-33.623 0-46.789" class="parenthesis"/><defs><filter id="b" width="60.045" height="41.654" x="-5.564" y="16.92" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-40.407" y="-6.762" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-35.435" y="2.801" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-30.84" y="20.8" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-29.307" y="21.949" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="29.961" y="-17.13" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="37.754" y="3.055" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-13.43" y="-22.082" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="34.321" y="-37.644" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="38.847" y="-10.552" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-15.081" y="6.78" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="22.45" y="-1.645" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="32.919" y="11.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17286" stdDeviation="4.596"/></filter></defs></svg>
 </file>
 
-<file path="src/components/ArcadeBackground.jsx">
-import React from 'react';
-
-// Blocky "pixel" tree built from stacked squares — reuses the site's
-// existing thick brown outline so it reads as part of the same world,
-// while the chunky block shapes nod to the pixel-art road-map moodboard.
-const PixelTree = ({ className, scale = 1, leafColor = '#8FBF7F', trunkColor = '#8B5E3C' }) => (
-  <div className={`absolute pointer-events-none select-none ${className}`} style={{ transform: `scale(${scale})` }}>
-    <div className="flex flex-col items-center">
-      <div className="w-5 h-5" style={{ backgroundColor: leafColor, border: '2px solid #3C2F2F' }} />
-      <div className="w-7 h-5 -mt-1" style={{ backgroundColor: leafColor, border: '2px solid #3C2F2F' }} />
-      <div className="w-3 h-4" style={{ backgroundColor: trunkColor, border: '2px solid #3C2F2F' }} />
-    </div>
-  </div>
-);
-
-// Chunky pixel sunflower — a circle "face" ringed by petal dots
-const PixelSunflower = ({ className, scale = 1 }) => (
-  <div className={`absolute pointer-events-none select-none ${className}`} style={{ transform: `scale(${scale})` }}>
-    <div className="relative w-7 h-7">
-      {[0, 60, 120, 180, 240, 300].map((deg) => (
-        <div
-          key={deg}
-          className="absolute w-2.5 h-2.5 rounded-full"
-          style={{
-            backgroundColor: '#FFD866',
-            border: '1.5px solid #3C2F2F',
-            top: '50%', left: '50%',
-            transform: `rotate(${deg}deg) translate(0, -9px) translate(-50%, -50%)`
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 m-auto w-3.5 h-3.5 rounded-full" style={{ backgroundColor: '#8B5E3C', border: '1.5px solid #3C2F2F' }} />
-    </div>
-    <div className="w-1 h-4 mx-auto" style={{ backgroundColor: '#8FBF7F', border: '1.5px solid #3C2F2F' }} />
-  </div>
-);
-
-// Sticky note doodle — same visual family as the washi-tape stickies
-// already used on Home.jsx, just re-themed with arcade-flavored text.
-const StickyNote = ({ className, rotate = -6, bg = '#FFF3B0', text }) => (
-  <div
-    className={`absolute pointer-events-none select-none bg-white px-3 py-2 shadow-[3px_3px_0_rgba(60,47,47,0.25)] border border-[#3C2F2F]/30 ${className}`}
-    style={{ backgroundColor: bg, transform: `rotate(${rotate}deg)`, maxWidth: '130px' }}
-  >
-    <p className="font-cursive text-[13px] leading-tight text-[#3C2F2F]">{text}</p>
-  </div>
-);
-
-// Tiny retro CRT monitor line-doodle — a wink to the hand-drawn "old
-// computer" moodboard, kept low-opacity so it reads as texture, not focus.
-const RetroMonitorDoodle = ({ className }) => (
-  <svg viewBox="0 0 80 70" className={`absolute pointer-events-none select-none ${className}`} width="60" height="52">
-    <rect x="6" y="6" width="60" height="44" rx="6" fill="none" stroke="#3C2F2F" strokeWidth="2.5" />
-    <rect x="13" y="13" width="46" height="28" rx="2" fill="none" stroke="#3C2F2F" strokeWidth="2" />
-    <line x1="26" y1="50" x2="46" y2="50" stroke="#3C2F2F" strokeWidth="2.5" />
-    <line x1="20" y1="58" x2="52" y2="58" stroke="#3C2F2F" strokeWidth="2.5" strokeLinecap="round" />
-    <circle cx="59" cy="45" r="1.6" fill="#3C2F2F" />
-  </svg>
-);
-
-const VARIANTS = {
-  hub: {
-    wash: 'linear-gradient(180deg, #EAF4E2 0%, #FBF6E9 45%, #FDF9EE 100%)',
-    roadStroke: '#B9AE9C',
-    showSunflower: true,
-    accentSticky: '#FFF3B0'
-  },
-  huehunt: {
-    wash: 'linear-gradient(180deg, #E4F1F4 0%, #F6F8ED 45%, #FDF9EE 100%)',
-    roadStroke: '#A9C6CC',
-    showSunflower: false,
-    accentSticky: '#D8ECEF'
-  },
-  icebreakers: {
-    wash: 'linear-gradient(180deg, #F7E9EF 0%, #FBF3E7 45%, #FDF9EE 100%)',
-    roadStroke: '#D9AFC0',
-    showSunflower: false,
-    accentSticky: '#FBDDE8'
-  }
-};
-
-/**
- * Shared decorative backdrop for the Arcade hub + both mini-games.
- * ~70-80% of the visual language comes from a pixel/road-trip moodboard
- * (blocky trees, sunflower, a winding dashed path) and a school-locker
- * sticky-note moodboard; ~20-30% ties back to the rest of the site
- * (same brown outline color, same cursive font, same washi-tape/sticker
- * technique already used on Home.jsx) so it still feels like the same café.
- *
- * Purely decorative: fixed, pointer-events-none, negative z-index —
- * cannot intercept clicks or affect layout of the page it sits behind.
- */
-const ArcadeBackground = ({ variant = 'hub' }) => {
-  const cfg = VARIANTS[variant] || VARIANTS.hub;
-
-  return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ background: cfg.wash }}>
-      {/* Winding dashed road, faint — evokes the road-map moodboard */}
-      <svg viewBox="0 0 400 900" preserveAspectRatio="none" className="absolute inset-0 w-full h-full opacity-40">
-        <path
-          d="M 80 0 C 220 120, 40 260, 200 380 C 340 480, 60 600, 220 720 C 330 800, 120 850, 180 900"
-          fill="none"
-          stroke={cfg.roadStroke}
-          strokeWidth="26"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 80 0 C 220 120, 40 260, 200 380 C 340 480, 60 600, 220 720 C 330 800, 120 850, 180 900"
-          fill="none"
-          stroke="#FFFDF9"
-          strokeWidth="3"
-          strokeDasharray="10 14"
-          strokeLinecap="round"
-        />
-      </svg>
-
-      {/* Pixel trees */}
-      <PixelTree className="top-[8%] left-[6%]" scale={1.1} />
-      <PixelTree className="top-[38%] right-[8%]" scale={0.9} leafColor="#A3D08C" />
-      <PixelTree className="bottom-[14%] left-[10%]" scale={1} leafColor="#7FB06B" />
-
-      {/* Sunflower only on the hub, keeping the two games a touch calmer */}
-      {cfg.showSunflower && (
-        <>
-          <PixelSunflower className="top-[20%] right-[16%]" scale={1} />
-          <PixelSunflower className="bottom-[22%] right-[24%]" scale={0.85} />
-        </>
-      )}
-
-      {/* Sticky notes, nodding to the locker moodboard */}
-      <StickyNote className="top-[12%] right-[6%]" rotate={-8} bg={cfg.accentSticky} text="game time! ✨" />
-      <StickyNote className="bottom-[10%] left-[5%]" rotate={5} bg="#FFFDF9" text="pick a table & play~" />
-
-      {/* Tiny retro monitor doodle tucked in a corner */}
-      <RetroMonitorDoodle className="top-[46%] left-[3%] opacity-30" />
-
-      {/* Soft sparkle accents, matching the site's existing star doodles */}
-      <span className="absolute top-[6%] left-[38%] text-2xl opacity-25">✦</span>
-      <span className="absolute bottom-[30%] right-[10%] text-xl opacity-20">⭐</span>
-    </div>
-  );
-};
-
-export default ArcadeBackground;
-</file>
-
 <file path="src/components/AvatarRenderer.jsx">
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -1697,6 +1550,134 @@ export default defineConfig({
 }
 </file>
 
+<file path="src/components/ArcadeBackground.jsx">
+import React from 'react';
+
+// Blocky "pixel" tree built from stacked squares — reuses the site's
+// existing thick brown outline so it reads as part of the same world.
+const PixelTree = ({ className, scale = 1, leafColor = '#8FAF8A', trunkColor = '#8B5E3C' }) => (
+  <div className={`absolute pointer-events-none select-none ${className}`} style={{ transform: `scale(${scale})` }}>
+    <div className="flex flex-col items-center">
+      <div className="w-5 h-5" style={{ backgroundColor: leafColor, border: '2px solid #3C2F2F' }} />
+      <div className="w-7 h-5 -mt-1" style={{ backgroundColor: leafColor, border: '2px solid #3C2F2F' }} />
+      <div className="w-3 h-4" style={{ backgroundColor: trunkColor, border: '2px solid #3C2F2F' }} />
+    </div>
+  </div>
+);
+
+// Chunky pixel sunflower
+const PixelSunflower = ({ className, scale = 1 }) => (
+  <div className={`absolute pointer-events-none select-none ${className}`} style={{ transform: `scale(${scale})` }}>
+    <div className="relative w-7 h-7">
+      {[0, 60, 120, 180, 240, 300].map((deg) => (
+        <div
+          key={deg}
+          className="absolute w-2.5 h-2.5 rounded-full"
+          style={{
+            backgroundColor: '#F0B860',
+            border: '1.5px solid #3C2F2F',
+            top: '50%', left: '50%',
+            transform: `rotate(${deg}deg) translate(0, -9px) translate(-50%, -50%)`
+          }}
+        />
+      ))}
+      <div className="absolute inset-0 m-auto w-3.5 h-3.5 rounded-full" style={{ backgroundColor: '#8B5E3C', border: '1.5px solid #3C2F2F' }} />
+    </div>
+    <div className="w-1 h-4 mx-auto" style={{ backgroundColor: '#8FAF8A', border: '1.5px solid #3C2F2F' }} />
+  </div>
+);
+
+// Sticky note doodle — same family as the washi-tape stickies on Home.jsx
+const StickyNote = ({ className, rotate = -6, bg = '#FFE3C2', text }) => (
+  <div
+    className={`absolute pointer-events-none select-none bg-white px-3 py-2 shadow-[3px_3px_0_rgba(60,47,47,0.2)] border border-[#3C2F2F]/25 ${className}`}
+    style={{ backgroundColor: bg, transform: `rotate(${rotate}deg)`, maxWidth: '130px' }}
+  >
+    <p className="font-cursive text-[13px] leading-tight text-[#3C2F2F]">{text}</p>
+  </div>
+);
+
+// Tiny retro CRT monitor line-doodle
+const RetroMonitorDoodle = ({ className }) => (
+  <svg viewBox="0 0 80 70" className={`absolute pointer-events-none select-none ${className}`} width="60" height="52">
+    <rect x="6" y="6" width="60" height="44" rx="6" fill="none" stroke="#3C2F2F" strokeWidth="2.5" />
+    <rect x="13" y="13" width="46" height="28" rx="2" fill="none" stroke="#3C2F2F" strokeWidth="2" />
+    <line x1="26" y1="50" x2="46" y2="50" stroke="#3C2F2F" strokeWidth="2.5" />
+    <line x1="20" y1="58" x2="52" y2="58" stroke="#3C2F2F" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="59" cy="45" r="1.6" fill="#3C2F2F" />
+  </svg>
+);
+
+// Complementary duo: warm coral/terracotta ↔ cool sage/teal, with cream
+// as the shared neutral base. Each variant is ~80% identical structure,
+// ~20% tint shift — hub leans warm, huehunt leans teal, icebreakers leans rose.
+const VARIANTS = {
+  hub: {
+    wash: 'linear-gradient(165deg, #FBF3E4 0%, #FCE9DA 55%, #F7DFCF 100%)',
+    roadStroke: '#E8B79A',
+    showSunflower: true,
+    accentSticky: '#FFE3C2'
+  },
+  huehunt: {
+    wash: 'linear-gradient(165deg, #FBF3E4 0%, #E5F1EC 55%, #D9ECE4 100%)',
+    roadStroke: '#9FC9BC',
+    showSunflower: false,
+    accentSticky: '#D3EEE5'
+  },
+  icebreakers: {
+    wash: 'linear-gradient(165deg, #FBF3E4 0%, #FBE3E9 55%, #F7D6DF 100%)',
+    roadStroke: '#E3A9BC',
+    showSunflower: false,
+    accentSticky: '#FAD7E2'
+  }
+};
+
+/**
+ * Shared decorative backdrop for the Arcade hub + both mini-games.
+ * Purely decorative: fixed, pointer-events-none, negative z-index —
+ * cannot intercept clicks or affect layout of the page it sits behind.
+ */
+const ArcadeBackground = ({ variant = 'hub' }) => {
+  const cfg = VARIANTS[variant] || VARIANTS.hub;
+
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ background: cfg.wash }}>
+      <svg viewBox="0 0 400 900" preserveAspectRatio="none" className="absolute inset-0 w-full h-full opacity-30">
+        <path
+          d="M 80 0 C 220 120, 40 260, 200 380 C 340 480, 60 600, 220 720 C 330 800, 120 850, 180 900"
+          fill="none" stroke={cfg.roadStroke} strokeWidth="26" strokeLinecap="round"
+        />
+        <path
+          d="M 80 0 C 220 120, 40 260, 200 380 C 340 480, 60 600, 220 720 C 330 800, 120 850, 180 900"
+          fill="none" stroke="#FFFDF9" strokeWidth="3" strokeDasharray="10 14" strokeLinecap="round"
+        />
+      </svg>
+
+      <PixelTree className="top-[8%] left-[6%]" scale={1.1} />
+      <PixelTree className="top-[38%] right-[8%]" scale={0.9} leafColor="#9FBF97" />
+      <PixelTree className="bottom-[14%] left-[10%]" scale={1} leafColor="#7FAE79" />
+
+      {cfg.showSunflower && (
+        <>
+          <PixelSunflower className="top-[20%] right-[16%]" scale={1} />
+          <PixelSunflower className="bottom-[22%] right-[24%]" scale={0.85} />
+        </>
+      )}
+
+      <StickyNote className="top-[12%] right-[6%]" rotate={-8} bg={cfg.accentSticky} text="game time! ✨" />
+      <StickyNote className="bottom-[10%] left-[5%]" rotate={5} bg="#FFFDF9" text="pick a table & play~" />
+
+      <RetroMonitorDoodle className="top-[46%] left-[3%] opacity-25" />
+
+      <span className="absolute top-[6%] left-[38%] text-2xl opacity-20">✦</span>
+      <span className="absolute bottom-[30%] right-[10%] text-xl opacity-15">⭐</span>
+    </div>
+  );
+};
+
+export default ArcadeBackground;
+</file>
+
 <file path="src/components/GlobalCompanion.jsx">
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
@@ -2258,382 +2239,6 @@ const Games = ({ onNavigate }) => {
 export default Games;
 </file>
 
-<file path="src/pages/IceBreakers.jsx">
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, AlertTriangle, MessageSquare, Zap } from 'lucide-react';
-
-// Pure chatpata drama prompts
-const SPICY_PROMPTS = [
-  "Who's most likely to accidentally start dating someone from this café? 👀",
-  "What's the biggest green flag you've ignored because they were hot? 🔥",
-  "Who's your celebrity \"hear me out\"? 🤔",
-  "What's your most embarrassing search history item that isn't illegal? 🔍",
-  "Have you ever secretly stalked someone's Spotify listening activity? 🎧",
-  "What is your absolute number one toxic trait? 💅",
-  "What's something you'd defend with your LIFE even though everyone disagrees? ⚔️",
-  "What's your most completely unnecessary purchase this month? 💸",
-  "What's a red flag you'd still probably ignore? 🚩",
-  "Who at this table would survive the longest in a zombie apocalypse? 🧟",
-  "What's your current personal Roman Empire? 🏛️",
-  "If your last situationship had a movie title, what would it be? 🎬",
-  "Who is the undisputed biggest yapper at this table? 🗣️",
-  "What's the most delusional thing you've convinced yourself of? 🌀",
-  "Which app would expose you the absolute most if people saw your screen time? 📱",
-  "Have you ever pretended not to see someone you know in public? 🙈",
-  "What's your worst \"I can fix them\" moment? 🛠️",
-  "What is the pettiest thing you've done in the last 6 months? 🧊",
-  "What's one spicy opinion you hold that would instantly get you cancelled? 🤫",
-  "What's the funniest, most unnecessary lie you've ever told? 🤥",
-  "If everyone here swapped unlocked phones for 5 minutes... who would panic first? 🚨",
-  "Who's most likely to accidentally become famous for something weird? 🌟",
-  "What's your most used emoji and why is it highly suspicious? 🧐",
-  "What's one thing you absolutely and silently judge other people for? ⚖️",
-  "If your life had a loading screen tip right now, what would it say? 🎮"
-];
-
-// 1-in-8 Chaos Wildcards
-const CHAOS_CARDS = [
-  {
-    title: "🐥 DUCK ATTACK!",
-    text: "Everyone points at the person most likely to ghost a group chat on 3, 2, 1... No explanations allowed. 🔪",
-    color: "#FFB6C9" // Pink attack
-  },
-  {
-    title: "🐥 CHAOS CARD",
-    text: "Everyone at the table has to answer the next card drawn. Absolute no skipping allowed! 🎲",
-    color: "#FFE08A" // Yellow panic
-  },
-  {
-    title: "🐥 PLOT TWIST",
-    text: "The oldest person at the table gets to invent and ask their own unhinged question next. 👑",
-    color: "#FFF7D8" // Soft cream
-  }
-];
-
-const FloatingDoodle = ({ char, className, style }) => (
-  <div className={`absolute text-3xl opacity-25 select-none pointer-events-none font-bold ${className}`} style={style}>
-    {char}
-  </div>
-);
-
-/* ---------------------------------------------------------------------
-   Original decorative doodles — a paperclip, a flower, sparkle stars,
-   and a little frog + kitten duo. Hand-drawn in a generic kawaii style
-   for this page only; not based on any existing character or brand.
---------------------------------------------------------------------- */
-const Paperclip = ({ className = '', color = '#F2A6C4' }) => (
-  <svg viewBox="0 0 24 48" className={className}>
-    <path
-      d="M12 4 C6 4 3 8 3 14 L3 34 C3 40 7 44 13 44 C19 44 22 40 22 35 L22 14 C22 11 20 9 17 9 C14 9 12 11 12 14 L12 32"
-      fill="none"
-      stroke={color}
-      strokeWidth="3.2"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
-const Flower = ({ className = '' }) => (
-  <svg viewBox="0 0 60 60" className={className}>
-    <g fill="#B79AD6">
-      <circle cx="30" cy="14" r="11" />
-      <circle cx="30" cy="46" r="11" />
-      <circle cx="14" cy="30" r="11" />
-      <circle cx="46" cy="30" r="11" />
-      <circle cx="19" cy="19" r="10" />
-      <circle cx="41" cy="19" r="10" />
-      <circle cx="19" cy="41" r="10" />
-      <circle cx="41" cy="41" r="10" />
-    </g>
-    <circle cx="30" cy="30" r="9" fill="#F4E3A1" />
-  </svg>
-);
-
-const SparkleStar = ({ className = '', fill = '#F6C445' }) => (
-  <svg viewBox="0 0 24 24" className={className}>
-    <path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill={fill} />
-  </svg>
-);
-
-const Frog = ({ className = '' }) => (
-  <svg viewBox="0 0 60 60" className={className}>
-    <ellipse cx="30" cy="34" rx="20" ry="18" fill="#7FC96B" />
-    <circle cx="16" cy="14" r="9" fill="#7FC96B" />
-    <circle cx="44" cy="14" r="9" fill="#7FC96B" />
-    <circle cx="16" cy="14" r="5" fill="#fff" />
-    <circle cx="44" cy="14" r="5" fill="#fff" />
-    <circle cx="17" cy="15" r="2.4" fill="#3C2F2F" />
-    <circle cx="45" cy="15" r="2.4" fill="#3C2F2F" />
-    <path d="M20 36 Q30 44 40 36" stroke="#3C2F2F" strokeWidth="2" fill="none" strokeLinecap="round" />
-    <circle cx="18" cy="34" r="3.5" fill="#B7E3A8" opacity="0.7" />
-    <circle cx="42" cy="34" r="3.5" fill="#B7E3A8" opacity="0.7" />
-  </svg>
-);
-
-const Kitten = ({ className = '' }) => (
-  <svg viewBox="0 0 60 60" className={className}>
-    <path d="M14 10 L22 24 L10 24 Z" fill="#3B2E2A" />
-    <path d="M46 10 L38 24 L50 24 Z" fill="#3B2E2A" />
-    <circle cx="30" cy="34" r="22" fill="#3B2E2A" />
-    <circle cx="22" cy="32" r="2.6" fill="#fff" />
-    <circle cx="38" cy="32" r="2.6" fill="#fff" />
-    <circle cx="30" cy="39" r="2" fill="#F2A6C4" />
-    <path d="M25 43 Q30 47 35 43" stroke="#F2A6C4" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-    <circle cx="19" cy="38" r="3" fill="#5C4B45" opacity="0.6" />
-    <circle cx="41" cy="38" r="3" fill="#5C4B45" opacity="0.6" />
-  </svg>
-);
-
-const Icebreakers = ({ onNavigate }) => {
-  const [currentCard, setCurrentCard] = useState(null);
-  const [isChaos, setIsChaos] = useState(false);
-  const [rotation, setRotation] = useState(0);
-
-  const drawCard = () => {
-    // 1 in 8 chance to trigger a Chaos Event card
-    const triggerChaos = Math.floor(Math.random() * 8) === 0;
-    const randomTilt = (Math.random() * 8 - 4).toFixed(1);
-    setRotation(randomTilt);
-
-    if (triggerChaos) {
-      const randomChaos = CHAOS_CARDS[Math.floor(Math.random() * CHAOS_CARDS.length)];
-      setCurrentCard(randomChaos);
-      setIsChaos(true);
-    } else {
-      let pool = SPICY_PROMPTS;
-      if (currentCard && !isChaos) {
-        pool = SPICY_PROMPTS.filter(p => p !== currentCard.text);
-      }
-      const randomText = pool[Math.floor(Math.random() * pool.length)];
-      setCurrentCard({
-        title: "✨ Secret Card ✨",
-        text: randomText,
-        color: "#FFF7D8"
-      });
-      setIsChaos(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen font-sans text-[#472C20] relative overflow-hidden select-none bg-[#FFFBEA] flex flex-col">
-
-      {/* ============ TOP: rainbow plaid banner ============ */}
-      <div
-        className="w-full h-14 md:h-16 relative shrink-0"
-        style={{
-          backgroundColor: '#F6DDE6',
-          backgroundImage: `
-            repeating-linear-gradient(45deg, rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 3px, transparent 3px, transparent 22px),
-            repeating-linear-gradient(-45deg, rgba(120,190,220,0.55) 0px, rgba(120,190,220,0.55) 3px, transparent 3px, transparent 26px),
-            repeating-linear-gradient(45deg, rgba(246,196,90,0.5) 0px, rgba(246,196,90,0.5) 2px, transparent 2px, transparent 34px),
-            repeating-linear-gradient(-45deg, rgba(230,120,150,0.5) 0px, rgba(230,120,150,0.5) 2px, transparent 2px, transparent 40px)
-          `,
-        }}
-      >
-        <div
-          className="absolute -bottom-2 left-0 w-full h-4"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 10px 0, transparent 9px, #FBE07A 9.5px)',
-            backgroundSize: '20px 16px',
-            backgroundColor: '#FBE07A',
-            WebkitMaskImage: 'radial-gradient(circle at 10px 0px, transparent 9px, black 9.5px)',
-            maskImage: 'radial-gradient(circle at 10px 0px, transparent 9px, black 9.5px)',
-          }}
-        />
-      </div>
-
-      {/* Flower + paperclip cluster, top-right */}
-      <div className="hidden md:block absolute top-3 right-6 z-20">
-        <Flower className="w-16 h-16" />
-        <Paperclip className="w-6 h-12 absolute -left-4 top-8 rotate-[20deg]" color="#F2A6C4" />
-        <Paperclip className="w-5 h-10 absolute -left-8 top-14 -rotate-[15deg]" color="#8FCB6E" />
-      </div>
-
-      {/* ============ MAIN CREAM BODY ============ */}
-      <div className="flex-1 relative px-6 pt-10 pb-6">
-
-        {/* Decorative Sanrio/Cozy Floating Cafe Doodles */}
-        <FloatingDoodle char="✨" className="top-2 left-10 rotate-12 animate-pulse" />
-        <FloatingDoodle char="💛" className="bottom-16 left-14 rotate-45" />
-        <FloatingDoodle char="🍞" className="top-1/3 right-12 -rotate-6 animate-bounce" style={{ animationDuration: '4s' }} />
-        <FloatingDoodle char="☕" className="top-2/3 left-8 -rotate-12" />
-
-        {/* Top Header Navigation */}
-        <div className="max-w-md mx-auto mb-6 relative z-10">
-          <button 
-            onClick={() => onNavigate('games')} 
-            className="flex items-center gap-2 text-sm font-black text-[#472C20] hover:opacity-80 transition-opacity uppercase tracking-wider bg-white border-2 border-[#F0C97A] rounded-full px-4 py-1.5 shadow-[3px_3px_0_#F0C97A]"
-          >
-            <ArrowLeft size={14} className="stroke-[3]" /> run away
-          </button>
-        </div>
-
-        <div className="max-w-md mx-auto relative z-10">
-          <AnimatePresence mode="wait">
-            {!currentCard ? (
-              /* ================= LOBBY SCREEN ================= */
-              <motion.div 
-                key="lobby"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white border-2 border-[#F0C97A] rounded-[35px] shadow-[8px_8px_0_#F6DDE6] p-8 text-center flex flex-col items-center mt-6 shadow-[8px_8px_0_#F6DDE6] min-h-[380px] justify-center"
-              >
-                {/* Cute Crime Mascot Image from project assets */}
-                <div className="relative mb-4">
-                  <img 
-                    src="/duck.png" 
-                    alt="Mascot Duck" 
-                    className="w-40 h-40 object-contain animate-bounce select-none pointer-events-none"
-                    style={{ animationDuration: '2s' }}
-                    onError={(e) => {
-                      // Fallback visual indicator just in case asset path shifts
-                      e.target.style.display = 'none';
-                      e.target.parentNode.innerHTML = "<div class='text-7xl p-4 bg-[#FFE08A] border-2 border-[#F0C97A] rounded-full shadow-[4px_4px_0_#F0C97A]'>🐥🔪</div>";
-                    }}
-                  />
-                </div>
-
-                {/* Unhinged Title Header */}
-                <div className="space-y-2 mb-8">
-                  <h1 className="text-3xl font-black tracking-tight text-[#472C20]">
-                    Today's Victim...
-                  </h1>
-                  <p className="text-sm font-bold text-[#6D4C41] max-w-xs leading-relaxed">
-                    Answer honestly. The duck knows when you're caping. Pull a card & expose your friends. ✨
-                  </p>
-                </div>
-
-                {/* Chunky Action Button */}
-                <button
-                  onClick={drawCard}
-                  className="w-full bg-[#FFB347] border-2 border-[#472C20] rounded-[22px] font-black text-lg py-4 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#472C20] active:translate-y-[2px] active:shadow-[2px_2px_0_#472C20] transition-all flex items-center justify-center gap-2 group"
-                >
-                  🍳 Cook Up Drama 
-                  <span className="group-hover:rotate-12 transition-transform">✨</span>
-                </button>
-              </motion.div>
-            ) : (
-              /* ================= PLAYING / DECK SCREEN ================= */
-              <motion.div
-                key="gameplay"
-                initial={{ opacity: 0, y: 40, scale: 0.85, rotate: parseFloat(rotation) - 4 }}
-                animate={{ opacity: 1, y: 0, scale: 1, rotate: parseFloat(rotation) }}
-                exit={{ opacity: 0, y: -40, scale: 0.85, rotate: parseFloat(rotation) + 4 }}
-                transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                className="w-full"
-              >
-                {/* Duck Speech Bubble Tip Indicator */}
-                <div className="flex flex-col items-center mb-5 relative">
-                  <div className="bg-white border-2 border-[#F0C97A] rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-wider shadow-[4px_4px_0_#F0C97A] relative max-w-[200px] text-center">
-                    {isChaos ? "🚨 CHOOSE CHAOS!" : "👁️ Don't lie."}
-                    {/* Speech Bubble Arrow tails */}
-                    <div className="absolute bottom-[-11px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-[#F0C97A] rotate-45"></div>
-                  </div>
-                </div>
-
-                {/* Main Custom Rounded Question Card Deck */}
-                <div 
-                  className="border-2 border-[#472C20] rounded-[35px] p-8 shadow-[8px_8px_0_#472C20] min-h-[380px] flex flex-col justify-between items-center relative overflow-hidden text-center"
-                  style={{ backgroundColor: currentCard.color }}
-                >
-                  {/* Visual Texture Sparkle Overlays */}
-                  <span className="absolute top-4 left-4 text-xl opacity-20">⭐</span>
-                  <span className="absolute bottom-4 right-4 text-xl opacity-20">✨</span>
-
-                  {/* Card Title Label */}
-                  <div className="flex items-center gap-1.5 bg-white border-2 border-[#472C20] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-[3px_3px_0_#472C20] mt-1">
-                    {isChaos ? (
-                      <AlertTriangle size={12} className="text-[#FF9F29] stroke-[3]" />
-                    ) : (
-                      <MessageSquare size={12} className="text-[#FFB347] stroke-[3]" />
-                    )}
-                    {currentCard.title}
-                  </div>
-
-                  {/* Question Body Text Box */}
-                  <div className="my-auto py-10 px-2">
-                    <p className="text-xl font-black text-[#472C20] leading-snug tracking-tight">
-                      {currentCard.text}
-                    </p>
-                  </div>
-
-                  {/* Footer Signature Sticker */}
-                  <div className="w-full flex justify-center items-center gap-1 opacity-90 border-t-2 border-dashed border-[#472C20]/20 pt-4">
-                    <span className="text-lg">🐥</span>
-                    <span className="text-[10px] font-black uppercase tracking-wider opacity-60">
-                      {isChaos ? "Mild Chaos System" : "Spicy Cafe Truth Deck"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Bottom Gameplay Controller Drawer Area */}
-                <div className="mt-10 flex flex-col items-center gap-4">
-                  <button
-                    onClick={drawCard}
-                    className="w-full bg-[#FFE08A] border-2 border-[#472C20] rounded-2xl font-black text-sm py-3.5 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:rotate-1 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
-                  >
-                    <Zap size={14} className="fill-current stroke-[3]" /> Next Question 🎲
-                  </button>
-                  
-                  <p className="text-[11px] font-black opacity-60 uppercase tracking-widest text-center bg-white border border-[#F0C97A] rounded-md px-3 py-1">
-                    Pass the screen to your right 🔄
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* ============ BOTTOM: sparkle wave + gingham footer ============ */}
-      <div className="relative shrink-0">
-        {/* sparkly teal wave strip */}
-        <div
-          className="w-full h-4"
-          style={{
-            backgroundColor: '#8FD9D6',
-            backgroundImage:
-              'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1.5px)',
-            backgroundSize: '10px 10px',
-          }}
-        />
-        {/* orange gingham footer */}
-        <div
-          className="w-full h-16 md:h-20 relative overflow-visible"
-          style={{
-            backgroundColor: '#F5A947',
-            backgroundImage: `
-              linear-gradient(90deg, rgba(255,255,255,0.35) 50%, transparent 50%),
-              linear-gradient(rgba(255,255,255,0.35) 50%, transparent 50%)
-            `,
-            backgroundSize: '26px 26px',
-          }}
-        >
-          {/* frog + kitten duo, bottom-left */}
-          <div className="hidden md:flex absolute -top-10 left-6 items-end z-20">
-            <div
-              className="w-24 h-24 rounded-full flex items-end justify-center overflow-visible relative"
-              style={{ backgroundColor: '#F6B8CF' }}
-            >
-              <SparkleStar className="w-4 h-4 absolute -top-2 -left-1" />
-              <SparkleStar className="w-5 h-5 absolute -top-5 left-6" fill="#F0A93A" />
-              <Frog className="w-14 h-14 relative -mr-2 mb-1" />
-              <Kitten className="w-16 h-16 relative mb-0" />
-            </div>
-            <Paperclip className="w-5 h-9 -ml-3 mb-1 rotate-[25deg]" color="#F6C445" />
-          </div>
-        </div>
-      </div>
-
-    </div>
-  );
-};
-
-export default Icebreakers;
-</file>
-
 <file path="src/pages/Receipt.jsx">
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -2911,6 +2516,382 @@ else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?tex
     </div>
   );
 }
+</file>
+
+<file path="src/pages/IceBreakers.jsx">
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Sparkles, AlertTriangle, MessageSquare, Zap } from 'lucide-react';
+
+// Pure chatpata drama prompts
+const SPICY_PROMPTS = [
+  "Who's most likely to accidentally start dating someone from this café? 👀",
+  "What's the biggest green flag you've ignored because they were hot? 🔥",
+  "Who's your celebrity \"hear me out\"? 🤔",
+  "What's your most embarrassing search history item that isn't illegal? 🔍",
+  "Have you ever secretly stalked someone's Spotify listening activity? 🎧",
+  "What is your absolute number one toxic trait? 💅",
+  "What's something you'd defend with your LIFE even though everyone disagrees? ⚔️",
+  "What's your most completely unnecessary purchase this month? 💸",
+  "What's a red flag you'd still probably ignore? 🚩",
+  "Who at this table would survive the longest in a zombie apocalypse? 🧟",
+  "What's your current personal Roman Empire? 🏛️",
+  "If your last situationship had a movie title, what would it be? 🎬",
+  "Who is the undisputed biggest yapper at this table? 🗣️",
+  "What's the most delusional thing you've convinced yourself of? 🌀",
+  "Which app would expose you the absolute most if people saw your screen time? 📱",
+  "Have you ever pretended not to see someone you know in public? 🙈",
+  "What's your worst \"I can fix them\" moment? 🛠️",
+  "What is the pettiest thing you've done in the last 6 months? 🧊",
+  "What's one spicy opinion you hold that would instantly get you cancelled? 🤫",
+  "What's the funniest, most unnecessary lie you've ever told? 🤥",
+  "If everyone here swapped unlocked phones for 5 minutes... who would panic first? 🚨",
+  "Who's most likely to accidentally become famous for something weird? 🌟",
+  "What's your most used emoji and why is it highly suspicious? 🧐",
+  "What's one thing you absolutely and silently judge other people for? ⚖️",
+  "If your life had a loading screen tip right now, what would it say? 🎮"
+];
+
+// 1-in-8 Chaos Wildcards
+const CHAOS_CARDS = [
+  {
+    title: "🐥 DUCK ATTACK!",
+    text: "Everyone points at the person most likely to ghost a group chat on 3, 2, 1... No explanations allowed. 🔪",
+    color: "#FFB6C9" // Pink attack
+  },
+  {
+    title: "🐥 CHAOS CARD",
+    text: "Everyone at the table has to answer the next card drawn. Absolute no skipping allowed! 🎲",
+    color: "#FFE08A" // Yellow panic
+  },
+  {
+    title: "🐥 PLOT TWIST",
+    text: "The oldest person at the table gets to invent and ask their own unhinged question next. 👑",
+    color: "#FFF7D8" // Soft cream
+  }
+];
+
+const FloatingDoodle = ({ char, className, style }) => (
+  <div className={`absolute text-3xl opacity-25 select-none pointer-events-none font-bold ${className}`} style={style}>
+    {char}
+  </div>
+);
+
+/* ---------------------------------------------------------------------
+   Original decorative doodles — a paperclip, a flower, sparkle stars,
+   and a little frog + kitten duo. Hand-drawn in a generic kawaii style
+   for this page only; not based on any existing character or brand.
+--------------------------------------------------------------------- */
+const Paperclip = ({ className = '', color = '#F2A6C4' }) => (
+  <svg viewBox="0 0 24 48" className={className}>
+    <path
+      d="M12 4 C6 4 3 8 3 14 L3 34 C3 40 7 44 13 44 C19 44 22 40 22 35 L22 14 C22 11 20 9 17 9 C14 9 12 11 12 14 L12 32"
+      fill="none"
+      stroke={color}
+      strokeWidth="3.2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const Flower = ({ className = '' }) => (
+  <svg viewBox="0 0 60 60" className={className}>
+    <g fill="#B79AD6">
+      <circle cx="30" cy="14" r="11" />
+      <circle cx="30" cy="46" r="11" />
+      <circle cx="14" cy="30" r="11" />
+      <circle cx="46" cy="30" r="11" />
+      <circle cx="19" cy="19" r="10" />
+      <circle cx="41" cy="19" r="10" />
+      <circle cx="19" cy="41" r="10" />
+      <circle cx="41" cy="41" r="10" />
+    </g>
+    <circle cx="30" cy="30" r="9" fill="#F4E3A1" />
+  </svg>
+);
+
+const SparkleStar = ({ className = '', fill = '#F6C445' }) => (
+  <svg viewBox="0 0 24 24" className={className}>
+    <path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill={fill} />
+  </svg>
+);
+
+const Frog = ({ className = '' }) => (
+  <svg viewBox="0 0 60 60" className={className}>
+    <ellipse cx="30" cy="34" rx="20" ry="18" fill="#7FC96B" />
+    <circle cx="16" cy="14" r="9" fill="#7FC96B" />
+    <circle cx="44" cy="14" r="9" fill="#7FC96B" />
+    <circle cx="16" cy="14" r="5" fill="#fff" />
+    <circle cx="44" cy="14" r="5" fill="#fff" />
+    <circle cx="17" cy="15" r="2.4" fill="#3C2F2F" />
+    <circle cx="45" cy="15" r="2.4" fill="#3C2F2F" />
+    <path d="M20 36 Q30 44 40 36" stroke="#3C2F2F" strokeWidth="2" fill="none" strokeLinecap="round" />
+    <circle cx="18" cy="34" r="3.5" fill="#B7E3A8" opacity="0.7" />
+    <circle cx="42" cy="34" r="3.5" fill="#B7E3A8" opacity="0.7" />
+  </svg>
+);
+
+const Kitten = ({ className = '' }) => (
+  <svg viewBox="0 0 60 60" className={className}>
+    <path d="M14 10 L22 24 L10 24 Z" fill="#3B2E2A" />
+    <path d="M46 10 L38 24 L50 24 Z" fill="#3B2E2A" />
+    <circle cx="30" cy="34" r="22" fill="#3B2E2A" />
+    <circle cx="22" cy="32" r="2.6" fill="#fff" />
+    <circle cx="38" cy="32" r="2.6" fill="#fff" />
+    <circle cx="30" cy="39" r="2" fill="#F2A6C4" />
+    <path d="M25 43 Q30 47 35 43" stroke="#F2A6C4" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+    <circle cx="19" cy="38" r="3" fill="#5C4B45" opacity="0.6" />
+    <circle cx="41" cy="38" r="3" fill="#5C4B45" opacity="0.6" />
+  </svg>
+);
+
+const Icebreakers = ({ onNavigate }) => {
+  const [currentCard, setCurrentCard] = useState(null);
+  const [isChaos, setIsChaos] = useState(false);
+  const [rotation, setRotation] = useState(0);
+
+  const drawCard = () => {
+    // 1 in 8 chance to trigger a Chaos Event card
+    const triggerChaos = Math.floor(Math.random() * 8) === 0;
+    const randomTilt = (Math.random() * 8 - 4).toFixed(1);
+    setRotation(randomTilt);
+
+    if (triggerChaos) {
+      const randomChaos = CHAOS_CARDS[Math.floor(Math.random() * CHAOS_CARDS.length)];
+      setCurrentCard(randomChaos);
+      setIsChaos(true);
+    } else {
+      let pool = SPICY_PROMPTS;
+      if (currentCard && !isChaos) {
+        pool = SPICY_PROMPTS.filter(p => p !== currentCard.text);
+      }
+      const randomText = pool[Math.floor(Math.random() * pool.length)];
+      setCurrentCard({
+        title: "✨ Secret Card ✨",
+        text: randomText,
+        color: "#FFF7D8"
+      });
+      setIsChaos(false);
+    }
+  };
+
+  return (
+   <div className="min-h-screen font-sans text-[#472C20] relative overflow-hidden select-none bg-[#FBF3E4] flex flex-col">
+
+      {/* ============ TOP: rainbow plaid banner ============ */}
+      <div
+        className="w-full h-14 md:h-16 relative shrink-0"
+        style={{
+          backgroundColor: '#F6DDE6',
+          backgroundImage: `
+            repeating-linear-gradient(45deg, rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 3px, transparent 3px, transparent 22px),
+            repeating-linear-gradient(-45deg, rgba(120,190,220,0.55) 0px, rgba(120,190,220,0.55) 3px, transparent 3px, transparent 26px),
+            repeating-linear-gradient(45deg, rgba(246,196,90,0.5) 0px, rgba(246,196,90,0.5) 2px, transparent 2px, transparent 34px),
+            repeating-linear-gradient(-45deg, rgba(230,120,150,0.5) 0px, rgba(230,120,150,0.5) 2px, transparent 2px, transparent 40px)
+          `,
+        }}
+      >
+        <div
+          className="absolute -bottom-2 left-0 w-full h-4"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 10px 0, transparent 9px, #FBE07A 9.5px)',
+            backgroundSize: '20px 16px',
+            backgroundColor: '#FBE07A',
+            WebkitMaskImage: 'radial-gradient(circle at 10px 0px, transparent 9px, black 9.5px)',
+            maskImage: 'radial-gradient(circle at 10px 0px, transparent 9px, black 9.5px)',
+          }}
+        />
+      </div>
+
+      {/* Flower + paperclip cluster, top-right */}
+      <div className="hidden md:block absolute top-3 right-6 z-20">
+        <Flower className="w-16 h-16" />
+        <Paperclip className="w-6 h-12 absolute -left-4 top-8 rotate-[20deg]" color="#F2A6C4" />
+        <Paperclip className="w-5 h-10 absolute -left-8 top-14 -rotate-[15deg]" color="#8FCB6E" />
+      </div>
+
+      {/* ============ MAIN CREAM BODY ============ */}
+      <div className="flex-1 relative px-6 pt-10 pb-6">
+
+        {/* Decorative Sanrio/Cozy Floating Cafe Doodles */}
+        <FloatingDoodle char="✨" className="top-2 left-10 rotate-12 animate-pulse" />
+        <FloatingDoodle char="💛" className="bottom-16 left-14 rotate-45" />
+        <FloatingDoodle char="🍞" className="top-1/3 right-12 -rotate-6 animate-bounce" style={{ animationDuration: '4s' }} />
+        <FloatingDoodle char="☕" className="top-2/3 left-8 -rotate-12" />
+
+        {/* Top Header Navigation */}
+        <div className="max-w-md mx-auto mb-6 relative z-10">
+          <button 
+            onClick={() => onNavigate('games')} 
+            className="flex items-center gap-2 text-sm font-black text-[#472C20] hover:opacity-80 transition-opacity uppercase tracking-wider bg-white border-2 border-[#F0C97A] rounded-full px-4 py-1.5 shadow-[3px_3px_0_#F0C97A]"
+          >
+            <ArrowLeft size={14} className="stroke-[3]" /> run away
+          </button>
+        </div>
+
+        <div className="max-w-md mx-auto relative z-10">
+          <AnimatePresence mode="wait">
+            {!currentCard ? (
+              /* ================= LOBBY SCREEN ================= */
+              <motion.div 
+                key="lobby"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-white border-2 border-[#F0C97A] rounded-[35px] shadow-[8px_8px_0_#F6DDE6] p-8 text-center flex flex-col items-center mt-6 shadow-[8px_8px_0_#F6DDE6] min-h-[380px] justify-center"
+              >
+                {/* Cute Crime Mascot Image from project assets */}
+                <div className="relative mb-4">
+                  <img 
+                    src="/duck.png" 
+                    alt="Mascot Duck" 
+                    className="w-40 h-40 object-contain animate-bounce select-none pointer-events-none"
+                    style={{ animationDuration: '2s' }}
+                    onError={(e) => {
+                      // Fallback visual indicator just in case asset path shifts
+                      e.target.style.display = 'none';
+                      e.target.parentNode.innerHTML = "<div class='text-7xl p-4 bg-[#FFE08A] border-2 border-[#F0C97A] rounded-full shadow-[4px_4px_0_#F0C97A]'>🐥🔪</div>";
+                    }}
+                  />
+                </div>
+
+                {/* Unhinged Title Header */}
+                <div className="space-y-2 mb-8">
+                  <h1 className="text-3xl font-black tracking-tight text-[#472C20]">
+                    Today's Victim...
+                  </h1>
+                  <p className="text-sm font-bold text-[#6D4C41] max-w-xs leading-relaxed">
+                    Answer honestly. The duck knows when you're caping. Pull a card & expose your friends. ✨
+                  </p>
+                </div>
+
+                {/* Chunky Action Button */}
+                <button
+                  onClick={drawCard}
+                  className="w-full bg-[#FFB347] border-2 border-[#472C20] rounded-[22px] font-black text-lg py-4 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#472C20] active:translate-y-[2px] active:shadow-[2px_2px_0_#472C20] transition-all flex items-center justify-center gap-2 group"
+                >
+                  🍳 Cook Up Drama 
+                  <span className="group-hover:rotate-12 transition-transform">✨</span>
+                </button>
+              </motion.div>
+            ) : (
+              /* ================= PLAYING / DECK SCREEN ================= */
+              <motion.div
+                key="gameplay"
+                initial={{ opacity: 0, y: 40, scale: 0.85, rotate: parseFloat(rotation) - 4 }}
+                animate={{ opacity: 1, y: 0, scale: 1, rotate: parseFloat(rotation) }}
+                exit={{ opacity: 0, y: -40, scale: 0.85, rotate: parseFloat(rotation) + 4 }}
+                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                className="w-full"
+              >
+                {/* Duck Speech Bubble Tip Indicator */}
+                <div className="flex flex-col items-center mb-5 relative">
+                  <div className="bg-white border-2 border-[#F0C97A] rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-wider shadow-[4px_4px_0_#F0C97A] relative max-w-[200px] text-center">
+                    {isChaos ? "🚨 CHOOSE CHAOS!" : "👁️ Don't lie."}
+                    {/* Speech Bubble Arrow tails */}
+                    <div className="absolute bottom-[-11px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-[#F0C97A] rotate-45"></div>
+                  </div>
+                </div>
+
+                {/* Main Custom Rounded Question Card Deck */}
+                <div 
+                  className="border-2 border-[#472C20] rounded-[35px] p-8 shadow-[8px_8px_0_#472C20] min-h-[380px] flex flex-col justify-between items-center relative overflow-hidden text-center"
+                  style={{ backgroundColor: currentCard.color }}
+                >
+                  {/* Visual Texture Sparkle Overlays */}
+                  <span className="absolute top-4 left-4 text-xl opacity-20">⭐</span>
+                  <span className="absolute bottom-4 right-4 text-xl opacity-20">✨</span>
+
+                  {/* Card Title Label */}
+                  <div className="flex items-center gap-1.5 bg-white border-2 border-[#472C20] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-[3px_3px_0_#472C20] mt-1">
+                    {isChaos ? (
+                      <AlertTriangle size={12} className="text-[#FF9F29] stroke-[3]" />
+                    ) : (
+                      <MessageSquare size={12} className="text-[#FFB347] stroke-[3]" />
+                    )}
+                    {currentCard.title}
+                  </div>
+
+                  {/* Question Body Text Box */}
+                  <div className="my-auto py-10 px-2">
+                    <p className="text-xl font-black text-[#472C20] leading-snug tracking-tight">
+                      {currentCard.text}
+                    </p>
+                  </div>
+
+                  {/* Footer Signature Sticker */}
+                  <div className="w-full flex justify-center items-center gap-1 opacity-90 border-t-2 border-dashed border-[#472C20]/20 pt-4">
+                    <span className="text-lg">🐥</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider opacity-60">
+                      {isChaos ? "Mild Chaos System" : "Spicy Cafe Truth Deck"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bottom Gameplay Controller Drawer Area */}
+                <div className="mt-10 flex flex-col items-center gap-4">
+                  <button
+                    onClick={drawCard}
+                    className="w-full bg-[#FFE08A] border-2 border-[#472C20] rounded-2xl font-black text-sm py-3.5 text-[#472C20] shadow-[5px_5px_0_#472C20] hover:rotate-1 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                  >
+                    <Zap size={14} className="fill-current stroke-[3]" /> Next Question 🎲
+                  </button>
+                  
+                  <p className="text-[11px] font-black opacity-60 uppercase tracking-widest text-center bg-white border border-[#F0C97A] rounded-md px-3 py-1">
+                    Pass the screen to your right 🔄
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ============ BOTTOM: sparkle wave + gingham footer ============ */}
+      <div className="relative shrink-0">
+        {/* sparkly teal wave strip */}
+        <div
+          className="w-full h-4"
+          style={{
+            backgroundColor: '#8FD9D6',
+            backgroundImage:
+              'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1.5px)',
+            backgroundSize: '10px 10px',
+          }}
+        />
+        {/* orange gingham footer */}
+        <div
+          className="w-full h-16 md:h-20 relative overflow-visible"
+          style={{
+            backgroundColor: '#E8825A',
+            backgroundImage: `
+              linear-gradient(90deg, rgba(255,255,255,0.35) 50%, transparent 50%),
+              linear-gradient(rgba(255,255,255,0.35) 50%, transparent 50%)
+            `,
+            backgroundSize: '26px 26px',
+          }}
+        >
+          {/* frog + kitten duo, bottom-left */}
+          <div className="hidden md:flex absolute -top-10 left-6 items-end z-20">
+            <div
+              className="w-24 h-24 rounded-full flex items-end justify-center overflow-visible relative"
+              style={{ backgroundColor: '#F6B8CF' }}
+            >
+              <SparkleStar className="w-4 h-4 absolute -top-2 -left-1" />
+              <SparkleStar className="w-5 h-5 absolute -top-5 left-6" fill="#F0A93A" />
+              <Frog className="w-14 h-14 relative -mr-2 mb-1" />
+              <Kitten className="w-16 h-16 relative mb-0" />
+            </div>
+            <Paperclip className="w-5 h-9 -ml-3 mb-1 rotate-[25deg]" color="#F6C445" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+export default Icebreakers;
 </file>
 
 <file path="src/pages/MemoryWall.jsx">
@@ -3835,108 +3816,122 @@ else if (platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?tex
 }
 </file>
 
+<file path="src/firebase.js">
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
+// Firebase Storage removed — requires the paid Blaze plan.
+// Images are now compressed client-side and stored inline in Firestore instead.
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+</file>
+
 <file path="src/pages/Games.jsx">
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Trophy, Heart } from 'lucide-react';
+import { Sparkles, Trophy, ChevronRight } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 import BackToCafeButton from '../components/BackToCafeButton';
+import ArcadeBackground from '../components/ArcadeBackground';
 
 /* ---------------------------------------------------------------------
-   CafePup — Original decorative corner illustration.
-   (Kept for the top-right peeking position)
+   Game picker card — subtle dot texture, gradient icon bubble, no
+   oversized mascot illustrations.
 --------------------------------------------------------------------- */
-const CafePup = ({ className = '', style = {} }) => (
-  <svg viewBox="0 0 120 130" className={className} style={style}>
-    <ellipse cx="60" cy="102" rx="28" ry="24" fill="#FBE3B5" />
-    <ellipse cx="30" cy="40" rx="15" ry="21" fill="#E7B98C" transform="rotate(-25 30 40)" />
-    <ellipse cx="90" cy="40" rx="15" ry="21" fill="#E7B98C" transform="rotate(25 90 40)" />
-    <circle cx="60" cy="56" r="34" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="3" />
-    <path d="M28 42 Q60 12 92 42 Q60 30 28 42 Z" fill="#F2A6A6" />
-    <circle cx="60" cy="15" r="6" fill="#F6C9C9" />
-    <circle cx="39" cy="63" r="6" fill="#F9C4C4" opacity="0.65" />
-    <circle cx="81" cy="63" r="6" fill="#F9C4C4" opacity="0.65" />
-    <circle cx="46" cy="56" r="3.2" fill="#6B5B4E" />
-    <circle cx="74" cy="56" r="3.2" fill="#6B5B4E" />
-    <ellipse cx="60" cy="65" rx="3.5" ry="3" fill="#B98A5E" />
-    <path d="M60 68 Q60 73 55 73 M60 68 Q60 73 65 73" stroke="#6B5B4E" strokeWidth="2" fill="none" strokeLinecap="round" />
-    <ellipse cx="78" cy="98" rx="8" ry="7" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="2" />
-    <ellipse cx="42" cy="98" rx="8" ry="7" fill="#FBE3B5" stroke="#FFF7E3" strokeWidth="2" />
-  </svg>
-);
-
-/* ---------------------------------------------------------------------
-   PompompurinPup — Hand-drawn SVG mimicking your uploaded image:
-   Yellow pudding dog holding a fresh bouquet of pink tulips!
---------------------------------------------------------------------- */
-const PompompurinPup = ({ className = '', style = {} }) => (
-  <svg viewBox="0 0 140 140" className={className} style={style}>
-    <ellipse cx="70" cy="125" rx="45" ry="8" fill="#D2B06A" opacity="0.3" />
-    <ellipse cx="70" cy="95" rx="36" ry="28" fill="#FFF8BD" />
-    <circle cx="45" cy="115" r="14" fill="#FFF8BD" />
-    <circle cx="95" cy="115" r="14" fill="#FFF8BD" />
-    <g transform="rotate(-15 35 65)">
-      <ellipse cx="35" cy="65" rx="14" ry="22" fill="#FFF8BD" />
-    </g>
-    <path d="M18 55 Q12 50 16 44 Q22 46 24 52 Q28 46 32 50 Q28 58 18 55 Z" fill="#C2D1F0" /> 
-    <g transform="rotate(15 105 65)">
-      <ellipse cx="105" cy="65" rx="14" ry="22" fill="#FFF8BD" />
-    </g>
-    <path d="M122 55 Q128 50 124 44 Q118 46 116 52 Q112 46 108 50 Q112 58 122 55 Z" fill="#C2D1F0" />
-    <circle cx="70" cy="70" r="38" fill="#FFF8BD" />
-    <path d="M46 44 Q70 20 94 44 Q70 38 46 44 Z" fill="#704F37" />
-    <ellipse cx="70" cy="30" rx="4" ry="6" fill="#704F37" />
-    <circle cx="48" cy="78" r="7" fill="#FFA3A3" opacity="0.5" />
-    <circle cx="92" cy="78" r="7" fill="#FFA3A3" opacity="0.5" />
-    <circle cx="58" cy="70" r="3.5" fill="#3D2616" />
-    <circle cx="82" cy="70" r="3.5" fill="#3D2616" />
-    <ellipse cx="70" cy="75" rx="3.5" ry="2.5" fill="#3D2616" />
-    <path d="M70 77.5 Q66 81 63 79 M70 77.5 Q74 81 77 79" stroke="#3D2616" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <ellipse cx="42" cy="96" rx="10" ry="14" fill="#FFF8BD" transform="rotate(-30 42 96)" />
-    <path d="M64 92 Q68 115 56 126" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M72 90 Q72 112 68 124" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M84 92 Q74 114 78 125" stroke="#5D8C43" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-    <path d="M60 115 Q46 100 62 95 Q68 108 60 115 Z" fill="#6EA650" />
-    <path d="M75 118 Q92 106 82 96 Q76 108 75 118 Z" fill="#6EA650" />
-    <g transform="translate(50, 80)">
-      <ellipse cx="10" cy="12" rx="9" ry="12" fill="#F491A5" />
-      <path d="M4 6 Q10 18 16 6" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <g transform="translate(68, 76)">
-      <ellipse cx="10" cy="12" rx="10" ry="13" fill="#F7A1B5" />
-      <path d="M3 6 Q10 20 17 6" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <g transform="translate(80, 88)">
-      <ellipse cx="10" cy="11" rx="9" ry="12" fill="#F491A5" />
-      <path d="M4 5 Q10 17 16 5" stroke="#FFF1F3" strokeWidth="1" fill="none" />
-    </g>
-    <ellipse cx="94" cy="98" rx="10" ry="13" fill="#FFF8BD" transform="rotate(45 94 98)" />
-  </svg>
-);
-
-const GameCard = ({ emoji, title, subtitle, accent, onClick }) => (
-  <motion.div
-    whileHover={{ y: -6, scale: 1.02, rotate: -1 }}
+const GameCard = ({ emoji, title, subtitle, iconBg, blobColor, onClick }) => (
+  <motion.button
+    whileHover={{ y: -4, scale: 1.015 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
-    className="relative bg-white/95 border-[3px] border-white rounded-[2rem] p-6 cursor-pointer shadow-[0_6px_20px_rgb(0,0,0,0.07)] flex items-center gap-5 overflow-hidden w-full"
+    className="w-full text-left relative bg-white/95 border-2 border-[#472C20]/10 rounded-[1.75rem] p-5 flex items-center gap-4 shadow-[0_4px_16px_rgba(71,44,32,0.08)] hover:shadow-[0_10px_26px_rgba(71,44,32,0.16)] hover:border-[#472C20]/20 transition-all overflow-hidden group"
   >
     <div
-      className="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-60"
-      style={{ backgroundColor: accent }}
+      className="absolute inset-0 opacity-[0.05] pointer-events-none"
+      style={{ backgroundImage: 'radial-gradient(#472C20 1px, transparent 1px)', backgroundSize: '14px 14px' }}
     />
     <div
-      className="relative shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-inner"
-      style={{ backgroundColor: accent }}
+      className="absolute -right-7 -bottom-7 w-24 h-24 rounded-full opacity-25 group-hover:scale-110 transition-transform"
+      style={{ backgroundColor: blobColor }}
+    />
+
+    <div
+      className="relative shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-black/5"
+      style={{ background: iconBg }}
     >
       {emoji}
     </div>
-    <div className="relative text-left">
-      <h2 className="text-xl font-serif font-black text-[#6B5B4E]">{title}</h2>
-      <p className="text-xs font-bold text-[#8a7a6a] tracking-wide mt-0.5">{subtitle}</p>
+    <div className="relative flex-1 min-w-0">
+      <h3 className="text-lg font-serif font-black text-[#472C20] leading-tight">{title}</h3>
+      <p className="text-[11px] font-bold text-[#472C20]/50 uppercase tracking-wide mt-0.5">{subtitle}</p>
     </div>
-    <Sparkles size={22} className="absolute right-4 bottom-4 text-[#f2c9a0]" />
+    <ChevronRight
+      size={20}
+      className="relative shrink-0 text-[#472C20]/30 group-hover:text-[#472C20]/70 group-hover:translate-x-1 transition-all"
+    />
+  </motion.button>
+);
+
+/* ---------------------------------------------------------------------
+   Rank badge — gold / silver / bronze medals for the top 3, a plain
+   numbered pill for everyone else.
+--------------------------------------------------------------------- */
+const RankBadge = ({ rank }) => {
+  const medals = {
+    1: { bg: 'linear-gradient(135deg,#F8D888,#E8A83C)', ring: '#C98A1F', icon: '🥇' },
+    2: { bg: 'linear-gradient(135deg,#EDF1F5,#C3CCD6)', ring: '#98A2AD', icon: '🥈' },
+    3: { bg: 'linear-gradient(135deg,#E8BB94,#CC8955)', ring: '#A96B3E', icon: '🥉' }
+  };
+  const m = medals[rank];
+
+  if (m) {
+    return (
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center text-base shadow-md shrink-0"
+        style={{ background: m.bg, border: `2px solid ${m.ring}` }}
+      >
+        {m.icon}
+      </div>
+    );
+  }
+  return (
+    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0 bg-[#6F9587] border-2 border-[#587A6E]">
+      {rank}
+    </div>
+  );
+};
+
+const LeaderboardRow = ({ player, rank }) => (
+  <motion.div
+    initial={{ opacity: 0, x: 8 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay: rank * 0.03 }}
+    className={`flex items-center gap-3 rounded-2xl px-3.5 py-2.5 border transition-colors ${
+      rank === 1
+        ? 'bg-white border-[#E8A83C]/50 shadow-[0_3px_14px_rgba(232,168,60,0.28)]'
+        : 'bg-white/75 border-white/60'
+    }`}
+  >
+    <RankBadge rank={rank} />
+    <span className="flex-1 min-w-0 font-bold text-sm text-[#2F5449] truncate">
+      {player.playerName || 'Anonymous'}
+    </span>
+    <span className="font-mono font-black text-xs px-2.5 py-1 rounded-full bg-[#E9F3EE] text-[#2F5449] whitespace-nowrap">
+      {player.finalScore ?? 0} <span className="opacity-50 font-bold">pts</span>
+    </span>
   </motion.div>
 );
 
@@ -3972,112 +3967,87 @@ const Games = ({ onNavigate }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="min-h-screen p-6 md:p-12 flex flex-col items-center relative overflow-x-hidden"
-      style={{
-        backgroundColor: '#FCE8A8',
-        backgroundImage:
-          'linear-gradient(90deg, rgba(255,255,255,0.55) 2px, transparent 2px), linear-gradient(rgba(255,255,255,0.55) 2px, transparent 2px)',
-        backgroundSize: '54px 54px',
-      }}
     >
-      <BackToCafeButton className="mb-8 z-20 relative" />
+      <ArcadeBackground variant="hub" />
 
-      <Heart
-        size={44}
-        strokeWidth={2}
-        className="hidden md:block absolute bottom-8 right-8 text-[#e8d18a] opacity-70 z-10"
-      />
+      <BackToCafeButton className="mb-8 z-20 relative" />
 
       <div className="w-full max-w-6xl relative z-10">
         {/* Header */}
         <div className="text-center mb-10 space-y-3">
-          <div className="inline-flex items-center gap-2 bg-pink-100/80 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-pink-900 border border-pink-200">
-            <Sparkles size={18} /> dumble play corner <Sparkles size={18} />
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-[#472C20] border-2 border-[#472C20]/15 shadow-sm">
+            <Sparkles size={14} className="text-[#E8825A]" /> dumble play corner <Sparkles size={14} className="text-[#6FAE9E]" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif font-black text-[#6B5B4E]">The Cozy Arcade</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-black text-[#472C20]">The Cozy Arcade</h1>
         </div>
 
-        {/* Updated grid ratio to give the elements slightly more room */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-8 items-stretch">
-          
-          {/* RECTANGLE 1: LEFT — Enlarged games panel */}
-          <div className="relative bg-[#F3C775] rounded-[2.75rem] p-10 md:p-14 border-[4px] border-white shadow-[0_12px_40px_rgb(0,0,0,0.1)] flex flex-col justify-center">
-            
-            {/* Peeking pup, repositioned nicely on the expanded layout */}
-            <CafePup className="absolute -top-11 -right-4 w-24 h-24 drop-shadow-md" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 items-stretch">
 
-            <div className="flex items-center gap-2 mb-6 font-black text-white/90 uppercase tracking-widest text-sm">
+          {/* LEFT — warm coral/terracotta games panel */}
+          <div
+            className="relative rounded-[2.75rem] p-8 md:p-10 border-[4px] border-white shadow-[0_14px_40px_rgba(232,130,90,0.22)] flex flex-col justify-center overflow-hidden"
+            style={{ background: 'linear-gradient(150deg, #F2A473 0%, #E8825A 100%)' }}
+          >
+            <div
+              className="absolute inset-0 opacity-[0.08] pointer-events-none"
+              style={{ backgroundImage: 'radial-gradient(#fff 1.5px, transparent 1.5px)', backgroundSize: '22px 22px' }}
+            />
+            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10" />
+            <div className="absolute -bottom-14 -left-10 w-40 h-40 rounded-full bg-white/10" />
+
+            <div className="relative flex items-center gap-2 mb-6 font-black text-white uppercase tracking-widest text-sm drop-shadow-sm">
               <Sparkles size={18} /> pick a game
             </div>
 
-            {/* Increased card gap */}
-            <div className="flex flex-col gap-6 w-full">
+            <div className="relative flex flex-col gap-5 w-full">
               <GameCard
                 emoji="📸"
                 title="Hue Hunt"
                 subtitle="spot the colors around you"
-                accent="#FBEAB0"
+                iconBg="linear-gradient(150deg,#FFE9C7,#F6C86B)"
+                blobColor="#F6C86B"
                 onClick={() => onNavigate('hue-hunt')}
               />
               <GameCard
                 emoji="💬"
                 title="Talk Box"
                 subtitle="cozy icebreaker questions"
-                accent="#D9ECEF"
+                iconBg="linear-gradient(150deg,#DCEFEA,#9FCFC0)"
+                blobColor="#9FCFC0"
                 onClick={() => onNavigate('icebreakers')}
               />
             </div>
-
-            {/* Pompompurin puppy sitting comfortably */}
-            <PompompurinPup
-              className="hidden md:block absolute -bottom-12 -left-8 w-32 h-32 drop-shadow-md"
-            />
           </div>
 
-          {/* RECTANGLE 2: RIGHT — Enlarged leaderboard panel */}
-          <div className="rounded-[2.75rem] border-[4px] border-white shadow-[0_12px_40px_rgb(0,0,0,0.1)] overflow-hidden flex flex-col min-h-[500px]">
-            <div className="bg-white/90 py-5 flex items-center justify-center gap-2 font-black text-[#6B5B4E] uppercase tracking-widest text-base border-b-2 border-dashed border-[#6B5B4E]/10">
-              <Trophy size={22} className="text-amber-500" /> Top Hunters
+          {/* RIGHT — cool sage/teal leaderboard panel */}
+          <div
+            className="rounded-[2.75rem] border-[4px] border-white shadow-[0_14px_40px_rgba(111,149,135,0.22)] overflow-hidden flex flex-col min-h-[500px]"
+            style={{ background: 'linear-gradient(160deg, #EAF4EF 0%, #D8EAE2 100%)' }}
+          >
+            <div className="bg-white/85 backdrop-blur-sm py-5 flex items-center justify-center gap-2 font-black text-[#2F5449] uppercase tracking-widest text-base border-b-2 border-dashed border-[#2F5449]/10">
+              <Trophy size={20} className="text-[#E8A83C]" /> Top Hunters
             </div>
-            
-            {/* Increased inner padding here (p-8) for a bigger, breathing layout */}
-            <div
-              className="flex-1 p-8 flex flex-col justify-start"
-              style={{
-                backgroundColor: '#EAF2DE',
-                backgroundImage:
-                  'linear-gradient(90deg, rgba(255,255,255,0.7) 8px, transparent 8px), linear-gradient(rgba(255,255,255,0.7) 8px, transparent 8px)',
-                backgroundSize: '24px 24px',
-              }}
-            >
+
+            <div className="flex-1 p-6 md:p-7 flex flex-col justify-start">
               {loading ? (
-                <p className="text-center text-sm opacity-50 mt-6">Loading scores...</p>
+                <p className="text-center text-sm opacity-50 mt-6 text-[#2F5449]">Loading scores...</p>
               ) : players.length > 0 ? (
-                <div className="space-y-3 w-full">
+                <div className="space-y-2.5 w-full">
                   {players.map((player, i) => (
-                    <div
-                      key={player.id}
-                      className="flex justify-between items-center bg-white/80 rounded-2xl px-4 py-3 font-bold text-[#6B5B4E] text-sm shadow-sm border border-white/40"
-                    >
-                      <span className="flex items-center gap-3">
-                        <span
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-black ${
-                            i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-slate-300' : i === 2 ? 'bg-orange-300' : 'bg-[#c9b89a]'
-                          }`}
-                        >
-                          {i + 1}
-                        </span>
-                        {player.playerName || 'Anonymous'}
-                      </span>
-                      <span className="font-extrabold text-[#5D8C43]">{player.finalScore ?? 0} pts</span>
-                    </div>
+                    <LeaderboardRow key={player.id} player={player} rank={i + 1} />
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-sm opacity-50 font-serif mt-6">No hunters yet...</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 py-10">
+                  <span className="text-4xl opacity-60">🏆</span>
+                  <p className="text-sm font-serif italic opacity-50 text-[#2F5449]">
+                    No hunters yet... be the first!
+                  </p>
+                </div>
               )}
             </div>
           </div>
-          
+
         </div>
       </div>
     </motion.div>
@@ -4498,7 +4468,7 @@ const HueHunt = ({ onNavigate }) => {
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center"
-      style={{ backgroundColor: '#F9D9DE' }}
+      style={{ backgroundColor: '#E4F1EC' }}
     >
       {/* Decorative critter header strip */}
       <CritterRow />
@@ -4510,7 +4480,7 @@ const HueHunt = ({ onNavigate }) => {
           backgroundImage: `
             linear-gradient(90deg, rgba(255,255,255,0.75) 12px, transparent 12px),
             linear-gradient(rgba(255,255,255,0.75) 12px, transparent 12px),
-            linear-gradient(#DCE8CB, #DCE8CB)
+            linear-gradient(#D9ECE4, #D9ECE4)
           `,
           backgroundSize: '32px 32px, 32px 32px, 100% 100%',
         }}
@@ -4674,29 +4644,6 @@ const HueHunt = ({ onNavigate }) => {
 };
 
 export default HueHunt;
-</file>
-
-<file path="src/firebase.js">
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
-// Firebase Storage removed — requires the paid Blaze plan.
-// Images are now compressed client-side and stored inline in Firestore instead.
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-};
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const db = getFirestore(app);
 </file>
 
 <file path="src/pages/ChronicleBoard.jsx">
