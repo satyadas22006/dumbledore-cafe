@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, collection, onSnapshot, deleteDoc, setDoc } from 'firebase/firestore';
 //import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import {
+  ResponsiveContainer,
+  AreaChart, Area,
+  BarChart, Bar,
+  CartesianGrid, XAxis, YAxis, Tooltip
+} from 'recharts';
 
 const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -15,6 +21,10 @@ const OwnerPortal = () => {
   const [menuData, setMenuData] = useState(null);
   const [memories, setMemories] = useState([]);
   const [hueHuntMatches, setHueHuntMatches] = useState([]); 
+
+  // --- ANALYTICS STATES ---
+  const [analyticsSummary, setAnalyticsSummary] = useState({ totalVisits: 0 });
+  const [dailyVisits, setDailyVisits] = useState([]);
   
   // Stats tab states
   const [itemSearch, setItemSearch] = useState('');
@@ -70,9 +80,25 @@ const OwnerPortal = () => {
       setHueHuntMatches(fetchedMatches.sort((a, b) => b.playedAt - a.playedAt));
     });
 
+    // --- ANALYTICS LISTENERS ---
+    const unsubscribeSummary = onSnapshot(doc(db, "analytics", "summary"), (docSnap) => {
+      setAnalyticsSummary(docSnap.exists() ? docSnap.data() : { totalVisits: 0 });
+    });
+
+    const unsubscribeAnalytics = onSnapshot(collection(db, "analytics"), (snapshot) => {
+      const daily = snapshot.docs
+        .filter(d => d.id !== 'summary')
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(d => d.date) // only well-formed daily_ docs
+        .sort((a, b) => a.date.localeCompare(b.date));
+      setDailyVisits(daily.slice(-14)); // last 14 days
+    });
+
     return () => {
       unsubscribeMemories();
       unsubscribeGames();
+      unsubscribeSummary();
+      unsubscribeAnalytics();
     };
   }, [navigate]);
 
@@ -128,6 +154,24 @@ const OwnerPortal = () => {
     setIsSavingInfo(false);
   };
 
+  // --- DERIVED ANALYTICS METRICS ---
+  const totalVisits = analyticsSummary.totalVisits || 0;
+  const totalReviews = memories.length;
+  const totalGamesPlayed = hueHuntMatches.length;
+  const avgGameScore = useMemo(() => {
+    if (hueHuntMatches.length === 0) return 0;
+    const sum = hueHuntMatches.reduce((acc, m) => acc + (m.finalScore || 0), 0);
+    return Math.round(sum / hueHuntMatches.length);
+  }, [hueHuntMatches]);
+  const reviewConversion = totalVisits > 0 ? ((totalReviews / totalVisits) * 100).toFixed(1) : '0';
+  const gameConversion = totalVisits > 0 ? ((totalGamesPlayed / totalVisits) * 100).toFixed(1) : '0';
+
+  const funnelData = useMemo(() => ([
+    { name: 'Site Visits', count: totalVisits },
+    { name: 'Reviews Left', count: totalReviews },
+    { name: 'Games Played', count: totalGamesPlayed }
+  ]), [totalVisits, totalReviews, totalGamesPlayed]);
+
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-200 p-8 pb-24">
       <div className="flex justify-between items-center mb-8">
@@ -144,7 +188,7 @@ const OwnerPortal = () => {
             onClick={() => setActiveTab(tab)} 
             className={`px-6 py-2 rounded font-bold capitalize transition-colors whitespace-nowrap ${activeTab === tab ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700'}`}
           >
-            {tab === 'settings' ? '⚙️ Global Settings' : tab}
+            {tab === 'settings' ? '⚙️ Global Settings' : tab === 'stats' ? '📊 Analytics' : tab}
           </button>
         ))}
       </div>
@@ -170,10 +214,10 @@ const OwnerPortal = () => {
                     <p className="text-xs text-slate-400 mt-2">Picked: <span className="font-semibold text-emerald-300">{m.items.join(', ')}</span></p>
                   )}
 
-                  {m.photo && (
+                  {m.photoURL && (
                     <div className="mt-4 pt-4 border-t border-slate-700/50">
                       <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-2 font-bold">📸 Guest Snapshot</p>
-                      <img src={m.photo} alt="Guest Memory" className="h-40 w-auto object-cover rounded-lg border-2 border-slate-600 shadow-md transform -rotate-2 hover:rotate-0 transition-transform" />
+                      <img src={m.photoURL} alt="Guest Memory" className="h-40 w-auto object-cover rounded-lg border-2 border-slate-600 shadow-md transform -rotate-2 hover:rotate-0 transition-transform" />
                     </div>
                   )}
                 </div>
@@ -296,14 +340,74 @@ const OwnerPortal = () => {
         </div>
       )}
 
-      {/* --- STATS TAB --- */}
+      {/* --- STATS / ANALYTICS TAB --- */}
       {activeTab === 'stats' && (
-        <div className="space-y-12">
-          {/* ... (Your existing stats tab code remains completely identical) ... */}
-           <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-700">
-            <h2 className="text-xl font-bold text-emerald-400 mb-6">Database Stats Area</h2>
-            <p className="text-slate-400 italic">Select filters above to search items and guest history.</p>
+        <div className="space-y-8">
+
+          {/* Key metrics row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-5">
+              <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-2">👀 Total Visits</p>
+              <p className="text-4xl font-black text-white">{totalVisits}</p>
+              <p className="text-[10px] text-slate-500 mt-1">Unique browser sessions, all time</p>
+            </div>
+            <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-5">
+              <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-2">✍️ Reviews Left</p>
+              <p className="text-4xl font-black text-emerald-400">{totalReviews}</p>
+              <p className="text-[10px] text-slate-500 mt-1">{reviewConversion}% of visitors reviewed</p>
+            </div>
+            <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-5">
+              <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-2">🎮 Games Played</p>
+              <p className="text-4xl font-black text-amber-400">{totalGamesPlayed}</p>
+              <p className="text-[10px] text-slate-500 mt-1">{gameConversion}% of visitors played</p>
+            </div>
+            <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-5">
+              <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-2">🎯 Avg Game Score</p>
+              <p className="text-4xl font-black text-blue-400">{avgGameScore}%</p>
+              <p className="text-[10px] text-slate-500 mt-1">Across all Hue Hunt matches</p>
+            </div>
           </div>
+
+          {/* Visits trend chart */}
+          <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-6">
+            <h2 className="text-lg font-bold text-white mb-1">Visits, Last 14 Days</h2>
+            <p className="text-xs text-slate-400 mb-6">How many browser sessions opened the site each day.</p>
+            {dailyVisits.length === 0 ? (
+              <p className="text-slate-500 italic text-sm py-10 text-center">No visit data logged yet — this fills in as people open the site.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={dailyVisits}>
+                  <defs>
+                    <linearGradient id="visitsGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#34D399" stopOpacity={0.5} />
+                      <stop offset="100%" stopColor="#34D399" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="date" tick={{ fill: '#94A3B8', fontSize: 11 }} tickFormatter={(d) => d.slice(5)} />
+                  <YAxis allowDecimals={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: '1px solid #334155', borderRadius: 8 }} labelStyle={{ color: '#E2E8F0' }} itemStyle={{ color: '#34D399' }} />
+                  <Area type="monotone" dataKey="visits" stroke="#34D399" strokeWidth={3} fill="url(#visitsGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Engagement funnel chart */}
+          <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-6">
+            <h2 className="text-lg font-bold text-white mb-1">Engagement Funnel</h2>
+            <p className="text-xs text-slate-400 mb-6">How visits convert into reviews and game plays.</p>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={funnelData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 12 }} />
+                <YAxis allowDecimals={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+                <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: '1px solid #334155', borderRadius: 8 }} labelStyle={{ color: '#E2E8F0' }} itemStyle={{ color: '#38BDF8' }} />
+                <Bar dataKey="count" fill="#38BDF8" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
         </div>
       )}
 

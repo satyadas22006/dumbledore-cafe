@@ -10,6 +10,10 @@ import { CartProvider } from './context/CartContext';
 import GlobalCompanion from './components/GlobalCompanion';
 import VinylPlayer from './components/VinylPlayer';
 
+// --- ANALYTICS ---
+import { db } from './firebase';
+import { doc, setDoc, increment } from 'firebase/firestore';
+
 // --- MAIN PAGES ---
 import LandingPage from './pages/LandingPage';
 import AvatarCreatorPage from './pages/AvatarCreatorPage';
@@ -28,6 +32,28 @@ import Icebreakers from './pages/Icebreakers';
 import GlobalGrid from './components/GlobalGrid';
 import { THEMES, DEFAULT_MEMORIES } from './constants/data';
 
+// --- VISIT TRACKING HELPER ---
+// Logs one visit per browser tab session (sessionStorage-gated so page
+// navigation within the SPA doesn't inflate the count) to two docs:
+//   analytics/summary        -> all-time total
+//   analytics/daily_YYYY-MM-DD -> per-day breakdown for the trend chart
+const trackSiteVisit = async () => {
+  try {
+    if (sessionStorage.getItem('dumble_visit_tracked')) return;
+    sessionStorage.setItem('dumble_visit_tracked', '1');
+
+    const todayKey = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    await Promise.all([
+      setDoc(doc(db, 'analytics', 'summary'), { totalVisits: increment(1) }, { merge: true }),
+      setDoc(doc(db, 'analytics', `daily_${todayKey}`), { date: todayKey, visits: increment(1) }, { merge: true })
+    ]);
+  } catch (err) {
+    // Never let analytics failures affect the actual site experience
+    console.error('Visit tracking failed:', err);
+  }
+};
+
 function MainLayoutContent() {
   const [memories, setMemories] = useState([]);
   const [reviewData, setReviewData] = useState(null);
@@ -39,6 +65,11 @@ function MainLayoutContent() {
 
   useEffect(() => {
     setMemories(DEFAULT_MEMORIES);
+  }, []);
+
+  // Fire once per session, on first mount of the app shell
+  useEffect(() => {
+    trackSiteVisit();
   }, []);
 
   useEffect(() => {
