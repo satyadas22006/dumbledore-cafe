@@ -6,6 +6,25 @@ import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw }
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 
+/* ---------------------------------------------------------------------
+   Mobile-only floating ambience — bottom-to-top infinite drift, same
+   technique as MemoryWall.jsx's FloatingPaper. The desktop parallax desk
+   scene (mug/cat/planner/etc) is sized and positioned for wide viewports
+   and gets hidden below `lg`; this is what fills that space on phones so
+   the page doesn't feel bare and loses the "living journal" feel.
+--------------------------------------------------------------------- */
+const FloatingUpDoodle = ({ char, left, duration, delay }) => (
+  <motion.div
+    initial={{ y: '115%', opacity: 0 }}
+    animate={{ y: '-15%', opacity: [0, 0.55, 0.55, 0] }}
+    transition={{ duration, repeat: Infinity, delay, ease: 'linear' }}
+    className="absolute text-3xl select-none"
+    style={{ left }}
+  >
+    {char}
+  </motion.div>
+);
+
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
   const [step, setStep] = useState(1);
@@ -161,8 +180,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       vibe: vibe || '☕ Coffee & Conversations',
       review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-      createdAt: Date.now(),
-      photoURL: capturedImage || null
+      createdAt: Date.now()
+      // NOTE: the captured snapshot is intentionally NOT included here.
+      // It never gets written to Firestore — for privacy it only ever
+      // lives in local React state for this one session (see
+      // executeFinalization below), so it can never surface on the
+      // Memory Wall or in the admin portal.
     };
 
     try {
@@ -177,8 +200,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const executeFinalization = async () => {
     setIsSubmitting(true);
     const savedResult = await saveToDatabase();
-    
-    const finalMemory = savedResult || {
+
+    const baseMemory = savedResult || {
       rating: rating || 3,
       purpose: purpose || 'escape',
       items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
@@ -187,9 +210,14 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       vibe: vibe || '☕ Coffee & Conversations',
       review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-      createdAt: Date.now(),
-      photoURL: capturedImage || null
+      createdAt: Date.now()
     };
+
+    // The photo is attached ONLY here — to the local, in-memory object used
+    // for this one-time receipt/chronicle view. It's never persisted, so a
+    // page refresh (or landing on /chronicle any other way) means it's
+    // simply gone, by design.
+    const finalMemory = { ...baseMemory, photoURL: capturedImage || null };
 
     onComplete(finalMemory);
     onNavigate('chronicle');
@@ -248,9 +276,9 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
       `}</style>
 
-      {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER ============ */}
+      {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER (desktop/tablet only) ============ */}
       <div
-        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        className="hidden lg:block absolute inset-0 pointer-events-none z-0 overflow-hidden"
         style={{ transform: `translate(${parallax.x * 8}px, ${parallax.y * 6}px)`, transition: 'transform 0.5s ease-out' }}
       >
         {/* Cozy Mug Top & Saucer */}
@@ -336,10 +364,37 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         </div>
       </div>
 
+      {/* ============ MOBILE-ONLY: floating-upward ambience ============
+          Desktop desk scene is sized for wide viewports and is hidden
+          below `lg`. This fills that gap on phones with continuously
+          drifting doodles (bottom → top, looping) so the page never
+          feels empty and the "cozy desk" mood carries over. */}
+      <div className="lg:hidden absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <FloatingUpDoodle char="☕" left="6%" duration={13} delay={0} />
+        <FloatingUpDoodle char="🍪" left="20%" duration={17} delay={3.5} />
+        <FloatingUpDoodle char="✨" left="36%" duration={11} delay={1.2} />
+        <FloatingUpDoodle char="🐾" left="52%" duration={19} delay={6} />
+        <FloatingUpDoodle char="🌿" left="68%" duration={15} delay={2.4} />
+        <FloatingUpDoodle char="📖" left="82%" duration={21} delay={8} />
+        <FloatingUpDoodle char="🎀" left="14%" duration={18} delay={10} />
+        <FloatingUpDoodle char="🕰️" left="62%" duration={14} delay={4.6} />
+        <FloatingUpDoodle char="☁️" left="90%" duration={20} delay={0.8} />
+      </div>
+
       {/* ================= TWO-PAGE SCRAPBOOK JOURNAL HARDCOVER ================= */}
       <div className="w-full max-w-4xl bg-[#48533C] rounded-[24px] p-6 md:p-8 relative journal-shadow border border-[#536046] flex flex-col lg:flex-row gap-8 items-stretch z-10">
+
+        {/* Mobile-only top spine/ribbon — the side ribbon below is desktop-only
+            (hidden lg:block), so this keeps the "journal" read clear on phones */}
+        <div className="lg:hidden w-full flex items-center justify-center gap-2 -mt-1 mb-1">
+          <div className="flex-1 h-2.5 bg-[#B05B43] opacity-90 rounded-full shadow-inner" />
+          <div className="w-6 h-6 bg-[#E2A752] rounded-full border border-[#9C6C2E] flex items-center justify-center shadow-md shrink-0">
+            <Heart size={11} className="text-[#562215]" fill="currentColor" />
+          </div>
+          <div className="flex-1 h-2.5 bg-[#B05B43] opacity-90 rounded-full shadow-inner" />
+        </div>
         
-        {/* Ribbon Bookmark - Terracotta */}
+        {/* Ribbon Bookmark - Terracotta (desktop/tablet only, unchanged) */}
         <div className="absolute right-12 top-0 bottom-0 w-3 bg-[#B05B43] opacity-90 z-40 rounded-sm shadow-inner pointer-events-none hidden lg:block">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#E2A752] rounded-full border border-[#9C6C2E] flex items-center justify-center shadow-md">
             <Heart size={10} className="text-[#562215]" fill="currentColor" />
@@ -347,7 +402,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         </div>
 
         {/* LEFT PAGE: THE INTEGRATED FUNCTIONAL REFLECTION JOURNAL */}
-        <div className="flex-1 bg-[#FAF2DC] rounded-2xl p-6 md:p-8 flex flex-col justify-between relative shadow-inner border border-[#E0D3B4]">
+        <div className="flex-1 bg-[#FAF2DC] rounded-2xl p-6 md:p-8 flex flex-col justify-between relative shadow-xl lg:shadow-inner border-2 lg:border border-[#E0D3B4]">
           {/* Subtle lined journal paper look */}
           <div 
             className="absolute inset-0 opacity-[0.06] pointer-events-none rounded-2xl" 
@@ -640,6 +695,9 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                 {step === 9 && (
                   <div className="space-y-4 text-center">
                     <h2 className="font-hand text-2xl font-bold text-[#534538]">Capture your snapshot memory</h2>
+                    <p className="text-[11px] font-bold text-[#534538]/60 italic -mt-2">
+                      📌 just for your receipt — stays on this device only, never saved or shared, poof after you leave~
+                    </p>
                     
                     <div className="w-full rounded-2xl p-3 bg-gradient-to-br from-[#DFD4B7] to-[#B09F7A] border-2 border-[#534538] flex flex-col md:flex-row gap-3 items-center">
                       <div className="w-full md:w-[60%] aspect-[4/3] rounded-xl p-1.5 bg-[#F3ECDB] border border-[#534538] flex flex-col">

@@ -55,6 +55,26 @@ const StampSticker = ({ className, text = "VERIFIED" }) => (
   </div>
 );
 
+/* ---------------------------------------------------------------------
+   Stapled snapshot — the one-time, session-only photo taken at the end
+   of the review flow. It is NEVER written to Firestore (privacy): it
+   only ever comes from the fresh in-memory `reviewData` handed down
+   right after a submission, which is plain React state in App.jsx with
+   no persistence. Refresh the page, or land on /chronicle any other
+   way, and `activeReview.photoURL` simply won't exist — so this quietly
+   renders nothing. It also never appears on the Memory Wall or in the
+   admin portal, since those all read from Firestore.
+--------------------------------------------------------------------- */
+const StapledPhoto = ({ src }) => (
+  <div className="absolute -top-2 -left-2 z-30 rotate-[-8deg] select-none pointer-events-none">
+    {/* Staple */}
+    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-8 h-[5px] bg-gradient-to-b from-gray-200 via-gray-400 to-gray-500 rounded-[1px] shadow-[0_1px_1px_rgba(0,0,0,0.5)] border border-gray-600/40 z-10" />
+    <div className="bg-white p-1.5 pb-3 shadow-[2px_5px_10px_rgba(0,0,0,0.35)] border border-black/10">
+      <img src={src} alt="your snapshot" className="w-16 h-14 object-cover block" />
+    </div>
+  </div>
+);
+
 const TextureOverlay = ({ type, color }) => {
   if (type === 'dots') return <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill={color} opacity="0.3" /></pattern>;
   if (type === 'lines') return <pattern id="lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke={color} strokeWidth="2" opacity="0.2" /></pattern>;
@@ -237,6 +257,9 @@ export default function ChronicleBoard({ reviewData }) {
     };
   }, [avatar]);
 
+  // Note: dbUserReview comes straight from Firestore, where photoURL is
+  // never written — so it will never carry a photo. Only a fresh
+  // reviewData (passed in-memory right after submitting) can.
   const activeReview = reviewData || dbUserReview;
 
   // Stashed Reflection Whisper: Filter out the current user's review and grab the previous text review
@@ -389,31 +412,37 @@ export default function ChronicleBoard({ reviewData }) {
               transition={{ duration: 0.9, ease: "easeInOut" }} className="relative shadow-2xl max-w-sm w-full"
             >
               
-              {/* Receipt Wrapper (this is the part that gets captured for download) */}
-              <div ref={receiptRef} className="w-[80%] mx-auto bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#5A2E25] rounded-lg">
-                <div className="absolute inset-0 pointer-events-none z-[100] opacity-[0.25] mix-blend-multiply" style={{ backgroundImage: paperNoise }}></div>
-                
-                <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
-                  <div className="text-right font-mono text-xl text-[#df3131] mb-1 tracking-widest opacity-80" style={{ transform: 'scaleY(1.2)' }}>{checkNumber}</div>
-                  <h2 className="font-cursive text-5xl text-center font-bold tracking-wider text-[#2B3A67] my-3 transform rotate-[-2deg]">Thank You!</h2>
-                  <p className="text-[8px] text-center font-mono font-black tracking-widest uppercase text-[#2B3A67] mb-2">Your patronage is appreciated</p>
-                </div>
-                
-                <div className="w-full flex-1 flex flex-col bg-[#EFE0CB] min-h-[140px]" style={{ backgroundImage: 'linear-gradient(180deg, #2B3A67 2px, transparent 2px)', backgroundSize: '100% 46px', backgroundPosition: '0 44px' }}>
-                  <div className="pt-2 flex-1">
-                    {activeReview?.items && activeReview.items.map((item, idx) => (
-                      <div key={idx} className="h-[46px] flex justify-center items-end pb-2 px-6">
-                        <span className="font-cursive text-3xl text-[#df3131] font-bold tracking-wider truncate">● {item}</span>
-                      </div>
-                    ))}
-                    <div className="h-[46px] flex justify-center items-end pb-2 px-6">
-                      <span className="font-cursive text-4xl text-[#df3131] font-bold transform -rotate-12">:)</span>
-                    </div>
-                  </div>
+              {/* Capture Wrapper — includes the stapled snapshot (if any) so the
+                  downloaded PNG shows the receipt exactly as pinned together.
+                  See StapledPhoto above for why the photo may or may not exist. */}
+              <div ref={receiptRef} className="relative w-[80%] mx-auto pt-8 pl-5 pb-1">
+                {activeReview?.photoURL && <StapledPhoto src={activeReview.photoURL} />}
 
-                  <div className="h-[46px] flex justify-between items-end pb-2 px-6 border-t-[3px] border-dashed border-[#2B3A67] mt-auto w-full bg-[#EFE0CB]">
-                    <span className="font-mono text-[10px] font-black uppercase text-[#2B3A67]">Signature</span>
-                    <span className="font-cursive text-2xl text-[#df3131] font-bold transform -rotate-3">- {activeReview?.name || 'guest'}</span>
+                <div className="w-full bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#5A2E25] rounded-lg">
+                  <div className="absolute inset-0 pointer-events-none z-[100] opacity-[0.25] mix-blend-multiply" style={{ backgroundImage: paperNoise }}></div>
+                  
+                  <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
+                    <div className="text-right font-mono text-xl text-[#df3131] mb-1 tracking-widest opacity-80" style={{ transform: 'scaleY(1.2)' }}>{checkNumber}</div>
+                    <h2 className="font-cursive text-5xl text-center font-bold tracking-wider text-[#2B3A67] my-3 transform rotate-[-2deg]">Thank You!</h2>
+                    <p className="text-[8px] text-center font-mono font-black tracking-widest uppercase text-[#2B3A67] mb-2">Your patronage is appreciated</p>
+                  </div>
+                  
+                  <div className="w-full flex-1 flex flex-col bg-[#EFE0CB] min-h-[140px]" style={{ backgroundImage: 'linear-gradient(180deg, #2B3A67 2px, transparent 2px)', backgroundSize: '100% 46px', backgroundPosition: '0 44px' }}>
+                    <div className="pt-2 flex-1">
+                      {activeReview?.items && activeReview.items.map((item, idx) => (
+                        <div key={idx} className="h-[46px] flex justify-center items-end pb-2 px-6">
+                          <span className="font-cursive text-3xl text-[#df3131] font-bold tracking-wider truncate">● {item}</span>
+                        </div>
+                      ))}
+                      <div className="h-[46px] flex justify-center items-end pb-2 px-6">
+                        <span className="font-cursive text-4xl text-[#df3131] font-bold transform -rotate-12">:)</span>
+                      </div>
+                    </div>
+
+                    <div className="h-[46px] flex justify-between items-end pb-2 px-6 border-t-[3px] border-dashed border-[#2B3A67] mt-auto w-full bg-[#EFE0CB]">
+                      <span className="font-mono text-[10px] font-black uppercase text-[#2B3A67]">Signature</span>
+                      <span className="font-cursive text-2xl text-[#df3131] font-bold transform -rotate-3">- {activeReview?.name || 'guest'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
