@@ -81,7 +81,7 @@ function MainLayoutContent() {
     else if (path === '/wall') setTheme(THEMES.navy);
     else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
     else if (path === '/directory') setTheme({ bg: '#D8C7F5', text: '#472C20', border: 'transparent' });
-    else if (path === '/review') setTheme(THEMES.rose);
+    else if (path === '/review') setTheme({ bg: 'transparent', text: '#FAF2DC', border: 'rgba(250,242,220,0.15)' });
   }, [location.pathname]);
 
   const handleSaveMemory = async (newMemory) => {
@@ -111,7 +111,7 @@ function MainLayoutContent() {
   const isCafeRoute = location.pathname === '/cafe';
 
   // Pages that should render without the global top nav bar
-  const hideGlobalNav = isOnboarding || ['/review', '/games/icebreakers', '/games/hue-hunt'].includes(location.pathname);
+  const hideGlobalNav = isOnboarding || [ '/games/icebreakers', '/games/hue-hunt'].includes(location.pathname);
 
   const layoutBackgroundStyle = isCafeRoute 
     ? {
@@ -149,9 +149,9 @@ function MainLayoutContent() {
         <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
           <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
             <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
-              <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
-                🚪
-              </div>
+               <div style={{ backgroundColor: theme.text, color: theme.bg === 'transparent' ? '#2F241A' : theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
+  🚪
+</div>
               <div>
                 <h1 className="font-serif font-black text-xl tracking-tight leading-none" style={{ color: theme.text }}>Dumble' Door</h1>
                 <p className="font-cursive text-sm opacity-80 mt-0.5" style={{ color: theme.text }}>Jagda, Rourkela</p>
