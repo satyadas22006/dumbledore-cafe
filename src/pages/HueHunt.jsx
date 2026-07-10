@@ -120,7 +120,7 @@ const FlowerStamp = ({ className = '' }) => (
 );
 
 /* ---------------------------------------------------------------------
-   NEW: small scattered decorative doodles inspired by a vintage Canon
+   Small scattered decorative doodles inspired by a vintage Canon
    compact camera, a lone tree on a hill, and a retro CRT/console setup.
    These sit lightly around the lobby card instead of a top icon bar,
    and only appear before the game starts (see gameState === 'idle'
@@ -452,7 +452,7 @@ const HueHunt = ({ onNavigate }) => {
     >
       {/* Gingham-patterned page body */}
       <div
-        className="w-full flex-1 flex justify-center px-4 py-10 md:py-14"
+        className="w-full flex-1 flex justify-center px-4 py-10 md:py-14 overflow-x-hidden"
         style={{
           backgroundImage: `
             linear-gradient(90deg, rgba(255,255,255,0.75) 12px, transparent 12px),
@@ -465,29 +465,36 @@ const HueHunt = ({ onNavigate }) => {
         {/* Main interactive container */}
         <div className="max-w-2xl w-full select-none relative">
           
-          {/* Cute Bunny Bouquet Icon (Swapped to Left Side Base) */}
-          <div className="absolute -bottom-10 -left-10 w-28 h-32 transform -rotate-6 hidden sm:block z-10 pointer-events-none">
+          {/* Cute Bunny Bouquet Icon — bottom-left, now visible on every
+              screen size (smaller on mobile, full size from sm up) */}
+          <div className="absolute -bottom-6 -left-6 w-16 h-20 sm:-bottom-10 sm:-left-10 sm:w-28 sm:h-32 transform -rotate-6 z-10 pointer-events-none">
             <MelodyBunny className="w-full h-full" />
           </div>
 
-          {/* Expanded & Resized FlowerStamp (Moved to Right Side Header) */}
-          <div className="absolute -top-14 -right-10 w-32 h-26 transform rotate-12 hidden sm:block z-10 pointer-events-none">
+          {/* Expanded FlowerStamp — top-right, visible on every screen size */}
+          <div className="absolute -top-8 -right-6 w-20 h-16 sm:-top-14 sm:-right-10 sm:w-32 sm:h-26 transform rotate-12 z-10 pointer-events-none">
             <FlowerStamp className="w-full h-full" />
           </div>
 
-          {/* --- NEW: a few extra scattered doodles inspired by a vintage
-              camera, a lone tree, and a retro console setup. Only shown
-              before the game starts, so nothing distracts once playing. --- */}
+          {/* --- Scattered doodles inspired by a vintage camera, a lone
+              tree, and a retro console — rebalanced so the left side
+              carries its share too, and visible on all screen sizes.
+              Only shown before the game starts. --- */}
           {gameState === 'idle' && (
             <>
-              <div className="absolute -top-8 left-[30%] w-16 h-12 transform -rotate-6 hidden sm:block z-10 pointer-events-none">
+              {/* LEFT: vintage camera, near the top */}
+              <div className="absolute -top-8 left-2 w-14 h-10 sm:-top-10 sm:left-8 sm:w-16 sm:h-12 transform -rotate-6 z-10 pointer-events-none">
                 <VintageCameraDoodle className="w-full h-full" />
               </div>
-              <div className="absolute -bottom-6 -right-8 w-16 h-20 transform rotate-3 hidden sm:block z-10 pointer-events-none">
-                <LoneTreeDoodle className="w-full h-full" />
-              </div>
-              <div className="absolute top-[18%] -right-16 w-20 h-20 transform rotate-6 hidden md:block z-10 pointer-events-none">
+
+              {/* LEFT: retro console, mid-height */}
+              <div className="absolute top-[38%] -left-6 w-14 h-14 sm:top-[40%] sm:-left-14 sm:w-20 sm:h-20 transform rotate-6 z-10 pointer-events-none">
                 <RetroConsoleDoodle className="w-full h-full" />
+              </div>
+
+              {/* RIGHT: lone tree, bottom */}
+              <div className="absolute -bottom-4 -right-4 w-12 h-14 sm:-bottom-6 sm:-right-8 sm:w-16 sm:h-20 transform rotate-3 z-10 pointer-events-none">
+                <LoneTreeDoodle className="w-full h-full" />
               </div>
             </>
           )}
