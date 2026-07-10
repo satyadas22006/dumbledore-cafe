@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -79,7 +80,7 @@ function MainLayoutContent() {
     else if (path === '/chronicle') setTheme({ bg: '#FFF0F5', text: '#7A5C58', border: 'transparent' });
     else if (path === '/wall') setTheme(THEMES.navy);
     else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
-    else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
+    else if (path === '/directory') setTheme({ bg: '#D8C7F5', text: '#472C20', border: 'transparent' });
     else if (path === '/review') setTheme(THEMES.rose);
   }, [location.pathname]);
 
@@ -108,6 +109,9 @@ function MainLayoutContent() {
 
   const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
   const isCafeRoute = location.pathname === '/cafe';
+
+  // Pages that should render without the global top nav bar
+  const hideGlobalNav = isOnboarding || ['/review', '/games/icebreakers', '/games/hue-hunt'].includes(location.pathname);
 
   const layoutBackgroundStyle = isCafeRoute 
     ? {
@@ -141,7 +145,7 @@ function MainLayoutContent() {
       {!isOnboarding && <VinylPlayer theme={theme} />}
       <GlobalCompanion />
 
-      {!isOnboarding && (
+      {!hideGlobalNav && (
         <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
           <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
             <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>

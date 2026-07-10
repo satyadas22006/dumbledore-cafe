@@ -1,7 +1,7 @@
+// src/pages/HueHunt.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, RotateCcw, Timer, Sparkles, HelpCircle } from 'lucide-react';
-import BackToCafeButton from '../components/BackToCafeButton';
+import { Camera, RotateCcw, Timer, Sparkles, HelpCircle, ArrowLeft } from 'lucide-react';
 
 // FIREBASE O2 SECURE COUPLING
 import { db } from '../firebase';
@@ -116,6 +116,46 @@ const FlowerStamp = ({ className = '' }) => (
     {/* Cancellation Postmark Overlay */}
     <circle cx="84" cy="64" r="16" stroke="#475569" strokeWidth="1" fill="none" strokeDasharray="4 2" opacity="0.4" />
     <path d="M62 76 Q84 66 104 74 M65 81 Q84 71 98 80" stroke="#475569" strokeWidth="1" fill="none" opacity="0.4" />
+  </svg>
+);
+
+/* ---------------------------------------------------------------------
+   NEW: small scattered decorative doodles inspired by a vintage Canon
+   compact camera, a lone tree on a hill, and a retro CRT/console setup.
+   These sit lightly around the lobby card instead of a top icon bar,
+   and only appear before the game starts (see gameState === 'idle'
+   gate at the render site below).
+--------------------------------------------------------------------- */
+const VintageCameraDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 100 70" className={className} filter="drop-shadow(0px 3px 5px rgba(0,0,0,0.12))">
+    <rect x="4" y="16" width="92" height="46" rx="8" fill="#C9BFA5" stroke="#472C20" strokeWidth="3" />
+    <rect x="10" y="5" width="34" height="14" rx="3" fill="#C9BFA5" stroke="#472C20" strokeWidth="3" />
+    <circle cx="50" cy="40" r="17" fill="#3C2F2F" stroke="#472C20" strokeWidth="3" />
+    <circle cx="50" cy="40" r="9" fill="#7FB8D9" />
+    <circle cx="79" cy="25" r="3" fill="#472C20" />
+    <rect x="60" y="25" width="20" height="6" rx="2" fill="#EE8A93" stroke="#472C20" strokeWidth="2" />
+  </svg>
+);
+
+const LoneTreeDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 80 90" className={className}>
+    <path d="M0 90 Q40 60 80 90 Z" fill="#CFE0BC" />
+    <ellipse cx="40" cy="45" rx="18" ry="16" fill="#5B6B4A" />
+    <ellipse cx="29" cy="38" rx="10" ry="9" fill="#5B6B4A" />
+    <ellipse cx="53" cy="40" rx="11" ry="10" fill="#5B6B4A" />
+    <rect x="37" y="55" width="6" height="16" fill="#8B5E3C" />
+  </svg>
+);
+
+const RetroConsoleDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 90 90" className={className} filter="drop-shadow(0px 3px 5px rgba(0,0,0,0.12))">
+    <rect x="8" y="6" width="74" height="54" rx="6" fill="#EAE3D3" stroke="#472C20" strokeWidth="3" />
+    <rect x="16" y="14" width="58" height="36" rx="3" fill="#7FB8D9" stroke="#472C20" strokeWidth="2" />
+    <rect x="22" y="28" width="10" height="10" fill="#EE8A93" />
+    <rect x="40" y="32" width="14" height="6" fill="#F3A94A" />
+    <rect x="18" y="66" width="54" height="12" rx="4" fill="#B0A0CD" stroke="#472C20" strokeWidth="2" />
+    <circle cx="27" cy="72" r="2.5" fill="#472C20" />
+    <circle cx="63" cy="72" r="2.5" fill="#472C20" />
   </svg>
 );
 
@@ -410,9 +450,6 @@ const HueHunt = ({ onNavigate }) => {
       className="min-h-screen w-full flex flex-col items-center"
       style={{ backgroundColor: '#E4F1EC' }}
     >
-      {/* Decorative critter header strip */}
-      <CritterRow />
-
       {/* Gingham-patterned page body */}
       <div
         className="w-full flex-1 flex justify-center px-4 py-10 md:py-14"
@@ -438,7 +475,32 @@ const HueHunt = ({ onNavigate }) => {
             <FlowerStamp className="w-full h-full" />
           </div>
 
-          <BackToCafeButton className="mb-6" />
+          {/* --- NEW: a few extra scattered doodles inspired by a vintage
+              camera, a lone tree, and a retro console setup. Only shown
+              before the game starts, so nothing distracts once playing. --- */}
+          {gameState === 'idle' && (
+            <>
+              <div className="absolute -top-8 left-[30%] w-16 h-12 transform -rotate-6 hidden sm:block z-10 pointer-events-none">
+                <VintageCameraDoodle className="w-full h-full" />
+              </div>
+              <div className="absolute -bottom-6 -right-8 w-16 h-20 transform rotate-3 hidden sm:block z-10 pointer-events-none">
+                <LoneTreeDoodle className="w-full h-full" />
+              </div>
+              <div className="absolute top-[18%] -right-16 w-20 h-20 transform rotate-6 hidden md:block z-10 pointer-events-none">
+                <RetroConsoleDoodle className="w-full h-full" />
+              </div>
+            </>
+          )}
+
+          {/* "Run Away" back navigation — matches Talk Box style, returns to the Arcade */}
+          <div className="mb-6">
+            <button 
+              onClick={() => onNavigate('games')} 
+              className="flex items-center gap-2 text-sm font-black text-[#472C20] hover:opacity-80 transition-opacity uppercase tracking-wider bg-white border-2 border-[#F0C97A] rounded-full px-4 py-1.5 shadow-[3px_3px_0_#F0C97A]"
+            >
+              <ArrowLeft size={14} className="stroke-[3]" /> run away
+            </button>
+          </div>
 
           <div className="bg-[#FFFDF9] text-[#3C2F2F] border-2 border-[#F3D9DC] rounded-[2.5rem] shadow-[0_10px_30px_rgba(60,47,47,0.12)] p-8 relative">
             <AnimatePresence mode="wait">
@@ -448,6 +510,14 @@ const HueHunt = ({ onNavigate }) => {
                 <motion.div key="idle" className="py-8 text-center space-y-6">
                   <span className="text-6xl block animate-bounce">🐥🔍</span>
                   <h2 className="text-3xl font-serif font-black">Hue Hunt Machine</h2>
+
+                  {/* Simple decorative touch inside the box — idle state only */}
+                  <div className="flex items-center justify-center gap-3 opacity-40 pt-1">
+                    <VintageCameraDoodle className="w-7 h-5" />
+                    <LoneTreeDoodle className="w-5 h-6" />
+                    <RetroConsoleDoodle className="w-6 h-6" />
+                  </div>
+
                   <p className="text-sm font-medium opacity-80 leading-relaxed max-w-sm mx-auto">
                     Given a target color, your mission is to capture 3 real world photos that match the hue and saturation range of the target. Happy hunting !!
                   </p>

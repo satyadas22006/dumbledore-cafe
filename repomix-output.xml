@@ -5369,571 +5369,6 @@ const Home = ({ onNavigate }) => {
 export default Home;
 </file>
 
-<file path="src/pages/ChronicleBoard.jsx">
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { db } from '../firebase';
-import { useAvatar } from '../context/AvatarContext';
-import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
-import { Activity } from 'lucide-react';
-import BackToCafeButton from '../components/BackToCafeButton';
-import html2canvas from 'html2canvas';
-
-// --- BRIGHT & HAPPY FOOD CONFIGURATIONS ---
-const VIBE_CONFIGS = {
-  '🌧️ Rainy Day Comfort': { color: '#B28DFF', texture: 'dots', label: 'Rainy Day Comfort' },
-  '✨ Main Character Energy': { color: '#FFB7B2', texture: 'lines', label: 'Main Character' },
-  '☕ Coffee & Conversations': { color: '#FFDAC1', texture: 'sprinkles', label: 'Coffee & Chats' },
-  '🌸 Peaceful Escape': { color: '#FDFD96', texture: 'crumbs', label: 'Peaceful Escape' }
-};
-
-const PURPOSE_CONFIGS = {
-  'food': { color: '#FFCB77', texture: 'dots', label: 'Food Mission 🥟' },
-  'catch': { color: '#FF9CEE', texture: 'lines', label: 'Catching Up ❤️' },
-  'escape': { color: '#A0E8AF', texture: 'sprinkles', label: 'Reality Escape 🌧️' },
-  'family': { color: '#85E3FF', texture: 'crumbs', label: 'Family Time 👨‍👩‍👧' }
-};
-
-const BRIGHT_PALETTE = [
-  { color: '#85E3FF', texture: 'dots' },   
-  { color: '#B5EAD7', texture: 'lines' },     
-  { color: '#FF9AA2', texture: 'sprinkles' },  
-  { color: '#E2F0CB', texture: 'crumbs' },  
-  { color: '#C7CEEA', texture: 'dots' },    
-  { color: '#FDE4CE', texture: 'lines' }    
-];
-
-// --- SCRAPBOOK DECORATIONS ---
-const WashiTape = ({ className, color = "bg-white/60" }) => (
-  <div 
-    className={`absolute w-12 h-5 md:w-16 md:h-6 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
-    style={{ borderLeft: '2px dashed rgba(122, 92, 88, 0.2)', borderRight: '2px dashed rgba(122, 92, 88, 0.2)' }} 
-  />
-);
-
-const FloatingDoodle = ({ char, className, delay = 0 }) => (
-  <motion.div 
-    animate={{ y: [0, -15, 0], rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
-    transition={{ duration: 6 + delay, repeat: Infinity, ease: "easeInOut" }}
-    className={`absolute text-4xl opacity-40 select-none pointer-events-none font-cursive drop-shadow-md ${className}`}
-  >
-    {char}
-  </motion.div>
-);
-
-const StampSticker = ({ className, text = "VERIFIED" }) => (
-  <div className={`absolute border-[2px] border-[#5A2E25] text-[#5A2E25] font-mono font-bold text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm shadow-[2px_2px_0_#5A2E25] bg-[#FDE4CE] z-20 ${className}`}>
-    {text}
-  </div>
-);
-
-const TextureOverlay = ({ type, color }) => {
-  if (type === 'dots') return <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill={color} opacity="0.3" /></pattern>;
-  if (type === 'lines') return <pattern id="lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke={color} strokeWidth="2" opacity="0.2" /></pattern>;
-  if (type === 'sprinkles') return <pattern id="sprinkles" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(15)" /><rect x="7" y="6" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(-30)" /></pattern>;
-  return <pattern id="crumbs" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M2,2 Q3,1 4,3 T6,2" fill="none" stroke={color} strokeWidth="1.5" opacity="0.3" /></pattern>;
-};
-
-const Paperclip = ({ className }) => (
-  <div className={`absolute w-3 h-10 md:w-4 md:h-12 border-[2.5px] border-[#472C20]/70 rounded-full z-30 shadow-[2px_3px_5px_rgba(0,0,0,0.3)] bg-gradient-to-b from-gray-200 to-gray-400 ${className}`}>
-    <div className="absolute top-1 right-[2px] bottom-3 w-1.5 border-r-[2.5px] border-t-[2.5px] border-b-[2.5px] border-[#472C20]/70 rounded-r-full"></div>
-  </div>
-);
-
-// Delicate background textures injected into the white cards to stop them looking bland
-const CardTexture = () => (
-  <div 
-    className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
-    style={{ 
-      backgroundImage: 'radial-gradient(#5A2E25 1.5px, transparent 1.5px)', 
-      backgroundSize: '16px 16px', 
-      opacity: 0.04 
-    }} 
-  />
-);
-
-const GraphPaperTexture = () => (
-  <div 
-    className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
-    style={{ 
-      backgroundImage: 'linear-gradient(rgba(90,46,37,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(90,46,37,0.06) 1px, transparent 1px)', 
-      backgroundSize: '20px 20px' 
-    }} 
-  />
-);
-
-// --- CLEAN VECTOR PIE CHART ---
-const ArtsyPieChart = ({ data, title, hoveredId, setHoveredVibe }) => {
-  let accumulatedAngle = -Math.PI / 2;
-  const radius = 100;
-  const center = 140; 
-
-  const slices = useMemo(() => {
-    return data.map((item) => {
-      if (item.percentage === 0) return null;
-      const angleDelta = (item.percentage / 100) * (Math.PI * 2);
-      
-      const startAngle = accumulatedAngle;
-      const endAngle = accumulatedAngle + angleDelta;
-      accumulatedAngle = endAngle;
-
-      const x1 = center + radius * Math.cos(startAngle);
-      const y1 = center + radius * Math.sin(startAngle);
-      const x2 = center + radius * Math.cos(endAngle);
-      const y2 = center + radius * Math.sin(endAngle);
-      const largeArcFlag = item.percentage > 50 ? 1 : 0;
-
-      const pathData = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-      
-      const middleAngle = startAngle + (angleDelta / 2);
-      const textX = center + (radius * 0.65) * Math.cos(middleAngle);
-      const textY = center + (radius * 0.65) * Math.sin(middleAngle);
-
-      return { ...item, pathData, textX, textY };
-    }).filter(Boolean);
-  }, [data]);
-
-  return (
-    <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[30px] p-6 shadow-[8px_8px_0_#5A2E25] flex flex-col items-center relative group w-full transition-all hover:-translate-y-2 overflow-hidden">
-      <CardTexture />
-      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#D95D39] opacity-5 rounded-full pointer-events-none"></div>
-      
-      <WashiTape className="-top-3 left-6 rotate-[-3deg] bg-amber-200/50" />
-      <h4 className="font-serif font-black text-xl text-[#5A2E25] mb-4 tracking-tight border-b-2 border-dashed border-[#5A2E25]/15 pb-2 w-full text-center relative z-10">{title}</h4>
-      
-      <div className="relative w-full aspect-square max-w-[240px] z-10">
-        <svg viewBox="0 0 280 280" className="w-full h-full overflow-visible">
-          <defs>
-            <TextureOverlay type="dots" color="#7A5C58" />
-            <TextureOverlay type="lines" color="#7A5C58" />
-            <TextureOverlay type="sprinkles" color="#7A5C58" />
-            <TextureOverlay type="crumbs" color="#7A5C58" />
-          </defs>
-          <circle cx={center} cy={center} r={radius + 8} fill="none" stroke="#7A5C58" strokeWidth="2" strokeDasharray="5 5" className="opacity-30" />
-          
-          {slices.map((slice) => {
-            const isSelected = hoveredId === slice.id;
-            return (
-              <g key={slice.id} className="cursor-pointer">
-                <motion.path
-                  d={slice.pathData}
-                  fill={slice.color}
-                  stroke="#FAF7F2"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                  animate={{ scale: isSelected ? 1.05 : 1, rotate: isSelected ? [0, 2, -2, 0] : 0 }}
-                  originX={`${center}px`}
-                  originY={`${center}px`}
-                  onMouseEnter={() => setHoveredVibe(slice.id)}
-                  onMouseLeave={() => setHoveredVibe(null)}
-                />
-                {slice.texture && (
-                  <path 
-                    d={slice.pathData} 
-                    fill={`url(#${slice.texture})`} 
-                    className="pointer-events-none mix-blend-multiply"
-                    style={{ transformOrigin: `${center}px ${center}px` }}
-                  />
-                )}
-                {slice.percentage > 5 && (
-                  <text
-                    x={slice.textX}
-                    y={slice.textY}
-                    fill="#5A2E25"
-                    fontSize="13"
-                    fontWeight="900"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="font-mono tracking-wide pointer-events-none select-none bg-white drop-shadow-md"
-                  >
-                    {slice.percentage}%
-                  </text>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      <div className="w-full mt-4 flex flex-wrap justify-center gap-2.5 text-[10px] font-mono font-bold relative z-10">
-        {data.map((item) => (
-          <div key={item.id} className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${hoveredId === item.id ? 'bg-[#5A2E25]/10 border-[#5A2E25]' : 'border-[#5A2E25]/10 bg-white/60'}`}>
-            <div className="w-2.5 h-2.5 rounded-full border border-[#5A2E25]/20 shadow-xs" style={{ backgroundColor: item.color }} />
-            <span className="text-[#5A2E25] truncate max-w-[100px]">{item.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// --- THE MAIN PAGE COMPONENT ---
-export default function ChronicleBoard({ reviewData }) {
-  const { avatar } = useAvatar(); 
-  const [memories, setMemories] = useState([]);
-  const [dbUserReview, setDbUserReview] = useState(null);
-  const [hoveredVibe, setHoveredVibe] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Animated Modal & Receipt Download Controls
-  const [showReceiptPopup, setShowReceiptPopup] = useState(true);
-  const [isCrumbling, setIsCrumbling] = useState(false);
-  const receiptRef = useRef(null);
-  const checkNumber = useMemo(() => Math.floor(Math.random() * 900000) + 100000, []);
-
-  // Use effect to forcibly hide the Global App.jsx Navbar while on this page
-  useEffect(() => {
-    const navElements = document.querySelectorAll('nav');
-    navElements.forEach(nav => nav.style.display = 'none');
-    
-    return () => {
-      navElements.forEach(nav => nav.style.display = ''); // Restore on unmount
-    };
-  }, []);
-
-  // Fetch from Firebase
-  useEffect(() => {
-    const unsubGlobal = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
-      const allMemories = snapshot.docs.map(doc => doc.data());
-      setMemories(allMemories);
-      setLoading(false);
-    });
-
-    const unsubUser = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(1)), (snapshot) => {
-      if (!snapshot.empty) setDbUserReview(snapshot.docs[0].data());
-    });
-
-    return () => {
-      unsubGlobal();
-      unsubUser();
-    };
-  }, [avatar]);
-
-  const activeReview = reviewData || dbUserReview;
-
-  // Stashed Reflection Whisper: Filter out the current user's review and grab the previous text review
-  const pastReview = useMemo(() => {
-    if (!memories || memories.length === 0) return null;
-    const validReviews = memories.filter(m => m.review && m.review.trim() !== "");
-    
-    if (activeReview && activeReview.createdAt) {
-      const filtered = validReviews.filter(m => m.createdAt !== activeReview.createdAt);
-      return filtered.length > 0 ? filtered[0] : null;
-    }
-    return validReviews.length > 0 ? validReviews[0] : null;
-  }, [memories, activeReview]);
-
-  // --- TOP 5 + OTHERS PROCESSING LOGIC ---
-  const processChartData = (fieldName, predefinedConfigMap, fallbackPalette) => {
-    if (memories.length === 0) {
-      return [{ id: 'empty', label: 'Awaiting Guests', color: '#E8E2D5', texture: 'dots', percentage: 100 }];
-    }
-
-    const counts = memories.reduce((acc, m) => {
-      const key = m[fieldName] || 'Unknown';
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    }, {});
-
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const top5 = sorted.slice(0, 5);
-    const others = sorted.slice(5);
-
-    let result = top5.map(([name, count], idx) => {
-      const conf = predefinedConfigMap ? predefinedConfigMap[name] : null;
-      return {
-        name, count,
-        color: conf ? conf.color : fallbackPalette[idx % fallbackPalette.length].color,
-        texture: conf ? conf.texture : fallbackPalette[idx % fallbackPalette.length].texture,
-        label: conf && conf.label ? conf.label : (name.length > 14 ? name.substring(0,11) + '...' : name)
-      };
-    });
-
-    if (others.length > 0) {
-      const othersCount = others.reduce((sum, item) => sum + item[1], 0);
-      result.push({ name: 'Others', count: othersCount, color: '#C7CEEA', texture: 'lines', label: 'Others (Mixed)' });
-    }
-
-    const total = result.reduce((sum, item) => sum + item.count, 0) || 1;
-    return result.map(item => ({ ...item, id: item.name, percentage: Math.round((item.count / total) * 100) }));
-  };
-
-  const vibeChartData = useMemo(() => processChartData('vibe', VIBE_CONFIGS, BRIGHT_PALETTE), [memories]);
-  const dishChartData = useMemo(() => processChartData('dish', null, BRIGHT_PALETTE), [memories]);
-  const purposeChartData = useMemo(() => processChartData('purpose', PURPOSE_CONFIGS, BRIGHT_PALETTE), [memories]);
-
-  // Compute ACTUAL Satisfaction Index Over Time
-  const satisfactionTrendPoints = useMemo(() => {
-    if (memories.length === 0) return [1,2,3,4,5].map(i => ({ week: `Pt ${i}`, index: 100 }));
-
-    const sorted = [...memories].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-    const numChunks = 5;
-    const chunkSize = Math.max(1, Math.ceil(sorted.length / numChunks));
-    const points = [];
-
-    for (let i = 0; i < numChunks; i++) {
-      const chunk = sorted.slice(i * chunkSize, (i + 1) * chunkSize);
-      if (chunk.length === 0) {
-        points.push({ week: `Pt ${i + 1}`, index: points.length > 0 ? points[points.length - 1].index : 100 });
-        continue;
-      }
-      const sumRatings = chunk.reduce((sum, m) => sum + (m.rating || 4), 0);
-      const maxPossible = chunk.length * 4; 
-      const avgSatisfaction = Math.round((sumRatings / maxPossible) * 100);
-      points.push({ week: `Pt ${i + 1}`, index: avgSatisfaction });
-    }
-    return points;
-  }, [memories]);
-
-  const dominantVibe = useMemo(() => {
-    if (!vibeChartData || vibeChartData.length === 0 || vibeChartData[0].id === 'empty') return 'Main Character Energy';
-    return vibeChartData.reduce((prev, current) => (prev.percentage > current.percentage) ? prev : current)?.label || 'Main Character Energy';
-  }, [vibeChartData]);
-
-  // --- ACTIONS ---
-  const handleCrumbleAnimation = () => {
-    setIsCrumbling(true);
-    setTimeout(() => setShowReceiptPopup(false), 950); 
-  };
-
-  const handleDownloadReceipt = async () => {
-    if (receiptRef.current) {
-      try {
-        const canvas = await html2canvas(receiptRef.current, { scale: 2, backgroundColor: null });
-        const image = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = image;
-        link.download = `DumbleDoor_Receipt_${checkNumber}.png`;
-        link.click();
-      } catch (err) {
-        console.error("Failed to download receipt", err);
-      }
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#130B09] font-mono text-xs font-black uppercase text-[#D95D39]">
-        <Activity size={32} className="animate-spin mb-3 text-[#D95D39]" /> Baking the data...
-      </div>
-    );
-  }
-
-  const paperNoise = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")`;
-
-  // Safely extract points for the SVG path to prevent crashes
-  const pt0 = satisfactionTrendPoints[0]?.index ?? 100;
-  const pt1 = satisfactionTrendPoints[1]?.index ?? 100;
-  const pt2 = satisfactionTrendPoints[2]?.index ?? 100;
-  const pt3 = satisfactionTrendPoints[3]?.index ?? 100;
-  const pt4 = satisfactionTrendPoints[4]?.index ?? 100;
-
-  const areaPath = `M 25 150 L 25 ${150 - (pt0 * 1.3)} L 137.5 ${150 - (pt1 * 1.3)} L 250 ${150 - (pt2 * 1.3)} L 362.5 ${150 - (pt3 * 1.3)} L 475 ${150 - (pt4 * 1.3)} L 475 150 Z`;
-
-  return (
-    <div className="w-full min-h-screen bg-[#150A08] text-[#FDE4CE] py-10 px-4 md:px-8 relative overflow-hidden flex flex-col items-center font-sans">
-      
-      {/* RICH RED/ORANGE/BLACK BACKGROUND ENGINE */}
-      <div className="absolute inset-0 bg-[#150A08] z-0 pointer-events-none overflow-hidden">
-        {/* Soft, warm blurred orbs floating slowly in the background */}
-        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15], rotate: [0, 45, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#8C271E] rounded-full blur-[140px]" />
-        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, -30, 0] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute bottom-[-10%] right-[-20%] w-[70vw] h-[70vw] bg-[#D95D39] rounded-full blur-[160px]" />
-        
-        {/* Intricate orange-tinted architectural grid overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(217,93,57,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(217,93,57,0.06)_1px,transparent_1px)] bg-[size:32px_32px]" />
-      </div>
-
-      <FloatingDoodle char="☕" className="top-[10%] left-[8%]" delay={0.5} />
-      <FloatingDoodle char="🤎" className="top-[35%] right-[5%]" delay={1.2} />
-      <FloatingDoodle char="🖋️" className="bottom-[18%] left-[4%]" delay={2.1} />
-      <FloatingDoodle char="✨" className="top-24 right-1/4 animate-pulse" />
-      <FloatingDoodle char="🥨" className="bottom-[8%] right-[15%]" delay={1.8} />
-
-      <AnimatePresence>
-        {showReceiptPopup && activeReview && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-[#150A08]/85 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-            <motion.div
-              animate={isCrumbling ? {
-                scale: [1, 0.7, 0.3, 0], rotate: [0, 45, 180, 360],
-                x: [0, -50, 150, window.innerWidth > 768 ? 400 : 100], y: [0, -80, 200, 500],
-                borderRadius: ["0px", "40px", "100px", "100px"], filter: ["blur(0px)", "blur(1px)", "blur(4px)", "blur(10px)"]
-              } : { scale: 1, rotate: 0 }}
-              transition={{ duration: 0.9, ease: "easeInOut" }} className="relative shadow-2xl max-w-sm w-full"
-            >
-              
-              {/* Receipt Wrapper (this is the part that gets captured for download) */}
-              <div ref={receiptRef} className="w-[80%] mx-auto bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#5A2E25] rounded-lg">
-                <div className="absolute inset-0 pointer-events-none z-[100] opacity-[0.25] mix-blend-multiply" style={{ backgroundImage: paperNoise }}></div>
-                
-                <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
-                  <div className="text-right font-mono text-xl text-[#df3131] mb-1 tracking-widest opacity-80" style={{ transform: 'scaleY(1.2)' }}>{checkNumber}</div>
-                  <h2 className="font-cursive text-5xl text-center font-bold tracking-wider text-[#2B3A67] my-3 transform rotate-[-2deg]">Thank You!</h2>
-                  <p className="text-[8px] text-center font-mono font-black tracking-widest uppercase text-[#2B3A67] mb-2">Your patronage is appreciated</p>
-                </div>
-                
-                <div className="w-full flex-1 flex flex-col bg-[#EFE0CB] min-h-[140px]" style={{ backgroundImage: 'linear-gradient(180deg, #2B3A67 2px, transparent 2px)', backgroundSize: '100% 46px', backgroundPosition: '0 44px' }}>
-                  <div className="pt-2 flex-1">
-                    {activeReview?.items && activeReview.items.map((item, idx) => (
-                      <div key={idx} className="h-[46px] flex justify-center items-end pb-2 px-6">
-                        <span className="font-cursive text-3xl text-[#df3131] font-bold tracking-wider truncate">● {item}</span>
-                      </div>
-                    ))}
-                    <div className="h-[46px] flex justify-center items-end pb-2 px-6">
-                      <span className="font-cursive text-4xl text-[#df3131] font-bold transform -rotate-12">:)</span>
-                    </div>
-                  </div>
-
-                  <div className="h-[46px] flex justify-between items-end pb-2 px-6 border-t-[3px] border-dashed border-[#2B3A67] mt-auto w-full bg-[#EFE0CB]">
-                    <span className="font-mono text-[10px] font-black uppercase text-[#2B3A67]">Signature</span>
-                    <span className="font-cursive text-2xl text-[#df3131] font-bold transform -rotate-3">- {activeReview?.name || 'guest'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Interaction Buttons Layout */}
-              <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex gap-3 z-40 w-max">
-                <button onClick={handleDownloadReceipt} className="bg-[#FAF7F2] text-[#5A2E25] font-mono font-black text-[10px] md:text-xs uppercase tracking-widest px-6 py-3.5 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-full hover:translate-y-0.5 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap">
-                  Save 📥
-                </button>
-                <button onClick={handleCrumbleAnimation} className="bg-[#D95D39] text-white font-mono font-black text-[10px] md:text-xs uppercase tracking-widest px-6 py-3.5 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-full hover:translate-y-0.5 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap">
-                  Crumble 🗑️
-                </button>
-              </div>
-
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="w-full max-w-[1300px] z-10 flex justify-between items-center mb-8 relative">
-        <BackToCafeButton />
-      </div>
-
-      {/* --- DASHBOARD LOG LAYOUT GRID --- */}
-      <div className="max-w-[1300px] w-full z-10 space-y-10 mt-4">
-        
-        {/* Title Ledger Section */}
-        <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-          <CardTexture />
-          <GraphPaperTexture />
-          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-[#D95D39] rounded-full opacity-10 blur-2xl pointer-events-none"></div>
-          
-          <WashiTape className="-top-3 left-16 rotate-[2deg] bg-amber-200/50" />
-          <StampSticker className="top-4 right-1/2 md:right-1/4 rotate-12" />
-
-          <div className="text-center md:text-left space-y-2 w-full md:w-auto relative z-10 bg-white/60 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none backdrop-blur-sm md:backdrop-blur-none border-2 border-[#5A2E25]/10 md:border-none shadow-sm md:shadow-none">
-            <span className="bg-[#FFDAC1] border-[2px] border-[#5A2E25] text-[10px] font-mono font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-[#5A2E25] inline-block shadow-[2px_2px_0_#5A2E25]">Community Ledger Metrics</span>
-            <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tighter text-[#5A2E25] pt-2">The Experience</h1>
-          </div>
-          
-          <div className="bg-[#FAF7F2] border-[3px] border-[#5A2E25] rounded-2xl p-5 w-full md:max-w-sm text-center md:text-right shadow-[4px_4px_0_#5A2E25] transform rotate-1 relative z-10">
-            <span className="text-[11px] font-mono font-black block text-[#D95D39] uppercase tracking-wider mb-2">Atmosphere Pulse</span>
-            <span className="text-lg font-serif italic font-black text-[#5A2E25]">
-              {vibeChartData.find(v => v.label === dominantVibe)?.percentage || 0}% Patrons share the "{dominantVibe}" vibe space.
-            </span>
-          </div>
-        </div>
-
-        {/* TOP ROW: THE 3 INTERACTIVE CLEAN PIE CHARTS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <ArtsyPieChart data={vibeChartData} title="🌟 Patrons Mood Vibe" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
-          <ArtsyPieChart data={dishChartData} title="🍰 Most Chosen Items" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
-          <ArtsyPieChart data={purposeChartData} title="🥧 Why They Visit Us" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
-        </div>
-
-        {/* BOTTOM ROW: SATISFACTION TREND GRAPH & STASHED SNAPSHOTS */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-16">
-          
-          {/* Satisfaction Index Vector Area Chart */}
-          <div className="lg:col-span-7 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between relative min-h-[380px] overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
-            <CardTexture />
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_top_right,#D95D39_0%,transparent_70%)] opacity-10 pointer-events-none"></div>
-            
-            <Paperclip className="-top-4 right-12 rotate-[15deg]" />
-            <WashiTape className="bottom-4 -left-4 rotate-[-15deg] bg-blue-200/40" />
-
-            <div className="relative z-10 bg-white/60 p-3 rounded-xl border border-[#5A2E25]/10 w-fit backdrop-blur-sm shadow-sm">
-              <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D95D39] mb-1 block">Data-Driven Trend Analysis</span>
-              <h3 className="font-serif font-black text-3xl md:text-4xl text-[#5A2E25] tracking-tight">Guest Satisfaction Trend</h3>
-            </div>
-
-            <div className="w-full h-56 relative mt-6 border-b-4 border-l-4 border-[#5A2E25] px-2 flex items-end justify-center rounded-bl-lg z-10 bg-white/40 shadow-inner">
-              <GraphPaperTexture />
-              <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible max-w-full">
-                <defs><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FFB7B2" stopOpacity="0.6" /><stop offset="100%" stopColor="#FFB7B2" stopOpacity="0.05" /></linearGradient></defs>
-                <line x1="0" y1="37.5" x2="500" y2="37.5" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
-                <line x1="0" y1="75" x2="500" y2="75" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
-                <line x1="0" y1="112.5" x2="500" y2="112.5" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
-                <path d={areaPath} fill="url(#areaGradient)" />
-                <path d={`M 25 ${150 - (pt0 * 1.3)} L 137.5 ${150 - (pt1 * 1.3)} L 250 ${150 - (pt2 * 1.3)} L 362.5 ${150 - (pt3 * 1.3)} L 475 ${150 - (pt4 * 1.3)}`} fill="none" stroke="#D95D39" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-                {satisfactionTrendPoints.map((pt, idx) => {
-                  const xCoord = 25 + idx * 112.5; const ptIndex = pt?.index ?? 100; const yCoord = 150 - (ptIndex * 1.3);
-                  return (
-                    <g key={idx} className="cursor-pointer group">
-                      <circle cx={xCoord} cy={yCoord} r="8" fill="#FAF7F2" stroke="#5A2E25" strokeWidth="4" />
-                      <circle cx={xCoord} cy={yCoord} r="4" fill="#D95D39" />
-                      <g className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <rect x={xCoord - 20} y={yCoord - 35} width="40" height="20" rx="4" fill="#5A2E25" />
-                        <text x={xCoord} y={yCoord - 24} fill="#FFF" fontSize="12" fontWeight="bold" fontFamily="monospace" textAnchor="middle">{ptIndex}%</text>
-                      </g>
-                    </g>
-                  );
-                })}
-              </svg>
-              <div className="absolute inset-x-0 bottom-[-32px] flex justify-between px-2 font-serif text-[14px] font-black text-[#5A2E25]">{satisfactionTrendPoints.map((pt, idx) => <span key={idx}>{pt?.week || `Pt ${idx}`}</span>)}</div>
-            </div>
-          </div>
-
-          {/* Stashed Scrapbook commentary */}
-          <div className="lg:col-span-5 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between overflow-hidden relative group hover:-translate-y-1 transition-transform duration-300">
-            <CardTexture />
-            <WashiTape className="-top-3 right-8 rotate-[-5deg] bg-blue-200/50" />
-            <div className="absolute -top-6 -left-6 w-24 h-24 border-[3px] border-[#5A2E25]/10 rounded-full pointer-events-none"></div>
-
-            <div className="relative z-10">
-              <div className="flex justify-between items-center border-b-2 border-dashed border-[#5A2E25]/20 pb-4 mb-6">
-                <h4 className="font-serif font-black text-2xl text-[#5A2E25] flex items-center gap-2">
-                  <span>🍓</span> Stashed Reflection Whisper
-                </h4>
-              </div>
-
-              <div className="space-y-4 relative mt-2">
-                {pastReview ? (
-                  <>
-                    <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold px-2">
-                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#5A2E25]">👤 {pastReview.name || 'Cozy Patron'}</span>
-                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#D95D39]">{pastReview.vibe || '☕ Coffee & Conversations'}</span>
-                    </div>
-
-                    <div className="relative mt-4">
-                      {/* Drop shadow back layer to make it look like a pinned note */}
-                      <div className="absolute -inset-1 bg-black/5 transform rotate-2 rounded-2xl"></div>
-                      
-                      <div className="bg-[#FFF8E7] p-6 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-2xl italic font-serif text-lg text-[#5A2E25] leading-relaxed min-h-[140px] flex items-center relative z-10 transform -rotate-1">
-                        <WashiTape className="-top-3 left-1/2 -translate-x-1/2 rotate-[2deg] bg-rose-200/60 w-16" />
-                        <span className="absolute bottom-2 right-3 text-3xl opacity-20">✍️</span>
-                        "{pastReview.review}"
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-sm text-[#5A2E25]/50 font-serif italic py-10 text-center">No past text reflections stashed away in the archive yet.</p>
-                )}
-              </div>
-            </div>
-
-            <p className="font-mono text-[10px] font-bold opacity-40 uppercase tracking-widest text-center mt-8 relative z-10">
-              • authentic guest diary logs •
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-</file>
-
 <file path="src/pages/MenuBoard.jsx">
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
@@ -6320,6 +5755,600 @@ export default function MenuBoard({ setTheme, theme }) {
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/ChronicleBoard.jsx">
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { db } from '../firebase';
+import { useAvatar } from '../context/AvatarContext';
+import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { Activity } from 'lucide-react';
+import BackToCafeButton from '../components/BackToCafeButton';
+import html2canvas from 'html2canvas';
+
+// --- BRIGHT & HAPPY FOOD CONFIGURATIONS ---
+const VIBE_CONFIGS = {
+  '🌧️ Rainy Day Comfort': { color: '#B28DFF', texture: 'dots', label: 'Rainy Day Comfort' },
+  '✨ Main Character Energy': { color: '#FFB7B2', texture: 'lines', label: 'Main Character' },
+  '☕ Coffee & Conversations': { color: '#FFDAC1', texture: 'sprinkles', label: 'Coffee & Chats' },
+  '🌸 Peaceful Escape': { color: '#FDFD96', texture: 'crumbs', label: 'Peaceful Escape' }
+};
+
+const PURPOSE_CONFIGS = {
+  'food': { color: '#FFCB77', texture: 'dots', label: 'Food Mission 🥟' },
+  'catch': { color: '#FF9CEE', texture: 'lines', label: 'Catching Up ❤️' },
+  'escape': { color: '#A0E8AF', texture: 'sprinkles', label: 'Reality Escape 🌧️' },
+  'family': { color: '#85E3FF', texture: 'crumbs', label: 'Family Time 👨‍👩‍👧' }
+};
+
+const BRIGHT_PALETTE = [
+  { color: '#85E3FF', texture: 'dots' },   
+  { color: '#B5EAD7', texture: 'lines' },     
+  { color: '#FF9AA2', texture: 'sprinkles' },  
+  { color: '#E2F0CB', texture: 'crumbs' },  
+  { color: '#C7CEEA', texture: 'dots' },    
+  { color: '#FDE4CE', texture: 'lines' }    
+];
+
+// --- SCRAPBOOK DECORATIONS ---
+const WashiTape = ({ className, color = "bg-white/60" }) => (
+  <div 
+    className={`absolute w-12 h-5 md:w-16 md:h-6 backdrop-blur-sm shadow-sm z-20 mix-blend-overlay ${color} ${className}`}
+    style={{ borderLeft: '2px dashed rgba(122, 92, 88, 0.2)', borderRight: '2px dashed rgba(122, 92, 88, 0.2)' }} 
+  />
+);
+
+const FloatingDoodle = ({ char, className, delay = 0 }) => (
+  <motion.div 
+    animate={{ y: [0, -15, 0], rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
+    transition={{ duration: 6 + delay, repeat: Infinity, ease: "easeInOut" }}
+    className={`absolute text-4xl opacity-40 select-none pointer-events-none font-cursive drop-shadow-md ${className}`}
+  >
+    {char}
+  </motion.div>
+);
+
+const StampSticker = ({ className, text = "VERIFIED" }) => (
+  <div className={`absolute border-[2px] border-[#5A2E25] text-[#5A2E25] font-mono font-bold text-[8px] uppercase tracking-widest px-2 py-1 rounded-sm shadow-[2px_2px_0_#5A2E25] bg-[#FDE4CE] z-20 ${className}`}>
+    {text}
+  </div>
+);
+
+/* ---------------------------------------------------------------------
+   Stapled snapshot — the one-time, session-only photo taken at the end
+   of the review flow. It is NEVER written to Firestore (privacy): it
+   only ever comes from the fresh in-memory `reviewData` handed down
+   right after a submission, which is plain React state in App.jsx with
+   no persistence. Refresh the page, or land on /chronicle any other
+   way, and `activeReview.photoURL` simply won't exist — so this quietly
+   renders nothing. It also never appears on the Memory Wall or in the
+   admin portal, since those all read from Firestore.
+--------------------------------------------------------------------- */
+const StapledPhoto = ({ src }) => (
+  <div className="absolute -top-2 -left-2 z-30 rotate-[-8deg] select-none pointer-events-none">
+    {/* Staple */}
+    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-8 h-[5px] bg-gradient-to-b from-gray-200 via-gray-400 to-gray-500 rounded-[1px] shadow-[0_1px_1px_rgba(0,0,0,0.5)] border border-gray-600/40 z-10" />
+    <div className="bg-white p-1.5 pb-3 shadow-[2px_5px_10px_rgba(0,0,0,0.35)] border border-black/10">
+      <img src={src} alt="your snapshot" className="w-16 h-14 object-cover block" />
+    </div>
+  </div>
+);
+
+const TextureOverlay = ({ type, color }) => {
+  if (type === 'dots') return <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill={color} opacity="0.3" /></pattern>;
+  if (type === 'lines') return <pattern id="lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke={color} strokeWidth="2" opacity="0.2" /></pattern>;
+  if (type === 'sprinkles') return <pattern id="sprinkles" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(15)" /><rect x="7" y="6" width="4" height="1.5" rx="0.5" fill={color} opacity="0.4" transform="rotate(-30)" /></pattern>;
+  return <pattern id="crumbs" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M2,2 Q3,1 4,3 T6,2" fill="none" stroke={color} strokeWidth="1.5" opacity="0.3" /></pattern>;
+};
+
+const Paperclip = ({ className }) => (
+  <div className={`absolute w-3 h-10 md:w-4 md:h-12 border-[2.5px] border-[#472C20]/70 rounded-full z-30 shadow-[2px_3px_5px_rgba(0,0,0,0.3)] bg-gradient-to-b from-gray-200 to-gray-400 ${className}`}>
+    <div className="absolute top-1 right-[2px] bottom-3 w-1.5 border-r-[2.5px] border-t-[2.5px] border-b-[2.5px] border-[#472C20]/70 rounded-r-full"></div>
+  </div>
+);
+
+// Delicate background textures injected into the white cards to stop them looking bland
+const CardTexture = () => (
+  <div 
+    className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
+    style={{ 
+      backgroundImage: 'radial-gradient(#5A2E25 1.5px, transparent 1.5px)', 
+      backgroundSize: '16px 16px', 
+      opacity: 0.04 
+    }} 
+  />
+);
+
+const GraphPaperTexture = () => (
+  <div 
+    className="absolute inset-0 pointer-events-none rounded-[inherit] z-0" 
+    style={{ 
+      backgroundImage: 'linear-gradient(rgba(90,46,37,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(90,46,37,0.06) 1px, transparent 1px)', 
+      backgroundSize: '20px 20px' 
+    }} 
+  />
+);
+
+// --- CLEAN VECTOR PIE CHART ---
+const ArtsyPieChart = ({ data, title, hoveredId, setHoveredVibe }) => {
+  let accumulatedAngle = -Math.PI / 2;
+  const radius = 100;
+  const center = 140; 
+
+  const slices = useMemo(() => {
+    return data.map((item) => {
+      if (item.percentage === 0) return null;
+      const angleDelta = (item.percentage / 100) * (Math.PI * 2);
+      
+      const startAngle = accumulatedAngle;
+      const endAngle = accumulatedAngle + angleDelta;
+      accumulatedAngle = endAngle;
+
+      const x1 = center + radius * Math.cos(startAngle);
+      const y1 = center + radius * Math.sin(startAngle);
+      const x2 = center + radius * Math.cos(endAngle);
+      const y2 = center + radius * Math.sin(endAngle);
+      const largeArcFlag = item.percentage > 50 ? 1 : 0;
+
+      const pathData = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+      
+      const middleAngle = startAngle + (angleDelta / 2);
+      const textX = center + (radius * 0.65) * Math.cos(middleAngle);
+      const textY = center + (radius * 0.65) * Math.sin(middleAngle);
+
+      return { ...item, pathData, textX, textY };
+    }).filter(Boolean);
+  }, [data]);
+
+  return (
+    <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[30px] p-6 shadow-[8px_8px_0_#5A2E25] flex flex-col items-center relative group w-full transition-all hover:-translate-y-2 overflow-hidden">
+      <CardTexture />
+      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#D95D39] opacity-5 rounded-full pointer-events-none"></div>
+      
+      <WashiTape className="-top-3 left-6 rotate-[-3deg] bg-amber-200/50" />
+      <h4 className="font-serif font-black text-xl text-[#5A2E25] mb-4 tracking-tight border-b-2 border-dashed border-[#5A2E25]/15 pb-2 w-full text-center relative z-10">{title}</h4>
+      
+      <div className="relative w-full aspect-square max-w-[240px] z-10">
+        <svg viewBox="0 0 280 280" className="w-full h-full overflow-visible">
+          <defs>
+            <TextureOverlay type="dots" color="#7A5C58" />
+            <TextureOverlay type="lines" color="#7A5C58" />
+            <TextureOverlay type="sprinkles" color="#7A5C58" />
+            <TextureOverlay type="crumbs" color="#7A5C58" />
+          </defs>
+          <circle cx={center} cy={center} r={radius + 8} fill="none" stroke="#7A5C58" strokeWidth="2" strokeDasharray="5 5" className="opacity-30" />
+          
+          {slices.map((slice) => {
+            const isSelected = hoveredId === slice.id;
+            return (
+              <g key={slice.id} className="cursor-pointer">
+                <motion.path
+                  d={slice.pathData}
+                  fill={slice.color}
+                  stroke="#FAF7F2"
+                  strokeWidth="3"
+                  strokeLinejoin="round"
+                  animate={{ scale: isSelected ? 1.05 : 1, rotate: isSelected ? [0, 2, -2, 0] : 0 }}
+                  originX={`${center}px`}
+                  originY={`${center}px`}
+                  onMouseEnter={() => setHoveredVibe(slice.id)}
+                  onMouseLeave={() => setHoveredVibe(null)}
+                />
+                {slice.texture && (
+                  <path 
+                    d={slice.pathData} 
+                    fill={`url(#${slice.texture})`} 
+                    className="pointer-events-none mix-blend-multiply"
+                    style={{ transformOrigin: `${center}px ${center}px` }}
+                  />
+                )}
+                {slice.percentage > 5 && (
+                  <text
+                    x={slice.textX}
+                    y={slice.textY}
+                    fill="#5A2E25"
+                    fontSize="13"
+                    fontWeight="900"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="font-mono tracking-wide pointer-events-none select-none bg-white drop-shadow-md"
+                  >
+                    {slice.percentage}%
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="w-full mt-4 flex flex-wrap justify-center gap-2.5 text-[10px] font-mono font-bold relative z-10">
+        {data.map((item) => (
+          <div key={item.id} className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border transition-all ${hoveredId === item.id ? 'bg-[#5A2E25]/10 border-[#5A2E25]' : 'border-[#5A2E25]/10 bg-white/60'}`}>
+            <div className="w-2.5 h-2.5 rounded-full border border-[#5A2E25]/20 shadow-xs" style={{ backgroundColor: item.color }} />
+            <span className="text-[#5A2E25] truncate max-w-[100px]">{item.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- THE MAIN PAGE COMPONENT ---
+export default function ChronicleBoard({ reviewData }) {
+  const { avatar } = useAvatar(); 
+  const [memories, setMemories] = useState([]);
+  const [dbUserReview, setDbUserReview] = useState(null);
+  const [hoveredVibe, setHoveredVibe] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Animated Modal & Receipt Download Controls
+  const [showReceiptPopup, setShowReceiptPopup] = useState(true);
+  const [isCrumbling, setIsCrumbling] = useState(false);
+  const receiptRef = useRef(null);
+  const checkNumber = useMemo(() => Math.floor(Math.random() * 900000) + 100000, []);
+
+  // Use effect to forcibly hide the Global App.jsx Navbar while on this page
+  useEffect(() => {
+    const navElements = document.querySelectorAll('nav');
+    navElements.forEach(nav => nav.style.display = 'none');
+    
+    return () => {
+      navElements.forEach(nav => nav.style.display = ''); // Restore on unmount
+    };
+  }, []);
+
+  // Fetch from Firebase
+  useEffect(() => {
+    const unsubGlobal = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
+      const allMemories = snapshot.docs.map(doc => doc.data());
+      setMemories(allMemories);
+      setLoading(false);
+    });
+
+    const unsubUser = onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(1)), (snapshot) => {
+      if (!snapshot.empty) setDbUserReview(snapshot.docs[0].data());
+    });
+
+    return () => {
+      unsubGlobal();
+      unsubUser();
+    };
+  }, [avatar]);
+
+  // Note: dbUserReview comes straight from Firestore, where photoURL is
+  // never written — so it will never carry a photo. Only a fresh
+  // reviewData (passed in-memory right after submitting) can.
+  const activeReview = reviewData || dbUserReview;
+
+  // Stashed Reflection Whisper: Filter out the current user's review and grab the previous text review
+  const pastReview = useMemo(() => {
+    if (!memories || memories.length === 0) return null;
+    const validReviews = memories.filter(m => m.review && m.review.trim() !== "");
+    
+    if (activeReview && activeReview.createdAt) {
+      const filtered = validReviews.filter(m => m.createdAt !== activeReview.createdAt);
+      return filtered.length > 0 ? filtered[0] : null;
+    }
+    return validReviews.length > 0 ? validReviews[0] : null;
+  }, [memories, activeReview]);
+
+  // --- TOP 5 + OTHERS PROCESSING LOGIC ---
+  const processChartData = (fieldName, predefinedConfigMap, fallbackPalette) => {
+    if (memories.length === 0) {
+      return [{ id: 'empty', label: 'Awaiting Guests', color: '#E8E2D5', texture: 'dots', percentage: 100 }];
+    }
+
+    const counts = memories.reduce((acc, m) => {
+      const key = m[fieldName] || 'Unknown';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const top5 = sorted.slice(0, 5);
+    const others = sorted.slice(5);
+
+    let result = top5.map(([name, count], idx) => {
+      const conf = predefinedConfigMap ? predefinedConfigMap[name] : null;
+      return {
+        name, count,
+        color: conf ? conf.color : fallbackPalette[idx % fallbackPalette.length].color,
+        texture: conf ? conf.texture : fallbackPalette[idx % fallbackPalette.length].texture,
+        label: conf && conf.label ? conf.label : (name.length > 14 ? name.substring(0,11) + '...' : name)
+      };
+    });
+
+    if (others.length > 0) {
+      const othersCount = others.reduce((sum, item) => sum + item[1], 0);
+      result.push({ name: 'Others', count: othersCount, color: '#C7CEEA', texture: 'lines', label: 'Others (Mixed)' });
+    }
+
+    const total = result.reduce((sum, item) => sum + item.count, 0) || 1;
+    return result.map(item => ({ ...item, id: item.name, percentage: Math.round((item.count / total) * 100) }));
+  };
+
+  const vibeChartData = useMemo(() => processChartData('vibe', VIBE_CONFIGS, BRIGHT_PALETTE), [memories]);
+  const dishChartData = useMemo(() => processChartData('dish', null, BRIGHT_PALETTE), [memories]);
+  const purposeChartData = useMemo(() => processChartData('purpose', PURPOSE_CONFIGS, BRIGHT_PALETTE), [memories]);
+
+  // Compute ACTUAL Satisfaction Index Over Time
+  const satisfactionTrendPoints = useMemo(() => {
+    if (memories.length === 0) return [1,2,3,4,5].map(i => ({ week: `Pt ${i}`, index: 100 }));
+
+    const sorted = [...memories].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const numChunks = 5;
+    const chunkSize = Math.max(1, Math.ceil(sorted.length / numChunks));
+    const points = [];
+
+    for (let i = 0; i < numChunks; i++) {
+      const chunk = sorted.slice(i * chunkSize, (i + 1) * chunkSize);
+      if (chunk.length === 0) {
+        points.push({ week: `Pt ${i + 1}`, index: points.length > 0 ? points[points.length - 1].index : 100 });
+        continue;
+      }
+      const sumRatings = chunk.reduce((sum, m) => sum + (m.rating || 4), 0);
+      const maxPossible = chunk.length * 4; 
+      const avgSatisfaction = Math.round((sumRatings / maxPossible) * 100);
+      points.push({ week: `Pt ${i + 1}`, index: avgSatisfaction });
+    }
+    return points;
+  }, [memories]);
+
+  const dominantVibe = useMemo(() => {
+    if (!vibeChartData || vibeChartData.length === 0 || vibeChartData[0].id === 'empty') return 'Main Character Energy';
+    return vibeChartData.reduce((prev, current) => (prev.percentage > current.percentage) ? prev : current)?.label || 'Main Character Energy';
+  }, [vibeChartData]);
+
+  // --- ACTIONS ---
+  const handleCrumbleAnimation = () => {
+    setIsCrumbling(true);
+    setTimeout(() => setShowReceiptPopup(false), 950); 
+  };
+
+  const handleDownloadReceipt = async () => {
+    if (receiptRef.current) {
+      try {
+        const canvas = await html2canvas(receiptRef.current, { scale: 2, backgroundColor: null });
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = `DumbleDoor_Receipt_${checkNumber}.png`;
+        link.click();
+      } catch (err) {
+        console.error("Failed to download receipt", err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#130B09] font-mono text-xs font-black uppercase text-[#D95D39]">
+        <Activity size={32} className="animate-spin mb-3 text-[#D95D39]" /> Baking the data...
+      </div>
+    );
+  }
+
+  const paperNoise = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E")`;
+
+  // Safely extract points for the SVG path to prevent crashes
+  const pt0 = satisfactionTrendPoints[0]?.index ?? 100;
+  const pt1 = satisfactionTrendPoints[1]?.index ?? 100;
+  const pt2 = satisfactionTrendPoints[2]?.index ?? 100;
+  const pt3 = satisfactionTrendPoints[3]?.index ?? 100;
+  const pt4 = satisfactionTrendPoints[4]?.index ?? 100;
+
+  const areaPath = `M 25 150 L 25 ${150 - (pt0 * 1.3)} L 137.5 ${150 - (pt1 * 1.3)} L 250 ${150 - (pt2 * 1.3)} L 362.5 ${150 - (pt3 * 1.3)} L 475 ${150 - (pt4 * 1.3)} L 475 150 Z`;
+
+  return (
+    <div className="w-full min-h-screen bg-[#150A08] text-[#FDE4CE] py-10 px-4 md:px-8 relative overflow-hidden flex flex-col items-center font-sans">
+      
+      {/* RICH RED/ORANGE/BLACK BACKGROUND ENGINE */}
+      <div className="absolute inset-0 bg-[#150A08] z-0 pointer-events-none overflow-hidden">
+        {/* Soft, warm blurred orbs floating slowly in the background */}
+        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15], rotate: [0, 45, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#8C271E] rounded-full blur-[140px]" />
+        <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, -30, 0] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute bottom-[-10%] right-[-20%] w-[70vw] h-[70vw] bg-[#D95D39] rounded-full blur-[160px]" />
+        
+        {/* Intricate orange-tinted architectural grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(217,93,57,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(217,93,57,0.06)_1px,transparent_1px)] bg-[size:32px_32px]" />
+      </div>
+
+      <FloatingDoodle char="☕" className="top-[10%] left-[8%]" delay={0.5} />
+      <FloatingDoodle char="🤎" className="top-[35%] right-[5%]" delay={1.2} />
+      <FloatingDoodle char="🖋️" className="bottom-[18%] left-[4%]" delay={2.1} />
+      <FloatingDoodle char="✨" className="top-24 right-1/4 animate-pulse" />
+      <FloatingDoodle char="🥨" className="bottom-[8%] right-[15%]" delay={1.8} />
+
+      <AnimatePresence>
+        {showReceiptPopup && activeReview && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-[#150A08]/85 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+            <motion.div
+              animate={isCrumbling ? {
+                scale: [1, 0.7, 0.3, 0], rotate: [0, 45, 180, 360],
+                x: [0, -50, 150, window.innerWidth > 768 ? 400 : 100], y: [0, -80, 200, 500],
+                borderRadius: ["0px", "40px", "100px", "100px"], filter: ["blur(0px)", "blur(1px)", "blur(4px)", "blur(10px)"]
+              } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.9, ease: "easeInOut" }} className="relative shadow-2xl max-w-sm w-full"
+            >
+              
+              {/* Capture Wrapper — includes the stapled snapshot (if any) so the
+                  downloaded PNG shows the receipt exactly as pinned together.
+                  See StapledPhoto above for why the photo may or may not exist. */}
+              <div ref={receiptRef} className="relative w-[80%] mx-auto pt-8 pl-5 pb-1">
+                {activeReview?.photoURL && <StapledPhoto src={activeReview.photoURL} />}
+
+                <div className="w-full bg-[#fbd8c9] relative text-[#173e87] flex flex-col font-sans select-none overflow-hidden border-[4px] border-[#5A2E25] rounded-lg">
+                  <div className="absolute inset-0 pointer-events-none z-[100] opacity-[0.25] mix-blend-multiply" style={{ backgroundImage: paperNoise }}></div>
+                  
+                  <div className="p-4 flex flex-col pt-6 relative border-b-[3px] border-[#2B3A67]">
+                    <div className="text-right font-mono text-xl text-[#df3131] mb-1 tracking-widest opacity-80" style={{ transform: 'scaleY(1.2)' }}>{checkNumber}</div>
+                    <h2 className="font-cursive text-5xl text-center font-bold tracking-wider text-[#2B3A67] my-3 transform rotate-[-2deg]">Thank You!</h2>
+                    <p className="text-[8px] text-center font-mono font-black tracking-widest uppercase text-[#2B3A67] mb-2">Your patronage is appreciated</p>
+                  </div>
+                  
+                  <div className="w-full flex-1 flex flex-col bg-[#EFE0CB] min-h-[140px]" style={{ backgroundImage: 'linear-gradient(180deg, #2B3A67 2px, transparent 2px)', backgroundSize: '100% 46px', backgroundPosition: '0 44px' }}>
+                    <div className="pt-2 flex-1">
+                      {activeReview?.items && activeReview.items.map((item, idx) => (
+                        <div key={idx} className="h-[46px] flex justify-center items-end pb-2 px-6">
+                          <span className="font-cursive text-3xl text-[#df3131] font-bold tracking-wider truncate">● {item}</span>
+                        </div>
+                      ))}
+                      <div className="h-[46px] flex justify-center items-end pb-2 px-6">
+                        <span className="font-cursive text-4xl text-[#df3131] font-bold transform -rotate-12">:)</span>
+                      </div>
+                    </div>
+
+                    <div className="h-[46px] flex justify-between items-end pb-2 px-6 border-t-[3px] border-dashed border-[#2B3A67] mt-auto w-full bg-[#EFE0CB]">
+                      <span className="font-mono text-[10px] font-black uppercase text-[#2B3A67]">Signature</span>
+                      <span className="font-cursive text-2xl text-[#df3131] font-bold transform -rotate-3">- {activeReview?.name || 'guest'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Interaction Buttons Layout */}
+              <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex gap-3 z-40 w-max">
+                <button onClick={handleDownloadReceipt} className="bg-[#FAF7F2] text-[#5A2E25] font-mono font-black text-[10px] md:text-xs uppercase tracking-widest px-6 py-3.5 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-full hover:translate-y-0.5 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap">
+                  Save 📥
+                </button>
+                <button onClick={handleCrumbleAnimation} className="bg-[#D95D39] text-white font-mono font-black text-[10px] md:text-xs uppercase tracking-widest px-6 py-3.5 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-full hover:translate-y-0.5 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap">
+                  Crumble 🗑️
+                </button>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="w-full max-w-[1300px] z-10 flex justify-between items-center mb-8 relative">
+        <BackToCafeButton />
+      </div>
+
+      {/* --- DASHBOARD LOG LAYOUT GRID --- */}
+      <div className="max-w-[1300px] w-full z-10 space-y-10 mt-4">
+        
+        {/* Title Ledger Section */}
+        <div className="bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+          <CardTexture />
+          <GraphPaperTexture />
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-[#D95D39] rounded-full opacity-10 blur-2xl pointer-events-none"></div>
+          
+          <WashiTape className="-top-3 left-16 rotate-[2deg] bg-amber-200/50" />
+          <StampSticker className="top-4 right-1/2 md:right-1/4 rotate-12" />
+
+          <div className="text-center md:text-left space-y-2 w-full md:w-auto relative z-10 bg-white/60 md:bg-transparent p-4 md:p-0 rounded-2xl md:rounded-none backdrop-blur-sm md:backdrop-blur-none border-2 border-[#5A2E25]/10 md:border-none shadow-sm md:shadow-none">
+            <span className="bg-[#FFDAC1] border-[2px] border-[#5A2E25] text-[10px] font-mono font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-[#5A2E25] inline-block shadow-[2px_2px_0_#5A2E25]">Community Ledger Metrics</span>
+            <h1 className="text-5xl md:text-7xl font-serif font-black tracking-tighter text-[#5A2E25] pt-2">The Experience</h1>
+          </div>
+          
+          <div className="bg-[#FAF7F2] border-[3px] border-[#5A2E25] rounded-2xl p-5 w-full md:max-w-sm text-center md:text-right shadow-[4px_4px_0_#5A2E25] transform rotate-1 relative z-10">
+            <span className="text-[11px] font-mono font-black block text-[#D95D39] uppercase tracking-wider mb-2">Atmosphere Pulse</span>
+            <span className="text-lg font-serif italic font-black text-[#5A2E25]">
+              {vibeChartData.find(v => v.label === dominantVibe)?.percentage || 0}% Patrons share the "{dominantVibe}" vibe space.
+            </span>
+          </div>
+        </div>
+
+        {/* TOP ROW: THE 3 INTERACTIVE CLEAN PIE CHARTS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <ArtsyPieChart data={vibeChartData} title="🌟 Patrons Mood Vibe" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+          <ArtsyPieChart data={dishChartData} title="🍰 Most Chosen Items" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+          <ArtsyPieChart data={purposeChartData} title="🥧 Why They Visit Us" hoveredId={hoveredVibe} setHoveredVibe={setHoveredVibe} />
+        </div>
+
+        {/* BOTTOM ROW: SATISFACTION TREND GRAPH & STASHED SNAPSHOTS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-16">
+          
+          {/* Satisfaction Index Vector Area Chart */}
+          <div className="lg:col-span-7 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between relative min-h-[380px] overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+            <CardTexture />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_top_right,#D95D39_0%,transparent_70%)] opacity-10 pointer-events-none"></div>
+            
+            <Paperclip className="-top-4 right-12 rotate-[15deg]" />
+            <WashiTape className="bottom-4 -left-4 rotate-[-15deg] bg-blue-200/40" />
+
+            <div className="relative z-10 bg-white/60 p-3 rounded-xl border border-[#5A2E25]/10 w-fit backdrop-blur-sm shadow-sm">
+              <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#D95D39] mb-1 block">Data-Driven Trend Analysis</span>
+              <h3 className="font-serif font-black text-3xl md:text-4xl text-[#5A2E25] tracking-tight">Guest Satisfaction Trend</h3>
+            </div>
+
+            <div className="w-full h-56 relative mt-6 border-b-4 border-l-4 border-[#5A2E25] px-2 flex items-end justify-center rounded-bl-lg z-10 bg-white/40 shadow-inner">
+              <GraphPaperTexture />
+              <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible max-w-full">
+                <defs><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FFB7B2" stopOpacity="0.6" /><stop offset="100%" stopColor="#FFB7B2" stopOpacity="0.05" /></linearGradient></defs>
+                <line x1="0" y1="37.5" x2="500" y2="37.5" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                <line x1="0" y1="75" x2="500" y2="75" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                <line x1="0" y1="112.5" x2="500" y2="112.5" stroke="#5A2E25" strokeWidth="2" strokeDasharray="6 6" opacity="0.1" />
+                <path d={areaPath} fill="url(#areaGradient)" />
+                <path d={`M 25 ${150 - (pt0 * 1.3)} L 137.5 ${150 - (pt1 * 1.3)} L 250 ${150 - (pt2 * 1.3)} L 362.5 ${150 - (pt3 * 1.3)} L 475 ${150 - (pt4 * 1.3)}`} fill="none" stroke="#D95D39" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                {satisfactionTrendPoints.map((pt, idx) => {
+                  const xCoord = 25 + idx * 112.5; const ptIndex = pt?.index ?? 100; const yCoord = 150 - (ptIndex * 1.3);
+                  return (
+                    <g key={idx} className="cursor-pointer group">
+                      <circle cx={xCoord} cy={yCoord} r="8" fill="#FAF7F2" stroke="#5A2E25" strokeWidth="4" />
+                      <circle cx={xCoord} cy={yCoord} r="4" fill="#D95D39" />
+                      <g className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <rect x={xCoord - 20} y={yCoord - 35} width="40" height="20" rx="4" fill="#5A2E25" />
+                        <text x={xCoord} y={yCoord - 24} fill="#FFF" fontSize="12" fontWeight="bold" fontFamily="monospace" textAnchor="middle">{ptIndex}%</text>
+                      </g>
+                    </g>
+                  );
+                })}
+              </svg>
+              <div className="absolute inset-x-0 bottom-[-32px] flex justify-between px-2 font-serif text-[14px] font-black text-[#5A2E25]">{satisfactionTrendPoints.map((pt, idx) => <span key={idx}>{pt?.week || `Pt ${idx}`}</span>)}</div>
+            </div>
+          </div>
+
+          {/* Stashed Scrapbook commentary */}
+          <div className="lg:col-span-5 bg-[#FAF7F2] border-[4px] border-[#5A2E25] rounded-[35px] p-8 shadow-[8px_8px_0_#5A2E25] flex flex-col justify-between overflow-hidden relative group hover:-translate-y-1 transition-transform duration-300">
+            <CardTexture />
+            <WashiTape className="-top-3 right-8 rotate-[-5deg] bg-blue-200/50" />
+            <div className="absolute -top-6 -left-6 w-24 h-24 border-[3px] border-[#5A2E25]/10 rounded-full pointer-events-none"></div>
+
+            <div className="relative z-10">
+              <div className="flex justify-between items-center border-b-2 border-dashed border-[#5A2E25]/20 pb-4 mb-6">
+                <h4 className="font-serif font-black text-2xl text-[#5A2E25] flex items-center gap-2">
+                  <span>🍓</span> Stashed Reflection Whisper
+                </h4>
+              </div>
+
+              <div className="space-y-4 relative mt-2">
+                {pastReview ? (
+                  <>
+                    <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] font-bold px-2">
+                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#5A2E25]">👤 {pastReview.name || 'Cozy Patron'}</span>
+                      <span className="bg-[#FAF7F2] border-[2px] border-[#5A2E25] px-3 py-1 rounded-full shadow-[2px_2px_0_#5A2E25] text-[#D95D39]">{pastReview.vibe || '☕ Coffee & Conversations'}</span>
+                    </div>
+
+                    <div className="relative mt-4">
+                      {/* Drop shadow back layer to make it look like a pinned note */}
+                      <div className="absolute -inset-1 bg-black/5 transform rotate-2 rounded-2xl"></div>
+                      
+                      <div className="bg-[#FFF8E7] p-6 border-[3px] border-[#5A2E25] shadow-[4px_4px_0_#5A2E25] rounded-2xl italic font-serif text-lg text-[#5A2E25] leading-relaxed min-h-[140px] flex items-center relative z-10 transform -rotate-1">
+                        <WashiTape className="-top-3 left-1/2 -translate-x-1/2 rotate-[2deg] bg-rose-200/60 w-16" />
+                        <span className="absolute bottom-2 right-3 text-3xl opacity-20">✍️</span>
+                        "{pastReview.review}"
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-[#5A2E25]/50 font-serif italic py-10 text-center">No past text reflections stashed away in the archive yet.</p>
+                )}
+              </div>
+            </div>
+
+            <p className="font-mono text-[10px] font-bold opacity-40 uppercase tracking-widest text-center mt-8 relative z-10">
+              • authentic guest diary logs •
+            </p>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
@@ -6992,6 +7021,215 @@ const OwnerPortal = () => {
 export default OwnerPortal;
 </file>
 
+<file path="src/App.jsx">
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminLogin from './pages/AdminLogin';
+
+// --- CONTEXT & PERSISTENCE ---
+import { AvatarProvider } from './context/AvatarContext';
+import { CartProvider } from './context/CartContext'; 
+import GlobalCompanion from './components/GlobalCompanion';
+import VinylPlayer from './components/VinylPlayer';
+
+// --- ANALYTICS ---
+import { db } from './firebase';
+import { doc, setDoc, increment } from 'firebase/firestore';
+
+// --- MAIN PAGES ---
+import LandingPage from './pages/LandingPage';
+import AvatarCreatorPage from './pages/AvatarCreatorPage';
+import Home from './pages/Home';
+import ReviewWizard from './pages/ReviewWizard';
+import ThankYou from './pages/ThankYou';
+import MemoryWall from './pages/MemoryWall';
+import MenuBoard from './pages/MenuBoard';
+import ChronicleBoard from './pages/ChronicleBoard';
+import GameLeaderboardBoard from './pages/GameLeaderboardBoard';
+import Directory from './pages/Directory';
+import OwnerPortal from './pages/OwnerPortal';
+import Games from './pages/Games';
+import HueHunt from './pages/HueHunt';
+import Icebreakers from './pages/IceBreakers';
+import GlobalGrid from './components/GlobalGrid';
+import { THEMES, DEFAULT_MEMORIES } from './constants/data';
+
+// --- VISIT TRACKING HELPER ---
+// Logs one visit per browser tab session (sessionStorage-gated so page
+// navigation within the SPA doesn't inflate the count) to two docs:
+//   analytics/summary        -> all-time total
+//   analytics/daily_YYYY-MM-DD -> per-day breakdown for the trend chart
+const trackSiteVisit = async () => {
+  try {
+    if (sessionStorage.getItem('dumble_visit_tracked')) return;
+    sessionStorage.setItem('dumble_visit_tracked', '1');
+
+    const todayKey = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    await Promise.all([
+      setDoc(doc(db, 'analytics', 'summary'), { totalVisits: increment(1) }, { merge: true }),
+      setDoc(doc(db, 'analytics', `daily_${todayKey}`), { date: todayKey, visits: increment(1) }, { merge: true })
+    ]);
+  } catch (err) {
+    // Never let analytics failures affect the actual site experience
+    console.error('Visit tracking failed:', err);
+  }
+};
+
+function MainLayoutContent() {
+  const [memories, setMemories] = useState([]);
+  const [reviewData, setReviewData] = useState(null);
+  const [theme, setTheme] = useState(THEMES.cream);
+  const [twin, setTwin] = useState(null);
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMemories(DEFAULT_MEMORIES);
+  }, []);
+
+  // Fire once per session, on first mount of the app shell
+  useEffect(() => {
+    trackSiteVisit();
+  }, []);
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
+    else if (path === '/menu') setTheme(THEMES.forest);
+    else if (path === '/chronicle') setTheme({ bg: '#FFF0F5', text: '#7A5C58', border: 'transparent' });
+    else if (path === '/wall') setTheme(THEMES.navy);
+    else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
+    else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
+    else if (path === '/review') setTheme(THEMES.rose);
+  }, [location.pathname]);
+
+  const handleSaveMemory = async (newMemory) => {
+    const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
+    if (match) setTwin(match);
+    const memoryToSave = { ...newMemory, createdAt: Date.now() };
+    setReviewData(memoryToSave);
+  };
+
+  const handleNavigate = (page, newTheme = THEMES.cream) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTheme(newTheme);
+    
+    if (page === 'welcome') navigate('/');
+    else if (page === 'avatar-studio') navigate('/avatar-studio');
+    else if (page === 'home') navigate('/cafe');
+    else if (page === 'hue-hunt') navigate('/games/hue-hunt');
+    else if (page === 'icebreakers') navigate('/games/icebreakers');
+    else if (page === 'memory-wall' || page === 'wall') navigate('/wall');
+    else if (page === 'chronicles' || page === 'chronicle') {
+      navigate('/chronicle', { state: { theme: THEMES.sand } });
+    } 
+    else navigate(`/${page}`);
+  };
+
+  const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
+  const isCafeRoute = location.pathname === '/cafe';
+
+  const layoutBackgroundStyle = isCafeRoute 
+    ? {
+        backgroundColor: '#FDFBF7',
+        backgroundImage: `
+          linear-gradient(transparent 95%, #E8E2D5 95%),
+          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E")
+        `,
+        backgroundSize: '100% 32px, 150px 150px',
+      }
+    : {};
+
+  return (
+    <motion.div 
+      style={{
+        // NOTE: background/color used to be driven by framer-motion's
+        // `animate` prop, which interpolates asynchronously. On a fresh
+        // client-side nav the very first paint could land before that
+        // interpolation kicked in, briefly showing the old (often
+        // cream/white) color instead of the new theme. Setting it
+        // directly via `style` makes it correct on every single render,
+        // with a plain CSS transition standing in for the fade.
+        ...layoutBackgroundStyle,
+        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg,
+        color: isOnboarding ? '#472C20' : theme.text,
+        transition: 'background-color 0.5s ease, color 0.5s ease'
+      }}
+      className="min-h-screen font-sans selection:bg-white/30 relative overflow-x-hidden select-none flex flex-col items-stretch"
+    >
+      {!isCafeRoute && <GlobalGrid />}
+      {!isOnboarding && <VinylPlayer theme={theme} />}
+      <GlobalCompanion />
+
+      {!isOnboarding && (
+        <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
+          <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+            <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
+              <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
+                🚪
+              </div>
+              <div>
+                <h1 className="font-serif font-black text-xl tracking-tight leading-none" style={{ color: theme.text }}>Dumble' Door</h1>
+                <p className="font-cursive text-sm opacity-80 mt-0.5" style={{ color: theme.text }}>Jagda, Rourkela</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 items-center">
+              {location.pathname !== '/menu' && (
+                <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.text, color: theme.text }} className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all">
+                  Menu
+                </button>
+              )}
+              <button onClick={() => handleNavigate('welcome')} style={{ borderColor: theme.text, color: theme.text }} className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all">
+                Log Out
+              </button>
+            </div>
+          </div>
+        </nav>
+      )}
+
+      <main className="flex-1 w-full relative z-10 flex flex-col items-stretch">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
+            <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
+            <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
+            <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
+            <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
+            <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
+            <Route path="/chronicle" element={<ChronicleBoard reviewData={reviewData} />} />
+            <Route path="/game-leaderboard" element={<GameLeaderboardBoard />} />
+            <Route path="/directory" element={<Directory theme={theme} onNavigate={handleNavigate} />} />
+            <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
+            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
+            <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
+            <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
+    </motion.div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <CartProvider>
+        <AvatarProvider>
+          <MainLayoutContent />
+        </AvatarProvider>
+      </CartProvider>
+    </Router>
+  );
+}
+</file>
+
 <file path="src/pages/ReviewWizard.jsx">
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7000,6 +7238,25 @@ import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+
+/* ---------------------------------------------------------------------
+   Mobile-only floating ambience — bottom-to-top infinite drift, same
+   technique as MemoryWall.jsx's FloatingPaper. The desktop parallax desk
+   scene (mug/cat/planner/etc) is sized and positioned for wide viewports
+   and gets hidden below `lg`; this is what fills that space on phones so
+   the page doesn't feel bare and loses the "living journal" feel.
+--------------------------------------------------------------------- */
+const FloatingUpDoodle = ({ char, left, duration, delay }) => (
+  <motion.div
+    initial={{ y: '115%', opacity: 0 }}
+    animate={{ y: '-15%', opacity: [0, 0.55, 0.55, 0] }}
+    transition={{ duration, repeat: Infinity, delay, ease: 'linear' }}
+    className="absolute text-3xl select-none"
+    style={{ left }}
+  >
+    {char}
+  </motion.div>
+);
 
 export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setTwin }) {
   const { avatar } = useAvatar();
@@ -7156,8 +7413,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       vibe: vibe || '☕ Coffee & Conversations',
       review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-      createdAt: Date.now(),
-      photoURL: capturedImage || null
+      createdAt: Date.now()
+      // NOTE: the captured snapshot is intentionally NOT included here.
+      // It never gets written to Firestore — for privacy it only ever
+      // lives in local React state for this one session (see
+      // executeFinalization below), so it can never surface on the
+      // Memory Wall or in the admin portal.
     };
 
     try {
@@ -7172,8 +7433,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const executeFinalization = async () => {
     setIsSubmitting(true);
     const savedResult = await saveToDatabase();
-    
-    const finalMemory = savedResult || {
+
+    const baseMemory = savedResult || {
       rating: rating || 3,
       purpose: purpose || 'escape',
       items: selectedItems.length > 0 ? selectedItems : ['Cozy Brew'],
@@ -7182,9 +7443,14 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       vibe: vibe || '☕ Coffee & Conversations',
       review: review || '',
       name: anonymousName && anonymousName.trim() !== "" ? anonymousName.trim() : 'Anonymous',
-      createdAt: Date.now(),
-      photoURL: capturedImage || null
+      createdAt: Date.now()
     };
+
+    // The photo is attached ONLY here — to the local, in-memory object used
+    // for this one-time receipt/chronicle view. It's never persisted, so a
+    // page refresh (or landing on /chronicle any other way) means it's
+    // simply gone, by design.
+    const finalMemory = { ...baseMemory, photoURL: capturedImage || null };
 
     onComplete(finalMemory);
     onNavigate('chronicle');
@@ -7243,9 +7509,9 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
       `}</style>
 
-      {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER ============ */}
+      {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER (desktop/tablet only) ============ */}
       <div
-        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        className="hidden lg:block absolute inset-0 pointer-events-none z-0 overflow-hidden"
         style={{ transform: `translate(${parallax.x * 8}px, ${parallax.y * 6}px)`, transition: 'transform 0.5s ease-out' }}
       >
         {/* Cozy Mug Top & Saucer */}
@@ -7331,10 +7597,37 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         </div>
       </div>
 
+      {/* ============ MOBILE-ONLY: floating-upward ambience ============
+          Desktop desk scene is sized for wide viewports and is hidden
+          below `lg`. This fills that gap on phones with continuously
+          drifting doodles (bottom → top, looping) so the page never
+          feels empty and the "cozy desk" mood carries over. */}
+      <div className="lg:hidden absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <FloatingUpDoodle char="☕" left="6%" duration={13} delay={0} />
+        <FloatingUpDoodle char="🍪" left="20%" duration={17} delay={3.5} />
+        <FloatingUpDoodle char="✨" left="36%" duration={11} delay={1.2} />
+        <FloatingUpDoodle char="🐾" left="52%" duration={19} delay={6} />
+        <FloatingUpDoodle char="🌿" left="68%" duration={15} delay={2.4} />
+        <FloatingUpDoodle char="📖" left="82%" duration={21} delay={8} />
+        <FloatingUpDoodle char="🎀" left="14%" duration={18} delay={10} />
+        <FloatingUpDoodle char="🕰️" left="62%" duration={14} delay={4.6} />
+        <FloatingUpDoodle char="☁️" left="90%" duration={20} delay={0.8} />
+      </div>
+
       {/* ================= TWO-PAGE SCRAPBOOK JOURNAL HARDCOVER ================= */}
       <div className="w-full max-w-4xl bg-[#48533C] rounded-[24px] p-6 md:p-8 relative journal-shadow border border-[#536046] flex flex-col lg:flex-row gap-8 items-stretch z-10">
+
+        {/* Mobile-only top spine/ribbon — the side ribbon below is desktop-only
+            (hidden lg:block), so this keeps the "journal" read clear on phones */}
+        <div className="lg:hidden w-full flex items-center justify-center gap-2 -mt-1 mb-1">
+          <div className="flex-1 h-2.5 bg-[#B05B43] opacity-90 rounded-full shadow-inner" />
+          <div className="w-6 h-6 bg-[#E2A752] rounded-full border border-[#9C6C2E] flex items-center justify-center shadow-md shrink-0">
+            <Heart size={11} className="text-[#562215]" fill="currentColor" />
+          </div>
+          <div className="flex-1 h-2.5 bg-[#B05B43] opacity-90 rounded-full shadow-inner" />
+        </div>
         
-        {/* Ribbon Bookmark - Terracotta */}
+        {/* Ribbon Bookmark - Terracotta (desktop/tablet only, unchanged) */}
         <div className="absolute right-12 top-0 bottom-0 w-3 bg-[#B05B43] opacity-90 z-40 rounded-sm shadow-inner pointer-events-none hidden lg:block">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#E2A752] rounded-full border border-[#9C6C2E] flex items-center justify-center shadow-md">
             <Heart size={10} className="text-[#562215]" fill="currentColor" />
@@ -7342,7 +7635,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         </div>
 
         {/* LEFT PAGE: THE INTEGRATED FUNCTIONAL REFLECTION JOURNAL */}
-        <div className="flex-1 bg-[#FAF2DC] rounded-2xl p-6 md:p-8 flex flex-col justify-between relative shadow-inner border border-[#E0D3B4]">
+        <div className="flex-1 bg-[#FAF2DC] rounded-2xl p-6 md:p-8 flex flex-col justify-between relative shadow-xl lg:shadow-inner border-2 lg:border border-[#E0D3B4]">
           {/* Subtle lined journal paper look */}
           <div 
             className="absolute inset-0 opacity-[0.06] pointer-events-none rounded-2xl" 
@@ -7635,6 +7928,9 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                 {step === 9 && (
                   <div className="space-y-4 text-center">
                     <h2 className="font-hand text-2xl font-bold text-[#534538]">Capture your snapshot memory</h2>
+                    <p className="text-[11px] font-bold text-[#534538]/60 italic -mt-2">
+                      📌 just for your receipt — stays on this device only, never saved or shared, poof after you leave~
+                    </p>
                     
                     <div className="w-full rounded-2xl p-3 bg-gradient-to-br from-[#DFD4B7] to-[#B09F7A] border-2 border-[#534538] flex flex-col md:flex-row gap-3 items-center">
                       <div className="w-full md:w-[60%] aspect-[4/3] rounded-xl p-1.5 bg-[#F3ECDB] border border-[#534538] flex flex-col">
@@ -7755,215 +8051,6 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
 
       <canvas ref={canvasRef} className="hidden" />
     </div>
-  );
-}
-</file>
-
-<file path="src/App.jsx">
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminLogin from './pages/AdminLogin';
-
-// --- CONTEXT & PERSISTENCE ---
-import { AvatarProvider } from './context/AvatarContext';
-import { CartProvider } from './context/CartContext'; 
-import GlobalCompanion from './components/GlobalCompanion';
-import VinylPlayer from './components/VinylPlayer';
-
-// --- ANALYTICS ---
-import { db } from './firebase';
-import { doc, setDoc, increment } from 'firebase/firestore';
-
-// --- MAIN PAGES ---
-import LandingPage from './pages/LandingPage';
-import AvatarCreatorPage from './pages/AvatarCreatorPage';
-import Home from './pages/Home';
-import ReviewWizard from './pages/ReviewWizard';
-import ThankYou from './pages/ThankYou';
-import MemoryWall from './pages/MemoryWall';
-import MenuBoard from './pages/MenuBoard';
-import ChronicleBoard from './pages/ChronicleBoard';
-import GameLeaderboardBoard from './pages/GameLeaderboardBoard';
-import Directory from './pages/Directory';
-import OwnerPortal from './pages/OwnerPortal';
-import Games from './pages/Games';
-import HueHunt from './pages/HueHunt';
-import Icebreakers from './pages/IceBreakers';
-import GlobalGrid from './components/GlobalGrid';
-import { THEMES, DEFAULT_MEMORIES } from './constants/data';
-
-// --- VISIT TRACKING HELPER ---
-// Logs one visit per browser tab session (sessionStorage-gated so page
-// navigation within the SPA doesn't inflate the count) to two docs:
-//   analytics/summary        -> all-time total
-//   analytics/daily_YYYY-MM-DD -> per-day breakdown for the trend chart
-const trackSiteVisit = async () => {
-  try {
-    if (sessionStorage.getItem('dumble_visit_tracked')) return;
-    sessionStorage.setItem('dumble_visit_tracked', '1');
-
-    const todayKey = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-
-    await Promise.all([
-      setDoc(doc(db, 'analytics', 'summary'), { totalVisits: increment(1) }, { merge: true }),
-      setDoc(doc(db, 'analytics', `daily_${todayKey}`), { date: todayKey, visits: increment(1) }, { merge: true })
-    ]);
-  } catch (err) {
-    // Never let analytics failures affect the actual site experience
-    console.error('Visit tracking failed:', err);
-  }
-};
-
-function MainLayoutContent() {
-  const [memories, setMemories] = useState([]);
-  const [reviewData, setReviewData] = useState(null);
-  const [theme, setTheme] = useState(THEMES.cream);
-  const [twin, setTwin] = useState(null);
-  
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    setMemories(DEFAULT_MEMORIES);
-  }, []);
-
-  // Fire once per session, on first mount of the app shell
-  useEffect(() => {
-    trackSiteVisit();
-  }, []);
-
-  useEffect(() => {
-    const path = location.pathname;
-    if (path === '/cafe' || path === '/games' || path === '/') setTheme(THEMES.cream);
-    else if (path === '/menu') setTheme(THEMES.forest);
-    else if (path === '/chronicle') setTheme({ bg: '#FFF0F5', text: '#7A5C58', border: 'transparent' });
-    else if (path === '/wall') setTheme(THEMES.navy);
-    else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
-    else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
-    else if (path === '/review') setTheme(THEMES.rose);
-  }, [location.pathname]);
-
-  const handleSaveMemory = async (newMemory) => {
-    const match = memories.find(m => m.vibe === newMemory.vibe || m.dish === newMemory.dish);
-    if (match) setTwin(match);
-    const memoryToSave = { ...newMemory, createdAt: Date.now() };
-    setReviewData(memoryToSave);
-  };
-
-  const handleNavigate = (page, newTheme = THEMES.cream) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTheme(newTheme);
-    
-    if (page === 'welcome') navigate('/');
-    else if (page === 'avatar-studio') navigate('/avatar-studio');
-    else if (page === 'home') navigate('/cafe');
-    else if (page === 'hue-hunt') navigate('/games/hue-hunt');
-    else if (page === 'icebreakers') navigate('/games/icebreakers');
-    else if (page === 'memory-wall' || page === 'wall') navigate('/wall');
-    else if (page === 'chronicles' || page === 'chronicle') {
-      navigate('/chronicle', { state: { theme: THEMES.sand } });
-    } 
-    else navigate(`/${page}`);
-  };
-
-  const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
-  const isCafeRoute = location.pathname === '/cafe';
-
-  const layoutBackgroundStyle = isCafeRoute 
-    ? {
-        backgroundColor: '#FDFBF7',
-        backgroundImage: `
-          linear-gradient(transparent 95%, #E8E2D5 95%),
-          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E")
-        `,
-        backgroundSize: '100% 32px, 150px 150px',
-      }
-    : {};
-
-  return (
-    <motion.div 
-      style={{
-        // NOTE: background/color used to be driven by framer-motion's
-        // `animate` prop, which interpolates asynchronously. On a fresh
-        // client-side nav the very first paint could land before that
-        // interpolation kicked in, briefly showing the old (often
-        // cream/white) color instead of the new theme. Setting it
-        // directly via `style` makes it correct on every single render,
-        // with a plain CSS transition standing in for the fade.
-        ...layoutBackgroundStyle,
-        backgroundColor: isOnboarding ? '#FDFBF7' : theme.bg,
-        color: isOnboarding ? '#472C20' : theme.text,
-        transition: 'background-color 0.5s ease, color 0.5s ease'
-      }}
-      className="min-h-screen font-sans selection:bg-white/30 relative overflow-x-hidden select-none flex flex-col items-stretch"
-    >
-      {!isCafeRoute && <GlobalGrid />}
-      {!isOnboarding && <VinylPlayer theme={theme} />}
-      <GlobalCompanion />
-
-      {!isOnboarding && (
-        <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
-          <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
-            <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
-              <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
-                🚪
-              </div>
-              <div>
-                <h1 className="font-serif font-black text-xl tracking-tight leading-none" style={{ color: theme.text }}>Dumble' Door</h1>
-                <p className="font-cursive text-sm opacity-80 mt-0.5" style={{ color: theme.text }}>Jagda, Rourkela</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-3 items-center">
-              {location.pathname !== '/menu' && (
-                <button onClick={() => handleNavigate('menu', THEMES.forest)} style={{ borderColor: theme.text, color: theme.text }} className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all">
-                  Menu
-                </button>
-              )}
-              <button onClick={() => handleNavigate('welcome')} style={{ borderColor: theme.text, color: theme.text }} className="bg-white/80 backdrop-blur-sm border-2 px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_currentColor] hover:translate-y-[1px] hover:shadow-[1px_1px_0_currentColor] transition-all">
-                Log Out
-              </button>
-            </div>
-          </div>
-        </nav>
-      )}
-
-      <main className="flex-1 w-full relative z-10 flex flex-col items-stretch">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
-            <Route path="/avatar-studio" element={<AvatarCreatorPage onNavigate={handleNavigate} />} />
-            <Route path="/cafe" element={<Home onNavigate={handleNavigate} theme={theme} />} />
-            <Route path="/review" element={<ReviewWizard onComplete={handleSaveMemory} onNavigate={handleNavigate} setTheme={setTheme} theme={theme} twin={twin} setTwin={setTwin} />} />
-            <Route path="/thank-you" element={<ThankYou memories={memories} reviewData={reviewData} onNavigate={handleNavigate} theme={theme} />} />
-            <Route path="/wall" element={<MemoryWall memories={memories} theme={theme} />} />
-            <Route path="/menu" element={<MenuBoard setTheme={setTheme} theme={theme} />} />
-            <Route path="/chronicle" element={<ChronicleBoard reviewData={reviewData} />} />
-            <Route path="/game-leaderboard" element={<GameLeaderboardBoard />} />
-            <Route path="/directory" element={<Directory theme={theme} onNavigate={handleNavigate} />} />
-            <Route path="/owner" element={<ProtectedRoute><OwnerPortal /></ProtectedRoute>} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/games" element={<Games onNavigate={handleNavigate} />} />
-            <Route path="/games/hue-hunt" element={<HueHunt onNavigate={handleNavigate} />} />
-            <Route path="/games/icebreakers" element={<Icebreakers onNavigate={handleNavigate} />} />
-          </Routes>
-        </AnimatePresence>
-      </main>
-    </motion.div>
-  );
-}
-
-export default function App() {
-  return (
-    <Router>
-      <CartProvider>
-        <AvatarProvider>
-          <MainLayoutContent />
-        </AvatarProvider>
-      </CartProvider>
-    </Router>
   );
 }
 </file>

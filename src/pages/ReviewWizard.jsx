@@ -1,3 +1,4 @@
+// src/pages/ReviewWizard.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
@@ -5,6 +6,7 @@ import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import BackToCafeButton from '../components/BackToCafeButton';
 
 /* ---------------------------------------------------------------------
    Mobile-only floating ambience — bottom-to-top infinite drift, same
@@ -275,6 +277,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .live-steam path { animation: subtleSteam 3.5s ease-in-out infinite; }
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
       `}</style>
+
+      {/* Back to Cafe — this page hides the global top nav, so it needs
+          its own way back, same component/style used across the app. */}
+      <div className="absolute top-6 left-6 z-[60]">
+        <BackToCafeButton className="" />
+      </div>
 
       {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER (desktop/tablet only) ============ */}
       <div
