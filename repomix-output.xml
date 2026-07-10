@@ -4165,10 +4165,10 @@ export default Games;
 </file>
 
 <file path="src/pages/HueHunt.jsx">
+// src/pages/HueHunt.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, RotateCcw, Timer, Sparkles, HelpCircle } from 'lucide-react';
-import BackToCafeButton from '../components/BackToCafeButton';
+import { Camera, RotateCcw, Timer, Sparkles, HelpCircle, ArrowLeft } from 'lucide-react';
 
 // FIREBASE O2 SECURE COUPLING
 import { db } from '../firebase';
@@ -4283,6 +4283,46 @@ const FlowerStamp = ({ className = '' }) => (
     {/* Cancellation Postmark Overlay */}
     <circle cx="84" cy="64" r="16" stroke="#475569" strokeWidth="1" fill="none" strokeDasharray="4 2" opacity="0.4" />
     <path d="M62 76 Q84 66 104 74 M65 81 Q84 71 98 80" stroke="#475569" strokeWidth="1" fill="none" opacity="0.4" />
+  </svg>
+);
+
+/* ---------------------------------------------------------------------
+   Small scattered decorative doodles inspired by a vintage Canon
+   compact camera, a lone tree on a hill, and a retro CRT/console setup.
+   These sit lightly around the lobby card instead of a top icon bar,
+   and only appear before the game starts (see gameState === 'idle'
+   gate at the render site below).
+--------------------------------------------------------------------- */
+const VintageCameraDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 100 70" className={className} filter="drop-shadow(0px 3px 5px rgba(0,0,0,0.12))">
+    <rect x="4" y="16" width="92" height="46" rx="8" fill="#C9BFA5" stroke="#472C20" strokeWidth="3" />
+    <rect x="10" y="5" width="34" height="14" rx="3" fill="#C9BFA5" stroke="#472C20" strokeWidth="3" />
+    <circle cx="50" cy="40" r="17" fill="#3C2F2F" stroke="#472C20" strokeWidth="3" />
+    <circle cx="50" cy="40" r="9" fill="#7FB8D9" />
+    <circle cx="79" cy="25" r="3" fill="#472C20" />
+    <rect x="60" y="25" width="20" height="6" rx="2" fill="#EE8A93" stroke="#472C20" strokeWidth="2" />
+  </svg>
+);
+
+const LoneTreeDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 80 90" className={className}>
+    <path d="M0 90 Q40 60 80 90 Z" fill="#CFE0BC" />
+    <ellipse cx="40" cy="45" rx="18" ry="16" fill="#5B6B4A" />
+    <ellipse cx="29" cy="38" rx="10" ry="9" fill="#5B6B4A" />
+    <ellipse cx="53" cy="40" rx="11" ry="10" fill="#5B6B4A" />
+    <rect x="37" y="55" width="6" height="16" fill="#8B5E3C" />
+  </svg>
+);
+
+const RetroConsoleDoodle = ({ className = '' }) => (
+  <svg viewBox="0 0 90 90" className={className} filter="drop-shadow(0px 3px 5px rgba(0,0,0,0.12))">
+    <rect x="8" y="6" width="74" height="54" rx="6" fill="#EAE3D3" stroke="#472C20" strokeWidth="3" />
+    <rect x="16" y="14" width="58" height="36" rx="3" fill="#7FB8D9" stroke="#472C20" strokeWidth="2" />
+    <rect x="22" y="28" width="10" height="10" fill="#EE8A93" />
+    <rect x="40" y="32" width="14" height="6" fill="#F3A94A" />
+    <rect x="18" y="66" width="54" height="12" rx="4" fill="#B0A0CD" stroke="#472C20" strokeWidth="2" />
+    <circle cx="27" cy="72" r="2.5" fill="#472C20" />
+    <circle cx="63" cy="72" r="2.5" fill="#472C20" />
   </svg>
 );
 
@@ -4577,12 +4617,9 @@ const HueHunt = ({ onNavigate }) => {
       className="min-h-screen w-full flex flex-col items-center"
       style={{ backgroundColor: '#E4F1EC' }}
     >
-      {/* Decorative critter header strip */}
-      <CritterRow />
-
       {/* Gingham-patterned page body */}
       <div
-        className="w-full flex-1 flex justify-center px-4 py-10 md:py-14"
+        className="w-full flex-1 flex justify-center px-4 py-10 md:py-14 overflow-x-hidden"
         style={{
           backgroundImage: `
             linear-gradient(90deg, rgba(255,255,255,0.75) 12px, transparent 12px),
@@ -4595,17 +4632,49 @@ const HueHunt = ({ onNavigate }) => {
         {/* Main interactive container */}
         <div className="max-w-2xl w-full select-none relative">
           
-          {/* Cute Bunny Bouquet Icon (Swapped to Left Side Base) */}
-          <div className="absolute -bottom-10 -left-10 w-28 h-32 transform -rotate-6 hidden sm:block z-10 pointer-events-none">
+          {/* Cute Bunny Bouquet Icon — bottom-left, now visible on every
+              screen size (smaller on mobile, full size from sm up) */}
+          <div className="absolute -bottom-6 -left-6 w-16 h-20 sm:-bottom-10 sm:-left-10 sm:w-28 sm:h-32 transform -rotate-6 z-10 pointer-events-none">
             <MelodyBunny className="w-full h-full" />
           </div>
 
-          {/* Expanded & Resized FlowerStamp (Moved to Right Side Header) */}
-          <div className="absolute -top-14 -right-10 w-32 h-26 transform rotate-12 hidden sm:block z-10 pointer-events-none">
+          {/* Expanded FlowerStamp — top-right, visible on every screen size */}
+          <div className="absolute -top-8 -right-6 w-20 h-16 sm:-top-14 sm:-right-10 sm:w-32 sm:h-26 transform rotate-12 z-10 pointer-events-none">
             <FlowerStamp className="w-full h-full" />
           </div>
 
-          <BackToCafeButton className="mb-6" />
+          {/* --- Scattered doodles inspired by a vintage camera, a lone
+              tree, and a retro console — rebalanced so the left side
+              carries its share too, and visible on all screen sizes.
+              Only shown before the game starts. --- */}
+          {gameState === 'idle' && (
+            <>
+              {/* LEFT: vintage camera, near the top */}
+              <div className="absolute -top-8 left-2 w-14 h-10 sm:-top-10 sm:left-8 sm:w-16 sm:h-12 transform -rotate-6 z-10 pointer-events-none">
+                <VintageCameraDoodle className="w-full h-full" />
+              </div>
+
+              {/* LEFT: retro console, mid-height */}
+              <div className="absolute top-[38%] -left-6 w-14 h-14 sm:top-[40%] sm:-left-14 sm:w-20 sm:h-20 transform rotate-6 z-10 pointer-events-none">
+                <RetroConsoleDoodle className="w-full h-full" />
+              </div>
+
+              {/* RIGHT: lone tree, bottom */}
+              <div className="absolute -bottom-4 -right-4 w-12 h-14 sm:-bottom-6 sm:-right-8 sm:w-16 sm:h-20 transform rotate-3 z-10 pointer-events-none">
+                <LoneTreeDoodle className="w-full h-full" />
+              </div>
+            </>
+          )}
+
+          {/* "Run Away" back navigation — matches Talk Box style, returns to the Arcade */}
+          <div className="mb-6">
+            <button 
+              onClick={() => onNavigate('games')} 
+              className="flex items-center gap-2 text-sm font-black text-[#472C20] hover:opacity-80 transition-opacity uppercase tracking-wider bg-white border-2 border-[#F0C97A] rounded-full px-4 py-1.5 shadow-[3px_3px_0_#F0C97A]"
+            >
+              <ArrowLeft size={14} className="stroke-[3]" /> run away
+            </button>
+          </div>
 
           <div className="bg-[#FFFDF9] text-[#3C2F2F] border-2 border-[#F3D9DC] rounded-[2.5rem] shadow-[0_10px_30px_rgba(60,47,47,0.12)] p-8 relative">
             <AnimatePresence mode="wait">
@@ -4615,6 +4684,14 @@ const HueHunt = ({ onNavigate }) => {
                 <motion.div key="idle" className="py-8 text-center space-y-6">
                   <span className="text-6xl block animate-bounce">🐥🔍</span>
                   <h2 className="text-3xl font-serif font-black">Hue Hunt Machine</h2>
+
+                  {/* Simple decorative touch inside the box — idle state only */}
+                  <div className="flex items-center justify-center gap-3 opacity-40 pt-1">
+                    <VintageCameraDoodle className="w-7 h-5" />
+                    <LoneTreeDoodle className="w-5 h-6" />
+                    <RetroConsoleDoodle className="w-6 h-6" />
+                  </div>
+
                   <p className="text-sm font-medium opacity-80 leading-relaxed max-w-sm mx-auto">
                     Given a target color, your mission is to capture 3 real world photos that match the hue and saturation range of the target. Happy hunting !!
                   </p>
@@ -7022,6 +7099,7 @@ export default OwnerPortal;
 </file>
 
 <file path="src/App.jsx">
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -7103,8 +7181,8 @@ function MainLayoutContent() {
     else if (path === '/chronicle') setTheme({ bg: '#FFF0F5', text: '#7A5C58', border: 'transparent' });
     else if (path === '/wall') setTheme(THEMES.navy);
     else if (path === '/game-leaderboard') setTheme({ bg: '#C5B4E3', text: '#472C20', border: 'transparent' });
-    else if (path === '/directory') setTheme({ bg: '#C2DCFF', text: '#472C20', border: 'transparent' });
-    else if (path === '/review') setTheme(THEMES.rose);
+    else if (path === '/directory') setTheme({ bg: '#D8C7F5', text: '#472C20', border: 'transparent' });
+    else if (path === '/review') setTheme({ bg: 'transparent', text: '#FAF2DC', border: 'rgba(250,242,220,0.15)' });
   }, [location.pathname]);
 
   const handleSaveMemory = async (newMemory) => {
@@ -7132,6 +7210,9 @@ function MainLayoutContent() {
 
   const isOnboarding = location.pathname === '/' || location.pathname === '/avatar-studio';
   const isCafeRoute = location.pathname === '/cafe';
+
+  // Pages that should render without the global top nav bar
+  const hideGlobalNav = isOnboarding || [ '/games/icebreakers', '/games/hue-hunt'].includes(location.pathname);
 
   const layoutBackgroundStyle = isCafeRoute 
     ? {
@@ -7165,13 +7246,13 @@ function MainLayoutContent() {
       {!isOnboarding && <VinylPlayer theme={theme} />}
       <GlobalCompanion />
 
-      {!isOnboarding && (
+      {!hideGlobalNav && (
         <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[100] bg-transparent transition-colors duration-500">
           <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
             <div className="cursor-pointer group flex items-center gap-4" onClick={() => handleNavigate('home', THEMES.cream)}>
-              <div style={{ backgroundColor: theme.text, color: theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
-                🚪
-              </div>
+               <div style={{ backgroundColor: theme.text, color: theme.bg === 'transparent' ? '#2F241A' : theme.bg }} className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent">
+  🚪
+</div>
               <div>
                 <h1 className="font-serif font-black text-xl tracking-tight leading-none" style={{ color: theme.text }}>Dumble' Door</h1>
                 <p className="font-cursive text-sm opacity-80 mt-0.5" style={{ color: theme.text }}>Jagda, Rourkela</p>
@@ -7231,13 +7312,16 @@ export default function App() {
 </file>
 
 <file path="src/pages/ReviewWizard.jsx">
+// src/pages/ReviewWizard.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
-import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw } from 'lucide-react';
+import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw, RotateCcw } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import BackToCafeButton from '../components/BackToCafeButton';
+import { THEMES } from '../constants/data';
 
 /* ---------------------------------------------------------------------
    Mobile-only floating ambience — bottom-to-top infinite drift, same
@@ -7268,10 +7352,28 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [cameraStream, setCameraStream] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [cameraError, setCameraError] = useState('');
+  const [facingMode, setFacingMode] = useState('user'); // 'user' = front, 'environment' = back
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const localNavRef = useRef(null);
 
   const lastSubmissionRef = useRef(0);
+
+  // This page renders its own local nav (below) instead of the global one,
+  // same as ChronicleBoard.jsx does. This mirrors that page's fix for the
+  // same class of bug: forcibly hide every OTHER <nav> in the DOM so the
+  // site-wide nav can never render its own bar above/behind this page's.
+  useEffect(() => {
+    const otherNavs = Array.from(document.querySelectorAll('nav')).filter(
+      (navEl) => navEl !== localNavRef.current
+    );
+    otherNavs.forEach((navEl) => { navEl.style.display = 'none'; });
+
+    return () => {
+      otherNavs.forEach((navEl) => { navEl.style.display = ''; });
+    };
+  }, []);
 
   // --- Decorative parallax tracking for cozy desktop ambiance ---
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
@@ -7302,6 +7404,37 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       }
     };
   }, [cameraStream]);
+
+  // FIX: The <video> element only mounts once `cameraStream` is truthy
+  // (it's conditionally rendered below), so `videoRef.current` was still
+  // null at the exact moment `startCamera` tried to assign `srcObject`
+  // right after `getUserMedia` resolved — the stream was captured, but
+  // never actually piped into the (not-yet-existing) <video> tag, which
+  // is why the preview stayed black and every capture came out empty.
+  // This effect re-runs after the video element has mounted and safely
+  // attaches the live stream to it every time the stream changes.
+  useEffect(() => {
+    if (cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      const playPromise = videoRef.current.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
+    }
+  }, [cameraStream]);
+
+  // Detect whether the device actually has more than one camera before
+  // showing a flip control (avoids showing a useless button on laptops).
+  useEffect(() => {
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+      navigator.mediaDevices.enumerateDevices()
+        .then((devices) => {
+          const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+          setHasMultipleCameras(videoInputs.length > 1);
+        })
+        .catch(() => setHasMultipleCameras(false));
+    }
+  }, []);
 
   // --- WIZARD FORM STATE ---
   const [rating, setRating] = useState(null);
@@ -7336,26 +7469,33 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     }
   }, [step, isSearchingTwin]);
 
-  const startCamera = async () => {
+  const startCamera = async (mode = facingMode) => {
     setCameraError('');
     setCapturedImage(null);
     try {
       if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
+        setCameraStream(null);
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
+        video: { facingMode: mode },
         audio: false
       });
       setCameraStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      // NOTE: srcObject assignment now happens in the useEffect above,
+      // once the <video> element guaranteed to exist in the DOM.
     } catch (err) {
       console.error("Error accessing camera: ", err);
       setCameraError('Could not launch lens. Tap below to retry or check browser permissions!');
     }
+  };
+
+  // Flip between front ("user") and back ("environment") camera, phone-style.
+  const flipCamera = () => {
+    const nextMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(nextMode);
+    startCamera(nextMode);
   };
 
   const capturePhoto = () => {
@@ -7367,6 +7507,12 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
       canvas.width = video.videoWidth || 640;
       canvas.height = video.videoHeight || 480;
 
+      // Only mirror the snapshot for the front-facing camera, matching
+      // the mirrored live preview. The back camera should capture normally.
+      if (facingMode === 'user') {
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+      }
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageDataUrl = canvas.toDataURL('image/png');
       setCapturedImage(imageDataUrl);
@@ -7509,6 +7655,43 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
       `}</style>
 
+      {/* ============ TOP NAV BAR ============
+          App.jsx hides the global <nav> on the /review route (it lives
+          on top of `theme.bg`, which doesn't match this page's own dark
+          radial background), so this is a local copy of the exact same
+          Home / Menu / Log Out nav used on every other page (e.g.
+          MenuBoard.jsx) — fully transparent, no bar/solid block behind
+          it, just the three items sitting directly on top of this
+          page's own existing background.
+          - z-[10000] so it always sits above <GlobalCompanion /> (the
+            cursor-following mascot, which renders at z-[9999] app-wide)
+            instead of getting covered by it. */}
+      <nav
+        ref={localNavRef}
+        className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[10000] bg-transparent"
+      >
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+          <div className="cursor-pointer group flex items-center gap-4" onClick={() => onNavigate('home', THEMES.cream)}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent bg-[#FAF2DC] text-[#3A2E25]">
+              🚪
+            </div>
+            <div>
+              <h1 className="font-serif font-black text-xl tracking-tight leading-none text-[#FAF2DC]">Dumble' Door</h1>
+              <p className="font-cursive text-sm opacity-80 mt-0.5 text-[#FAF2DC]">Jagda, Rourkela</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 items-center">
+            <button onClick={() => onNavigate('menu', THEMES.forest)} className="bg-white/10 backdrop-blur-sm border-2 border-[#FAF2DC] text-[#FAF2DC] px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_#FAF2DC] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#FAF2DC] transition-all">
+              Menu
+            </button>
+            <button onClick={() => onNavigate('welcome')} className="bg-white/10 backdrop-blur-sm border-2 border-[#FAF2DC] text-[#FAF2DC] px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_#FAF2DC] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#FAF2DC] transition-all">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </nav>
+
       {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER (desktop/tablet only) ============ */}
       <div
         className="hidden lg:block absolute inset-0 pointer-events-none z-0 overflow-hidden"
@@ -7612,6 +7795,13 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         <FloatingUpDoodle char="🎀" left="14%" duration={18} delay={10} />
         <FloatingUpDoodle char="🕰️" left="62%" duration={14} delay={4.6} />
         <FloatingUpDoodle char="☁️" left="90%" duration={20} delay={0.8} />
+      </div>
+
+      {/* Back to Cafe — sits in normal document flow, left-aligned directly
+          above the journal card below (same max-w-4xl width), instead of
+          floating over the top nav. Plain pill button, no avatar/face. */}
+      <div className="w-full max-w-4xl relative z-10 mb-3 flex justify-start">
+        <BackToCafeButton className="" />
       </div>
 
       {/* ================= TWO-PAGE SCRAPBOOK JOURNAL HARDCOVER ================= */}
@@ -7753,7 +7943,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                                 key={idx}
                                 onClick={() => toggleItemSelection(item.n)}
                                 className="p-2.5 rounded-lg flex justify-between items-center text-left font-bold text-xs transition-all border border-[#534538]"
-                                style={{ background: selectedItems.includes(item.n) ? '#B5D1A9' : '#FFFDF9' }}
+                                style={{
+                                  background: selectedItems.includes(item.n) ? '#B5D1A9' : '#FFFDF9',
+                                  color: '#3A2E25'
+                                }}
                               >
                                 <span>{item.n}</span>
                                 {selectedItems.includes(item.n) && <Check size={12} />}
@@ -7787,7 +7980,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           className="px-4 py-2.5 rounded-xl font-bold text-xs border-2 border-[#534538]"
                           style={{
                             background: favoriteDish === item ? '#E2A752' : '#FFFDF9',
-                            boxShadow: '3px 3px 0 #534538'
+                            boxShadow: '3px 3px 0 #534538',
+                            color: '#3A2E25'
                           }}
                         >
                           👑 {item}
@@ -7814,7 +8008,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                             className="px-3 py-2 rounded-full font-bold text-xs border border-[#534538] transition-transform"
                             style={{
                               background: active ? '#E2A752' : '#FFFDF9',
-                              transform: active ? 'rotate(-3deg)' : 'none'
+                              transform: active ? 'rotate(-3deg)' : 'none',
+                              color: '#3A2E25'
                             }}
                           >
                             {badge}
@@ -7843,7 +8038,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           key={vOption}
                           onClick={() => { setVibe(vOption); handleNextStep(); }}
                           className="p-3 rounded-xl border border-[#534538] font-bold text-xs text-left transition-colors"
-                          style={{ background: vibe === vOption ? '#689B94' : '#FFFDF9' }}
+                          style={{
+                            background: vibe === vOption ? '#689B94' : '#FFFDF9',
+                            color: '#3A2E25'
+                          }}
                         >
                           {vOption}
                         </button>
@@ -7900,7 +8098,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                               <div className="rounded-xl p-3 bg-[#FFFDF9] border-2 border-[#534538]">
                                 <h4 className="font-bold text-sm text-[#3A2E25]">👤 {twin.name || 'Cozy Wanderer'}</h4>
                                 <p className="text-[11px] text-[#CD6A4E] font-bold">Vibe: {twin.vibe || 'Food Adventure'}</p>
-                                <p className="text-xs mt-1.5 italic p-2 bg-[#F7EED6] rounded border border-stone-200">"{twin.review || 'Loved the space!'}"</p>
+                                <p className="text-xs mt-1.5 italic p-2 bg-[#F7EED6] rounded border border-stone-200 text-[#3A2E25]">"{twin.review || 'Loved the space!'}"</p>
                               </div>
                             </div>
                           ) : (
@@ -7935,15 +8133,40 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                     <div className="w-full rounded-2xl p-3 bg-gradient-to-br from-[#DFD4B7] to-[#B09F7A] border-2 border-[#534538] flex flex-col md:flex-row gap-3 items-center">
                       <div className="w-full md:w-[60%] aspect-[4/3] rounded-xl p-1.5 bg-[#F3ECDB] border border-[#534538] flex flex-col">
                         <div className="w-full flex-1 bg-black rounded overflow-hidden relative flex items-center justify-center">
-                          {cameraStream && !capturedImage && (
-                            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform -scale-x-100" />
-                          )}
+                          {/* FIX: video element is now always mounted (instead of only
+                              when cameraStream is truthy) so `videoRef.current` is never
+                              null when we try to attach the stream. Visibility is toggled
+                              instead, which is what actually makes the live preview show up. */}
+                          <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="w-full h-full object-cover"
+                            style={{
+                              display: cameraStream && !capturedImage ? 'block' : 'none',
+                              transform: facingMode === 'user' ? 'scaleX(-1)' : 'none'
+                            }}
+                          />
                           {capturedImage && (
                             <img src={capturedImage} alt="Captured preview" className="w-full h-full object-cover" />
                           )}
                           {!cameraStream && !capturedImage && (
-                            <button onClick={startCamera} className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-[#CD6A4E] text-[#FFFDF9] rounded-lg border border-[#534538]">
+                            <button onClick={() => startCamera()} className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 bg-[#CD6A4E] text-[#FFFDF9] rounded-lg border border-[#534538]">
                               Power Lens On
+                            </button>
+                          )}
+
+                          {/* Flip camera control — phone-style, only shown once the
+                              device is confirmed to have more than one camera and a
+                              live (non-captured) preview is showing. */}
+                          {cameraStream && !capturedImage && hasMultipleCameras && (
+                            <button
+                              onClick={flipCamera}
+                              title="Flip camera"
+                              className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-black/50 border border-white/40 text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+                            >
+                              <RotateCcw size={13} />
                             </button>
                           )}
                         </div>
@@ -7955,7 +8178,7 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           {cameraStream && !capturedImage ? (
                             <button onClick={capturePhoto} className="w-8 h-8 rounded-full bg-[#CD6A4E] border border-[#534538] font-bold text-[9px] text-[#FFFDF9]" fill="none">SNAP</button>
                           ) : (
-                            <button onClick={startCamera} className="w-8 h-8 rounded-full bg-[#FFFDF9] border border-[#534538] text-[9px] flex items-center justify-center">
+                            <button onClick={() => startCamera()} className="w-8 h-8 rounded-full bg-[#FFFDF9] border border-[#534538] text-[9px] flex items-center justify-center">
                               {capturedImage ? <RefreshCw size={10} /> : 'SET'}
                             </button>
                           )}

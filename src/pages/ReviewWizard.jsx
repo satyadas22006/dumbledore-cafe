@@ -5,7 +5,7 @@ import { useAvatar } from '../context/AvatarContext';
 import { AvatarRenderer } from '../components/AvatarRenderer';
 import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw, RotateCcw } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import BackToCafeButton from '../components/BackToCafeButton';
 import { THEMES } from '../constants/data';
 
@@ -42,8 +42,24 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const localNavRef = useRef(null);
 
   const lastSubmissionRef = useRef(0);
+
+  // This page renders its own local nav (below) instead of the global one,
+  // same as ChronicleBoard.jsx does. This mirrors that page's fix for the
+  // same class of bug: forcibly hide every OTHER <nav> in the DOM so the
+  // site-wide nav can never render its own bar above/behind this page's.
+  useEffect(() => {
+    const otherNavs = Array.from(document.querySelectorAll('nav')).filter(
+      (navEl) => navEl !== localNavRef.current
+    );
+    otherNavs.forEach((navEl) => { navEl.style.display = 'none'; });
+
+    return () => {
+      otherNavs.forEach((navEl) => { navEl.style.display = ''; });
+    };
+  }, []);
 
   // --- Decorative parallax tracking for cozy desktop ambiance ---
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
@@ -118,6 +134,54 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
   
   const [isSearchingTwin, setIsSearchingTwin] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localTwin, setLocalTwin] = useState(null);
+
+  const findCafeTwin = async () => {
+    try {
+      const q = query(collection(db, "memories"), orderBy("createdAt", "desc"), limit(100)); // Buffer to find good matches
+      const snapshot = await getDocs(q);
+      const pastMemories = snapshot.docs.map(d => d.data());
+
+      let validTwins = [];
+
+      for (const m of pastMemories) {
+        // Prevent matching with a just-submitted version of themselves if rapid-clicking
+        if (m.createdAt === lastSubmissionRef.current) continue;
+
+        // Rule 1: Exact matches on the core solitary attributes
+        const matchesVibe = m.vibe === vibe;
+        const matchesPurpose = m.purpose === purpose;
+        const matchesRating = m.rating === rating;
+
+        // Rule 2: At least 2 parameters must match in multiple-option arrays (Highlights)
+        let overlap = 0;
+        if (m.highlights && selectedHighlights) {
+          overlap = m.highlights.filter(h => selectedHighlights.includes(h)).length;
+        }
+        
+        // If the user selected < 2 highlights themselves, we check against what they DID select,
+        // otherwise strictly enforce 2 or more overlapping highlights.
+        const requiredOverlap = Math.min(2, selectedHighlights.length);
+        const matchesHighlights = overlap >= requiredOverlap;
+
+        if (matchesVibe && matchesPurpose && matchesRating && matchesHighlights) {
+          validTwins.push(m);
+        }
+      }
+
+      let bestMatch = null;
+      if (validTwins.length > 0) {
+        // Randomly shuffle to display a different twin every time if multiple people had the same experience
+        bestMatch = validTwins[Math.floor(Math.random() * validTwins.length)];
+      }
+
+      setLocalTwin(bestMatch);
+      if (setTwin) setTwin(bestMatch); // Sync with parent context if desired
+    } catch (e) {
+      console.error("Error finding twin:", e);
+      setLocalTwin(null);
+    }
+  };
 
   const handleNextStep = () => {
     if (step < 7) {
@@ -125,19 +189,16 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
     } else if (step === 7) {
       setStep(8);
       setIsSearchingTwin(true);
+      // Run search and then transition state
+      findCafeTwin().then(() => {
+        setTimeout(() => {
+          setIsSearchingTwin(false);
+        }, 3000);
+      });
     } else if (step === 8) {
       setStep(9);
     }
   };
-
-  useEffect(() => {
-    if (step === 8 && isSearchingTwin) {
-      const timer = setTimeout(() => {
-        setIsSearchingTwin(false);
-      }, 3500);
-      return () => clearTimeout(timer);
-    }
-  }, [step, isSearchingTwin]);
 
   const startCamera = async (mode = facingMode) => {
     setCameraError('');
@@ -323,16 +384,28 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .live-item { animation: microDrift 7s ease-in-out infinite; }
         .live-steam path { animation: subtleSteam 3.5s ease-in-out infinite; }
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
+
+        /* Fix for global VinylPlayer icon color on transparent background */
+        div.fixed.bottom-6.left-6 button {
+          color: #17100B !important;
+        }
       `}</style>
 
       {/* ============ TOP NAV BAR ============
           App.jsx hides the global <nav> on the /review route (it lives
           on top of `theme.bg`, which doesn't match this page's own dark
           radial background), so this is a local copy of the exact same
-          Home / Menu / Log Out nav used on every other page, just
-          recolored to sit on top of this page's own background instead
-          of relying on the global one. */}
-      <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[70]">
+          Home / Menu / Log Out nav used on every other page (e.g.
+          MenuBoard.jsx) — fully transparent, no bar/solid block behind
+          it, just the three items sitting directly on top of this
+          page's own existing background.
+          - z-[10000] so it always sits above <GlobalCompanion /> (the
+            cursor-following mascot, which renders at z-[9999] app-wide)
+            instead of getting covered by it. */}
+      <nav
+        ref={localNavRef}
+        className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[10000] bg-transparent"
+      >
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
           <div className="cursor-pointer group flex items-center gap-4" onClick={() => onNavigate('home', THEMES.cream)}>
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent bg-[#FAF2DC] text-[#3A2E25]">
@@ -606,7 +679,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                                 key={idx}
                                 onClick={() => toggleItemSelection(item.n)}
                                 className="p-2.5 rounded-lg flex justify-between items-center text-left font-bold text-xs transition-all border border-[#534538]"
-                                style={{ background: selectedItems.includes(item.n) ? '#B5D1A9' : '#FFFDF9' }}
+                                style={{
+                                  background: selectedItems.includes(item.n) ? '#B5D1A9' : '#FFFDF9',
+                                  color: '#3A2E25'
+                                }}
                               >
                                 <span>{item.n}</span>
                                 {selectedItems.includes(item.n) && <Check size={12} />}
@@ -640,7 +716,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           className="px-4 py-2.5 rounded-xl font-bold text-xs border-2 border-[#534538]"
                           style={{
                             background: favoriteDish === item ? '#E2A752' : '#FFFDF9',
-                            boxShadow: '3px 3px 0 #534538'
+                            boxShadow: '3px 3px 0 #534538',
+                            color: '#3A2E25'
                           }}
                         >
                           👑 {item}
@@ -667,7 +744,8 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                             className="px-3 py-2 rounded-full font-bold text-xs border border-[#534538] transition-transform"
                             style={{
                               background: active ? '#E2A752' : '#FFFDF9',
-                              transform: active ? 'rotate(-3deg)' : 'none'
+                              transform: active ? 'rotate(-3deg)' : 'none',
+                              color: '#3A2E25'
                             }}
                           >
                             {badge}
@@ -696,7 +774,10 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                           key={vOption}
                           onClick={() => { setVibe(vOption); handleNextStep(); }}
                           className="p-3 rounded-xl border border-[#534538] font-bold text-xs text-left transition-colors"
-                          style={{ background: vibe === vOption ? '#689B94' : '#FFFDF9' }}
+                          style={{
+                            background: vibe === vOption ? '#689B94' : '#FFFDF9',
+                            color: '#3A2E25'
+                          }}
                         >
                           {vOption}
                         </button>
@@ -747,13 +828,19 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
                         </motion.div>
                       ) : (
                         <motion.div key="reveal" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full space-y-4">
-                          {twin ? (
+                          {localTwin ? (
                             <div className="space-y-3 w-full text-left">
                               <span className="rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#DE8F6E] border border-[#534538] text-[#3D1E14]">✨ Cafe Twin Found</span>
                               <div className="rounded-xl p-3 bg-[#FFFDF9] border-2 border-[#534538]">
-                                <h4 className="font-bold text-sm text-[#3A2E25]">👤 {twin.name || 'Cozy Wanderer'}</h4>
-                                <p className="text-[11px] text-[#CD6A4E] font-bold">Vibe: {twin.vibe || 'Food Adventure'}</p>
-                                <p className="text-xs mt-1.5 italic p-2 bg-[#F7EED6] rounded border border-stone-200">"{twin.review || 'Loved the space!'}"</p>
+                                <h4 className="font-bold text-sm text-[#3A2E25]">
+                                  👤 {localTwin.name && localTwin.name.trim() !== '' && localTwin.name.toLowerCase() !== 'anonymous' 
+                                      ? localTwin.name 
+                                      : 'Anonymous Twin'}
+                                </h4>
+                                <p className="text-[11px] text-[#CD6A4E] font-bold">Vibe: {localTwin.vibe || 'Food Adventure'}</p>
+                                {(localTwin.review || localTwin.text) && (
+                                  <p className="text-xs mt-1.5 italic p-2 bg-[#F7EED6] rounded border border-stone-200 text-[#3A2E25]">"{localTwin.review || localTwin.text}"</p>
+                                )}
                               </div>
                             </div>
                           ) : (
