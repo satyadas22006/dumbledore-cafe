@@ -7,6 +7,7 @@ import { Sparkles, Heart, Coffee, Check, ArrowRight, Search, Camera, RefreshCw, 
 import { db } from '../firebase';
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 import BackToCafeButton from '../components/BackToCafeButton';
+import { THEMES } from '../constants/data';
 
 /* ---------------------------------------------------------------------
    Mobile-only floating ambience — bottom-to-top infinite drift, same
@@ -324,11 +325,35 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         .cat-tail { animation: tailWag 4s ease-in-out infinite; transform-origin: 22px 26px; }
       `}</style>
 
-      {/* Back to Cafe — this page hides the global top nav, so it needs
-          its own way back, same component/style used across the app. */}
-      <div className="absolute top-6 left-6 z-[60]">
-        <BackToCafeButton className="" />
-      </div>
+      {/* ============ TOP NAV BAR ============
+          App.jsx hides the global <nav> on the /review route (it lives
+          on top of `theme.bg`, which doesn't match this page's own dark
+          radial background), so this is a local copy of the exact same
+          Home / Menu / Log Out nav used on every other page, just
+          recolored to sit on top of this page's own background instead
+          of relying on the global one. */}
+      <nav className="w-full px-6 pt-6 pb-2 flex justify-between items-center relative z-[70]">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
+          <div className="cursor-pointer group flex items-center gap-4" onClick={() => onNavigate('home', THEMES.cream)}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-md group-hover:rotate-12 transition-transform border border-transparent bg-[#FAF2DC] text-[#3A2E25]">
+              🚪
+            </div>
+            <div>
+              <h1 className="font-serif font-black text-xl tracking-tight leading-none text-[#FAF2DC]">Dumble' Door</h1>
+              <p className="font-cursive text-sm opacity-80 mt-0.5 text-[#FAF2DC]">Jagda, Rourkela</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 items-center">
+            <button onClick={() => onNavigate('menu', THEMES.forest)} className="bg-white/10 backdrop-blur-sm border-2 border-[#FAF2DC] text-[#FAF2DC] px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_#FAF2DC] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#FAF2DC] transition-all">
+              Menu
+            </button>
+            <button onClick={() => onNavigate('welcome')} className="bg-white/10 backdrop-blur-sm border-2 border-[#FAF2DC] text-[#FAF2DC] px-4 py-1.5 rounded-full font-mono text-xs font-bold shadow-[2px_2px_0_#FAF2DC] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#FAF2DC] transition-all">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </nav>
 
       {/* ============ LIVE WALLPAPER BACKGROUND DESK LAYER (desktop/tablet only) ============ */}
       <div
@@ -433,6 +458,13 @@ export default function ReviewWizard({ onComplete, onNavigate, theme, twin, setT
         <FloatingUpDoodle char="🎀" left="14%" duration={18} delay={10} />
         <FloatingUpDoodle char="🕰️" left="62%" duration={14} delay={4.6} />
         <FloatingUpDoodle char="☁️" left="90%" duration={20} delay={0.8} />
+      </div>
+
+      {/* Back to Cafe — sits in normal document flow, left-aligned directly
+          above the journal card below (same max-w-4xl width), instead of
+          floating over the top nav. Plain pill button, no avatar/face. */}
+      <div className="w-full max-w-4xl relative z-10 mb-3 flex justify-start">
+        <BackToCafeButton className="" />
       </div>
 
       {/* ================= TWO-PAGE SCRAPBOOK JOURNAL HARDCOVER ================= */}
